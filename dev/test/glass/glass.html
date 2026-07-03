@@ -14,7 +14,7 @@
       }
 
       #root {
-        background: linear-gradient(135deg, #f0f0f0, #ccc);
+        background: linear-gradient(135deg, #000000, #333);
         padding: 50px;
       }
 
@@ -26,7 +26,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 20px;
+        border-radius: 40px;
         font-weight: bold;
         color: #333;
       }
@@ -44,13 +44,13 @@
       }
 
       /* Background to show refraction clearly */
-      }
+      
     </style>
   </head>
   <body>
     <!-- Root container for mirage engine -->
     <div id="root">
-      <h1>a2kama Glass Test</h1>
+      <h1 style="color: #fff"> a2kama Glass Test</h1>
 
       <button data-a2kama="myGlass" class="btn">Glass Button</button>
       <div
@@ -61,7 +61,8 @@
           top: 0px;
           left: 0px;
           z-index: 20;
-          background-color: rgba(255, 255, 255, 0.2);
+          /* background-color: rgba(255, 255, 255, 0.2); */
+          background-color: rgba(0,0,0,0.4);
         "
       >
         <!-- Glass Box -->

@@ -25,7 +25,7 @@ class A2kama {
           // Apply mirage attributes required by the engine for travelers
           el.dataset.mirageTravel = "traveler";
           // el.dataset.mirageFilter = "exclude-self";
-          // el.dataset.mirageDom = "hide";
+          el.dataset.mirageDom = "hide";
 
           // Inject the generated shader from the recipe
           el.dataset.mirageShader = JSON.stringify(recipe.shader);
