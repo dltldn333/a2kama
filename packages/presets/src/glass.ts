@@ -79,7 +79,16 @@ export const a2kGlass = {
           vec2 zoomOffset = p * pixelToUv * (1.0 / textureZoom - 1.0);
           
           float refStrength = refraction / 100.0;
-          vec2 distortOffset = -grad * pushDist * refStrength * pixelToUv;
+          float splayAmount = ${splay.toFixed(3)} / 100.0;
+          
+          // Calculate tangent pull towards corners for splay distortion
+          vec2 tangentPull = p / max(halfSize, 0.001);
+          vec2 splayDir = tangentPull - grad * dot(tangentPull, grad);
+          
+          // Add splay distortion (tangential). Reversed (-splayDir) so image is pulled towards the corners.
+          vec2 distortDir = -grad - splayDir * splayAmount;
+
+          vec2 distortOffset = distortDir * pushDist * refStrength * pixelToUv;
           
           resultUv = screenUv + zoomOffset + distortOffset; 
         `,
@@ -89,8 +98,6 @@ export const a2kGlass = {
           float lightIntensity = ${lightIntensity.toFixed(3)};
           float lightSymmetry = ${lightSymmetry.toFixed(3)};
           float bevel = ${bevelWidth.toFixed(3)};
-          float splayNorm_c = ${splay.toFixed(3)} / 100.0;
-          float splayPower_c = mix(15.0, 3.0, splayNorm_c);
 
           // --- Logic ---
           vec2 e_c = vec2(0.5, 0.0);
@@ -120,7 +127,7 @@ export const a2kGlass = {
           float edgeReflection = smoothstep(-1.5, 0.0, d) * smoothstep(0.0, -1.5, d);
           float crispEdge = edgeReflection * diffuse;
 
-          float fresnel = pow(1.0 - max(dot(normal_c, viewDir), 0.0), splayPower_c);
+          float fresnel = pow(1.0 - max(dot(normal_c, viewDir), 0.0), 3.0);
           
           float dirLight = (diffuse * fresnel) + crispEdge;
           
