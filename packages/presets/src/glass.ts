@@ -22,12 +22,12 @@ export const a2kGlass = {
       lightSymmetry = 1,
       refraction = 150,
       depth = 30,
-      dispersion = 0,
+      dispersion = 100,
       frost = 10,
       splay = 100,
       zoom = 1.0,
       bevelWidth = depth / 2,
-      bevelCurve = 3.0
+      bevelCurve = 3.0,
     } = options;
 
     return {
@@ -131,6 +131,29 @@ export const a2kGlass = {
           
           float dirLight = (diffuse * fresnel) + crispEdge;
           
+          ${
+            dispersion > 0
+              ? `
+          // Dispersion (Chromatic Aberration)
+          vec2 dispOffset = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+          
+          float texR = texture2D(uTexture, resultUv + dispOffset).r;
+          float texG = texture2D(uTexture, resultUv).g;
+          float texB = texture2D(uTexture, resultUv - dispOffset).b;
+          float texA = texture2D(uTexture, resultUv).a;
+          vec4 texColorDisp = vec4(texR, texG, texB, texA);
+          
+          vec4 newBaseColor = vec4(uBgColor.rgb, uBgColor.a);
+          if (uGradientCount > 0) {
+            vec4 gradColor = calculateGradientLayer(vUv);
+            newBaseColor = blendSrcOver(gradColor, newBaseColor);
+          }
+          newBaseColor = blendSrcOver(newBaseColor, texColorDisp);
+          finalColor = blendSrcOver(borderLayer, newBaseColor);
+          `
+              : ""
+          }
+
           finalColor.rgb += vec3(1.0) * (dirLight * lightIntensity);
         `,
       },
