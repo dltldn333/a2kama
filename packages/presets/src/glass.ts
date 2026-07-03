@@ -1,30 +1,96 @@
 import type { Recipe } from "a2kama";
 
 export interface GlassOptions {
+  /**
+   * Angle of the main light source in degrees.
+   * @default 45
+   * @range [0, 360]
+   */
   lightDirection?: number;
+
+  /**
+   * Intensity multiplier for the specular highlights.
+   * @default 0.6
+   * @range [0.0, 2.0]
+   */
   lightIntensity?: number;
+
+  /**
+   * Ratio of light reflection symmetry (0.0 for single-sided, 1.0 for mirrored).
+   * @default 1.0
+   * @range [0.0, 1.0]
+   */
   lightSymmetry?: number;
+
+  /**
+   * Base strength of background refraction/distortion.
+   * @default 100
+   * @range [0, 300]
+   */
   refraction?: number;
+
+  /**
+   * Apparent thickness of the glass in pixels.
+   * @default 40
+   * @range [0, 200]
+   */
   depth?: number;
+
+  /**
+   * Strength of chromatic aberration (RGB splitting).
+   * ⚠️ Heavy on performance when > 0.
+   * @default 0
+   * @range [0, 200]
+   */
   dispersion?: number;
+
+  /**
+   * Gaussian blur radius for the frosted glass effect.
+   * ⚠️ Heavy on performance when > 0.
+   * @default 0
+   * @range [0, 100]
+   */
   frost?: number;
+
+  /**
+   * Tangential distortion strength that pulls the background towards the corners.
+   * @default 0
+   * @range [0, 200]
+   */
   splay?: number;
+
+  /**
+   * Scale multiplier for the background texture inside the glass.
+   * @default 1.0
+   * @range [0.1, 5.0]
+   */
   zoom?: number;
+
+  /**
+   * Width of the outer beveled edge in pixels.
+   * @default depth / 2
+   * @range [0, depth]
+   */
   bevelWidth?: number;
+
+  /**
+   * Sharpness/curvature of the beveled edge.
+   * @default 3.0
+   * @range [0.1, 10.0]
+   */
   bevelCurve?: number;
 }
-
 export const a2kGlass = {
   normal(options: GlassOptions = {}): Recipe {
     const {
-      lightDirection = -45,
-      lightIntensity = 1,
+      lightDirection = 45,
+      lightIntensity = 0.6,
       lightSymmetry = 1,
-      refraction = 150,
-      depth = 30,
-      dispersion = 100,
-      frost = 10,
-      splay = 100,
+      refraction = 100,
+      depth = 40,
+      dispersion = 0,
+      frost = 0,
+      splay = 0,
       zoom = 1.0,
       bevelWidth = depth / 2,
       bevelCurve = 3.0,
@@ -132,16 +198,63 @@ export const a2kGlass = {
           float dirLight = (diffuse * fresnel) + crispEdge;
           
           ${
-            dispersion > 0
+            dispersion > 0 || frost > 0
               ? `
-          // Dispersion (Chromatic Aberration)
-          vec2 dispOffset = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+          // Frost (Blur) & Dispersion (Chromatic Aberration)
+          float frostRadius = ${frost.toFixed(3)};
+          vec4 texColorDisp = vec4(0.0);
           
-          float texR = texture2D(uTexture, resultUv + dispOffset).r;
-          float texG = texture2D(uTexture, resultUv).g;
-          float texB = texture2D(uTexture, resultUv - dispOffset).b;
-          float texA = texture2D(uTexture, resultUv).a;
-          vec4 texColorDisp = vec4(texR, texG, texB, texA);
+          if (frostRadius > 0.0) {
+              float weightSum = 0.0;
+              // Sigma controls the blur spread. 
+              float sigma = max(frostRadius * 0.2, 1.0);
+              float twoSigmaSq = 2.0 * sigma * sigma;
+              
+              // Standard 11x11 Gaussian Blur (121 samples) for a much wider smudge
+              for(float x = -5.0; x <= 5.0; x += 1.0) {
+                  for(float y = -5.0; y <= 5.0; y += 1.0) {
+                      // Standard Gaussian weight formula
+                      float weight = exp(-(x*x + y*y) / twoSigmaSq);
+                      
+                      // Spacing between samples. 
+                      // Removed min() constraint as requested, allowing indefinite scaling at the cost of potential ghosting at extreme values.
+                      float spacing = frostRadius * 0.15; 
+                      vec2 texOffset = vec2(x, y) * spacing * pixelToUv;
+                      
+                      ${
+                        dispersion > 0
+                          ? `
+                      vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+                      float rC = texture2D(uTexture, resultUv + texOffset + dispOff).r;
+                      float gC = texture2D(uTexture, resultUv + texOffset).g;
+                      float bC = texture2D(uTexture, resultUv + texOffset - dispOff).b;
+                      float aC = texture2D(uTexture, resultUv + texOffset).a;
+                      texColorDisp += vec4(rC, gC, bC, aC) * weight;
+                      `
+                          : `
+                      texColorDisp += texture2D(uTexture, resultUv + texOffset) * weight;
+                      `
+                      }
+                      weightSum += weight;
+                  }
+              }
+              texColorDisp /= weightSum;
+          } else {
+              ${
+                dispersion > 0
+                  ? `
+              vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+              float r = texture2D(uTexture, resultUv + dispOff).r;
+              float g = texture2D(uTexture, resultUv).g;
+              float b = texture2D(uTexture, resultUv - dispOff).b;
+              float a = texture2D(uTexture, resultUv).a;
+              texColorDisp = vec4(r, g, b, a);
+              `
+                  : `
+              texColorDisp = texture2D(uTexture, resultUv);
+              `
+              }
+          }
           
           vec4 newBaseColor = vec4(uBgColor.rgb, uBgColor.a);
           if (uGradientCount > 0) {

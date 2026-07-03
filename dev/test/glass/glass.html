@@ -20,7 +20,7 @@
 
       .box {
         width: 200px;
-        height: 200px;
+        height: 80px;
         /* background: #eee; */
         margin: 20px;
         display: flex;
@@ -40,17 +40,16 @@
         border: none;
         background: #fff;
         font-weight: bold;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
       /* Background to show refraction clearly */
-      
     </style>
   </head>
   <body>
     <!-- Root container for mirage engine -->
     <div id="root">
-      <h1 style="color: #fff"> a2kama Glass Test</h1>
+      <h1 style="color: #fff">a2kama Glass Test</h1>
 
       <button data-a2kama="myGlass" class="btn">Glass Button</button>
       <div
@@ -61,8 +60,8 @@
           top: 0px;
           left: 0px;
           z-index: 20;
-          /* background-color: rgba(255, 255, 255, 0.2); */
-          background-color: rgba(0,0,0,0.4);
+          background-color: rgba(255, 255, 255, 0.8);
+          /* background-color: rgba(0, 0, 0, 0.4); */
         "
       >
         <!-- Glass Box -->
@@ -89,8 +88,14 @@
 
       // 2. Create recipes
       const glassRecipe = a2kGlass.normal({
-        // refraction: 1.5,
-        // depth: 10,
+        lightDirection: 45,
+        lightIntensity: 0.6,
+        lightSymmetry: 1,
+        refraction: 100,
+        depth: 120,
+        dispersion: 0,
+        frost: 10,
+        bevelWidth: 15,
       });
 
       const waterRecipe = a2kWater.normal({
