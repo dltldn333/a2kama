@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a2kama Vanilla Example</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Arial", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      #root {
+        background: linear-gradient(135deg, #f0f0f0, #ccc);
+        padding: 50px;
+      }
+
+      .box {
+        width: 200px;
+        height: 200px;
+        /* background: #eee; */
+        margin: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .btn {
+        padding: 15px 30px;
+        font-size: 16px;
+        margin: 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: none;
+        background: #fff;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      /* Background to show refraction clearly */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Root container for mirage engine -->
+    <div id="root">
+      <h1>a2kama Glass Test</h1>
+
+      <button data-a2kama="myGlass" class="btn">Glass Button</button>
+      <div
+        data-a2kama="myGlass"
+        class="box"
+        style="
+          position: fixed;
+          top: 0px;
+          left: 0px;
+          z-index: 20;
+          background-color: rgba(255, 255, 255, 0.2);
+        "
+      >
+        <!-- Glass Box -->
+      </div>
+      <div
+        class="box"
+        style="background-color: rgba(0, 100, 255, 0.2); height: 1000px"
+      >
+        Water Box
+      </div>
+
+      <button id="temp-btn" data-a2kama="myGlass" class="btn">
+        Temporary Button
+      </button>
+    </div>
+
+    <script type="module">
+      // In a real environment, we would use module resolution.
+      // For this dev environment, we assume Vite resolves these based on monorepo linking.
+      import a2kama from "a2kama";
+      import { a2kGlass, a2kWater } from "a2kama/presets";
+
+      console.log("a2kama imported:", a2kama);
+
+      // 2. Create recipes
+      const glassRecipe = a2kGlass.normal({
+        // refraction: 1.5,
+        // depth: 10,
+      });
+
+      const waterRecipe = a2kWater.normal({
+        speed: 1.5,
+        intensity: 0.8,
+      });
+
+      // 3. Register recipes
+      a2kama.register("myGlass", glassRecipe);
+      a2kama.register("myWater", waterRecipe);
+
+      // 4. Initialize on the root element
+      const rootEl = document.getElementById("root");
+      a2kama.init(rootEl);
+
+      // ----------------------------------------------------
+      // Dynamic DOM destruction testing
+      // ----------------------------------------------------
+      const tempBtn = document.getElementById("temp-btn");
+
+      tempBtn.addEventListener("click", () => {
+        console.log("Disposing temporary button");
+        a2kama.dispose(tempBtn);
+        tempBtn.remove();
+      });
+    </script>
+  </body>
+</html>

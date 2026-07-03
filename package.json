@@ -1,0 +1,21 @@
+{
+  "name": "a2kama-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm -r build",
+
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    
+    "test": "pnpm -r test",
+    "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist"
+  },
+  "devDependencies": {
+    "a2kama": "workspace:*",
+    "@changesets/cli": "^2.29.8",
+    "typescript": "^5.0.0",
+    "vite": "^4.0.0",
+    "vite-plugin-dts": "^3.0.0"
+  }
+}
