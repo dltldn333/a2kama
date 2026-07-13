@@ -283,6 +283,19 @@ export const a2kGlass = {
           finalColor.rgb += vec3(1.0) * (dirLight * lightIntensity);
         `,
       },
+      optionMap: {
+        lightDirection: "uGlassLightDirection",
+        lightIntensity: "uGlassLightIntensity",
+        lightSymmetry: "uGlassLightSymmetry",
+        refraction: "uGlassRefraction",
+        depth: "uGlassDepth",
+        dispersion: "uGlassDispersion",
+        frost: "uGlassFrost",
+        splay: "uGlassSplay",
+        zoom: "uGlassZoom",
+        bevelWidth: "uGlassBevelWidth",
+        bevelCurve: "uGlassBevelCurve",
+      },
     };
   },
 };

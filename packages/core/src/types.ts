@@ -6,5 +6,5 @@ export interface RecipeShader {
 
 export interface Recipe {
   shader: RecipeShader;
-  // Extensible for future properties
+  optionMap?: Record<string, string>;
 }

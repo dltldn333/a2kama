@@ -5,6 +5,88 @@ class A2kama {
   private recipes: Map<string, Recipe> = new Map();
   private mirageInstance: Mirage | null = null;
   private rootElement: HTMLElement | null = null;
+  private animatedUniforms: WeakMap<HTMLElement, Record<string, any>> = new WeakMap();
+
+  /**
+   * Retrieves a reactive Proxy object for the element's options.
+   * Any changes to the properties of this object will automatically apply to the WebGL shader.
+   * @param element The target element or a CSS selector.
+   * @returns A Proxy object of the options.
+   */
+  getOptions(element: HTMLElement | string): Record<string, any> | null {
+    if (!this.mirageInstance) {
+      console.warn("a2kama: Engine is not initialized yet.");
+      return null;
+    }
+
+    const targetElement = typeof element === "string" ? document.querySelector(element) as HTMLElement : element;
+    if (!targetElement) {
+      console.warn("a2kama: Target element not found.", element);
+      return null;
+    }
+
+    let currentUniforms = this.animatedUniforms.get(targetElement);
+    if (!currentUniforms) {
+      let initialUniforms: Record<string, any> = {};
+      let optionMap: Record<string, string> = {};
+      
+      const shaderData = targetElement.dataset.mirageShader;
+      const mapData = targetElement.dataset.a2kamaMap;
+
+      if (shaderData) {
+        try {
+          const parsed = JSON.parse(shaderData);
+          if (parsed.uniforms) {
+            initialUniforms = { ...parsed.uniforms };
+          }
+        } catch (e) {
+          console.error("a2kama: Failed to parse mirageShader dataset", e);
+        }
+      }
+      
+      if (mapData) {
+        try {
+          optionMap = JSON.parse(mapData);
+        } catch (e) {
+          console.error("a2kama: Failed to parse a2kamaMap dataset", e);
+        }
+      }
+      
+      const engine = this.mirageInstance;
+
+      // Create a user-facing options object
+      const userOptions: Record<string, any> = {};
+      if (Object.keys(optionMap).length > 0) {
+        for (const [userKey, uniformKey] of Object.entries(optionMap)) {
+          if (uniformKey in initialUniforms) {
+            userOptions[userKey] = initialUniforms[uniformKey];
+          }
+        }
+      } else {
+        Object.assign(userOptions, initialUniforms);
+      }
+
+      // Create a Proxy to intercept all property assignments.
+      const proxy = new Proxy(userOptions, {
+        set(target, property, value) {
+          target[property as string] = value;
+          
+          // Map back to uniform key
+          const uniformKey = optionMap[property as string] || (property as string);
+          initialUniforms[uniformKey] = value;
+
+          // Synchronize with mirage-engine on every property change
+          engine.updateUniforms(targetElement, initialUniforms);
+          return true; // Indicate success
+        }
+      });
+
+      this.animatedUniforms.set(targetElement, proxy);
+      currentUniforms = proxy;
+    }
+
+    return currentUniforms;
+  }
 
   register(name: string, recipe: Recipe) {
     this.recipes.set(name, recipe);
@@ -29,6 +111,9 @@ class A2kama {
 
           // Inject the generated shader from the recipe
           el.dataset.mirageShader = JSON.stringify(recipe.shader);
+          if (recipe.optionMap) {
+            el.dataset.a2kamaMap = JSON.stringify(recipe.optionMap);
+          }
         }
       } else {
         console.warn(
