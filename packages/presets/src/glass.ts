@@ -98,13 +98,26 @@ export const a2kGlass = {
 
     return {
       shader: {
+        uniforms: {
+          uGlassLightDirection: lightDirection,
+          uGlassLightIntensity: lightIntensity,
+          uGlassLightSymmetry: lightSymmetry,
+          uGlassRefraction: refraction,
+          uGlassDepth: depth,
+          uGlassDispersion: dispersion,
+          uGlassFrost: frost,
+          uGlassSplay: splay,
+          uGlassZoom: zoom,
+          uGlassBevelWidth: bevelWidth,
+          uGlassBevelCurve: bevelCurve,
+        },
         uvModifier: /* glsl */ `
           // --- Settings ---
-          float textureZoom = ${zoom.toFixed(3)};
-          float maxDepth = ${depth.toFixed(3)};
-          float bevelWidth = ${bevelWidth.toFixed(3)}; 
-          float refraction = ${refraction.toFixed(3)};
-          float bevelCurve = ${bevelCurve.toFixed(3)};
+          float textureZoom = uGlassZoom;
+          float maxDepth = uGlassDepth;
+          float bevelWidth = uGlassBevelWidth; 
+          float refraction = uGlassRefraction;
+          float bevelCurve = uGlassBevelCurve;
 
           // --- Logic ---
           vec2 xRadii_uv = mix(uBorderRadius.xw, uBorderRadius.yz, step(0.0, p.x));
@@ -145,7 +158,7 @@ export const a2kGlass = {
           vec2 zoomOffset = p * pixelToUv * (1.0 / textureZoom - 1.0);
           
           float refStrength = refraction / 100.0;
-          float splayAmount = ${splay.toFixed(3)} / 100.0;
+          float splayAmount = uGlassSplay / 100.0;
           
           // Calculate tangent pull towards corners for splay distortion
           vec2 tangentPull = p / max(halfSize, 0.001);
@@ -160,10 +173,10 @@ export const a2kGlass = {
         `,
         colorModifier: /* glsl */ `
           // --- Settings ---
-          float lightDirection = ${lightDirection.toFixed(3)};
-          float lightIntensity = ${lightIntensity.toFixed(3)};
-          float lightSymmetry = ${lightSymmetry.toFixed(3)};
-          float bevel = ${bevelWidth.toFixed(3)};
+          float lightDirection = uGlassLightDirection;
+          float lightIntensity = uGlassLightIntensity;
+          float lightSymmetry = uGlassLightSymmetry;
+          float bevel = uGlassBevelWidth;
 
           // --- Logic ---
           vec2 e_c = vec2(0.5, 0.0);
@@ -201,7 +214,7 @@ export const a2kGlass = {
             dispersion > 0 || frost > 0
               ? `
           // Frost (Blur) & Dispersion (Chromatic Aberration)
-          float frostRadius = ${frost.toFixed(3)};
+          float frostRadius = uGlassFrost;
           vec4 texColorDisp = vec4(0.0);
           
           if (frostRadius > 0.0) {
@@ -224,7 +237,7 @@ export const a2kGlass = {
                       ${
                         dispersion > 0
                           ? `
-                      vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+                      vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
                       float rC = texture2D(uTexture, resultUv + texOffset + dispOff).r;
                       float gC = texture2D(uTexture, resultUv + texOffset).g;
                       float bC = texture2D(uTexture, resultUv + texOffset - dispOff).b;
@@ -243,7 +256,7 @@ export const a2kGlass = {
               ${
                 dispersion > 0
                   ? `
-              vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (${dispersion.toFixed(3)} / 1000.0);
+              vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
               float r = texture2D(uTexture, resultUv + dispOff).r;
               float g = texture2D(uTexture, resultUv).g;
               float b = texture2D(uTexture, resultUv - dispOff).b;
