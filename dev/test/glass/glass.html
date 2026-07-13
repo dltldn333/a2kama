@@ -73,54 +73,26 @@
         Water Box
       </div>
 
+      <div id="controls" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px; z-index: 100; font-family: monospace; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        <h3 style="margin: 0 0 10px 0;">Glass Options</h3>
+        <label>Zoom: <span id="val-zoom"></span><br><input type="range" id="zoom" min="0.5" max="3.0" step="0.1" value="1.0"></label>
+        <label>Depth: <span id="val-depth"></span><br><input type="range" id="depth" min="0" max="200" step="1" value="120"></label>
+        <label>Bevel Width: <span id="val-bevelWidth"></span><br><input type="range" id="bevelWidth" min="0" max="100" step="1" value="15"></label>
+        <label>Bevel Curve: <span id="val-bevelCurve"></span><br><input type="range" id="bevelCurve" min="0.1" max="10" step="0.1" value="3.0"></label>
+        <label>Refraction: <span id="val-refraction"></span><br><input type="range" id="refraction" min="0" max="100" step="1" value="50"></label>
+        <label>Splay: <span id="val-splay"></span><br><input type="range" id="splay" min="0" max="100" step="1" value="0"></label>
+        <label>Frost: <span id="val-frost"></span><br><input type="range" id="frost" min="0" max="20" step="0.1" value="0"></label>
+        <label>Dispersion: <span id="val-dispersion"></span><br><input type="range" id="dispersion" min="0" max="1000" step="10" value="0"></label>
+        <label>Light Direction: <span id="val-lightDirection"></span><br><input type="range" id="lightDirection" min="0" max="360" step="1" value="45"></label>
+        <label>Light Intensity: <span id="val-lightIntensity"></span><br><input type="range" id="lightIntensity" min="0" max="2" step="0.1" value="0.6"></label>
+        <label>Light Symmetry: <span id="val-lightSymmetry"></span><br><input type="range" id="lightSymmetry" min="0" max="1" step="0.01" value="1.0"></label>
+      </div>
+
       <button id="temp-btn" data-a2kama="myGlass" class="btn">
         Temporary Button
       </button>
     </div>
 
-    <script type="module">
-      // In a real environment, we would use module resolution.
-      // For this dev environment, we assume Vite resolves these based on monorepo linking.
-      import a2kama from "a2kama";
-      import { a2kGlass, a2kWater } from "a2kama/presets";
-
-      console.log("a2kama imported:", a2kama);
-
-      // 2. Create recipes
-      const glassRecipe = a2kGlass.normal({
-        lightDirection: 45,
-        lightIntensity: 0.6,
-        lightSymmetry: 1,
-        refraction: 50,
-        depth: 120,
-        dispersion: 0,
-        frost: 0,
-        bevelWidth: 15,
-      });
-
-      const waterRecipe = a2kWater.normal({
-        speed: 1.5,
-        intensity: 0.8,
-      });
-
-      // 3. Register recipes
-      a2kama.register("myGlass", glassRecipe);
-      a2kama.register("myWater", waterRecipe);
-
-      // 4. Initialize on the root element
-      const rootEl = document.getElementById("root");
-      a2kama.init(rootEl);
-
-      // ----------------------------------------------------
-      // Dynamic DOM destruction testing
-      // ----------------------------------------------------
-      const tempBtn = document.getElementById("temp-btn");
-
-      tempBtn.addEventListener("click", () => {
-        console.log("Disposing temporary button");
-        a2kama.dispose(tempBtn);
-        tempBtn.remove();
-      });
-    </script>
+    <script type="module" src="./main.ts"></script>
   </body>
 </html>

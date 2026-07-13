@@ -210,9 +210,6 @@ export const a2kGlass = {
           
           float dirLight = (diffuse * fresnel) + crispEdge;
           
-          ${
-            dispersion > 0 || frost > 0
-              ? `
           // Frost (Blur) & Dispersion (Chromatic Aberration)
           float frostRadius = uGlassFrost;
           vec4 texColorDisp = vec4(0.0);
@@ -223,9 +220,9 @@ export const a2kGlass = {
               float sigma = max(frostRadius * 0.2, 1.0);
               float twoSigmaSq = 2.0 * sigma * sigma;
               
-              // Standard 11x11 Gaussian Blur (121 samples) for a much wider smudge
-              for(float x = -5.0; x <= 5.0; x += 1.0) {
-                  for(float y = -5.0; y <= 5.0; y += 1.0) {
+              // Standard 7x7 Gaussian Blur (49 samples) for better performance
+              for(float x = -3.0; x <= 3.0; x += 1.0) {
+                  for(float y = -3.0; y <= 3.0; y += 1.0) {
                       // Standard Gaussian weight formula
                       float weight = exp(-(x*x + y*y) / twoSigmaSq);
                       
@@ -234,38 +231,31 @@ export const a2kGlass = {
                       float spacing = frostRadius * 0.15; 
                       vec2 texOffset = vec2(x, y) * spacing * pixelToUv;
                       
-                      ${
-                        dispersion > 0
-                          ? `
-                      vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
-                      float rC = texture2D(uTexture, resultUv + texOffset + dispOff).r;
-                      float gC = texture2D(uTexture, resultUv + texOffset).g;
-                      float bC = texture2D(uTexture, resultUv + texOffset - dispOff).b;
-                      float aC = texture2D(uTexture, resultUv + texOffset).a;
-                      texColorDisp += vec4(rC, gC, bC, aC) * weight;
-                      `
-                          : `
-                      texColorDisp += texture2D(uTexture, resultUv + texOffset) * weight;
-                      `
+                      if (uGlassDispersion > 0.0) {
+                          vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
+                          float rC = texture2D(uTexture, resultUv + texOffset + dispOff).r;
+                          float gC = texture2D(uTexture, resultUv + texOffset).g;
+                          float bC = texture2D(uTexture, resultUv + texOffset - dispOff).b;
+                          float aC = texture2D(uTexture, resultUv + texOffset).a;
+                          texColorDisp += vec4(rC, gC, bC, aC) * weight;
+                      } else {
+                          texColorDisp += texture2D(uTexture, resultUv + texOffset) * weight;
                       }
+                      
                       weightSum += weight;
                   }
               }
               texColorDisp /= weightSum;
           } else {
-              ${
-                dispersion > 0
-                  ? `
-              vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
-              float r = texture2D(uTexture, resultUv + dispOff).r;
-              float g = texture2D(uTexture, resultUv).g;
-              float b = texture2D(uTexture, resultUv - dispOff).b;
-              float a = texture2D(uTexture, resultUv).a;
-              texColorDisp = vec4(r, g, b, a);
-              `
-                  : `
-              texColorDisp = texture2D(uTexture, resultUv);
-              `
+              if (uGlassDispersion > 0.0) {
+                  vec2 dispOff = distortDir * pushDist * refStrength * pixelToUv * (uGlassDispersion / 1000.0);
+                  float r = texture2D(uTexture, resultUv + dispOff).r;
+                  float g = texture2D(uTexture, resultUv).g;
+                  float b = texture2D(uTexture, resultUv - dispOff).b;
+                  float a = texture2D(uTexture, resultUv).a;
+                  texColorDisp = vec4(r, g, b, a);
+              } else {
+                  texColorDisp = texture2D(uTexture, resultUv);
               }
           }
           
@@ -276,9 +266,6 @@ export const a2kGlass = {
           }
           newBaseColor = blendSrcOver(newBaseColor, texColorDisp);
           finalColor = blendSrcOver(borderLayer, newBaseColor);
-          `
-              : ""
-          }
 
           finalColor.rgb += vec3(1.0) * (dirLight * lightIntensity);
         `,
