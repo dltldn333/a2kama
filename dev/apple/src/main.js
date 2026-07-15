@@ -464,6 +464,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const lockInterface = document.querySelector(".lock-interface");
     const lockBackground = document.querySelector(".lock-background");
     const wallpaper = document.querySelector(".wallpaper");
+    const wallpaperBack = document.querySelector(".wallpaper-back");
+    const wallpaperFront = document.querySelector(".wallpaper-front");
     lockScreen.style.setProperty("--unlock", progress.toFixed(4));
     lockScreen.style.setProperty(
       "--system-opacity",
@@ -473,7 +475,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.gsap && lockInterface && lockBackground) {
       gsap.set(lockInterface, { y: -(progress * viewportHeight * 1.02) });
       gsap.set(lockBackground, { opacity: backgroundOpacity });
-      if (wallpaper) gsap.set(wallpaper, { opacity: backgroundOpacity });
+      
+      // Keep wallpaper wrapper opacity at 1 so children can have independent opacities
+      if (wallpaper) gsap.set(wallpaper, { opacity: 1 });
+      
+      // Only fade out the back image, leave the front image fully visible
+      if (wallpaperBack) gsap.set(wallpaperBack, { opacity: backgroundOpacity });
+      if (wallpaperFront) gsap.set(wallpaperFront, { opacity: 1 });
     } else {
       lockScreen.style.setProperty(
         "--unlock-translate",

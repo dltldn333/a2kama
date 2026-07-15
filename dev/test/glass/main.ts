@@ -25,7 +25,7 @@ const waterRecipe = a2kWater.normal({
 });
 
 // 2. Register recipes
-a2kama.register("myGlass", glassRecipe);
+a2kama.register("lockGlass", glassRecipe);
 a2kama.register("myWater", waterRecipe);
 
 // 3. Initialize on the root element
@@ -37,7 +37,7 @@ if (rootEl) {
 // ----------------------------------------------------
 // UI Logic for Glass Options
 // ----------------------------------------------------
-const glassBoxes = document.querySelectorAll(".box[data-a2kama='myGlass']");
+const glassBoxes = document.querySelectorAll(".box[data-a2kama='lockGlass']");
 const targetGlass = glassBoxes[0] as HTMLElement;
 
 if (targetGlass) {
@@ -45,11 +45,13 @@ if (targetGlass) {
   const options = a2kama.getOptions(targetGlass);
 
   if (options) {
-    const inputs = document.querySelectorAll<HTMLInputElement>("#controls input[type='range']");
-    
+    const inputs = document.querySelectorAll<HTMLInputElement>(
+      "#controls input[type='range']",
+    );
+
     inputs.forEach((input) => {
       const valSpan = document.getElementById(`val-${input.id}`);
-      
+
       // Initialize UI with current option values
       if (options[input.id] !== undefined) {
         input.value = options[input.id];

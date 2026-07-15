@@ -1,8 +1,6 @@
 import a2kama from "a2kama";
 import { a2kGlass } from "a2kama/presets";
 
-
-
 // Fix mirage-engine scroll sync by overriding window.scrollY to match Lenis showcase wrapper
 const showcase = document.querySelector(".showcase");
 if (showcase) {
@@ -19,7 +17,7 @@ if (showcase) {
     },
   });
 
-//   // Dispatch window scroll event when showcase scrolls so mirage-engine updates the camera
+  //   // Dispatch window scroll event when showcase scrolls so mirage-engine updates the camera
   showcase.addEventListener("scroll", () => {
     window.dispatchEvent(new Event("scroll"));
   });
@@ -39,9 +37,9 @@ const glassRecipe = a2kGlass.normal({
   splay: 30,
 });
 
-a2kama.register("myGlass", glassRecipe);
+a2kama.register("lockGlass", glassRecipe);
 
 // Initialize a2kama with quality scaling to fix mirage-engine performance
 
 const rootNode = document.querySelector("#root");
-a2kama.init(rootNode, { quality: "medium",  layer:"selected"});
+a2kama.init(rootNode, { quality: "medium", layer: "selected" });
