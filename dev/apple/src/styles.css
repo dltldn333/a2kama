@@ -579,7 +579,7 @@ button {
   grid-template-columns: repeat(5, 1fr);
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.74);
-  border-radius: 999px;
+  border-radius: 50%;
   background: rgba(243, 243, 246, 0.78);
   box-shadow: 0 8px 24px rgba(16, 17, 23, 0.12);
   opacity: var(--dock-opacity);
