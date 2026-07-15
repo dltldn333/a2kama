@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Apple 디자인을 웹의 기본 기술로 재해석하는 인터랙티브 레이아웃 실험."
+    />
+    <meta name="codex-preview" content="development" />
+    <title>Vanilla Apple Lab</title>
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script src="./vendor/gsap.min.js" defer></script>
+    <script src="./vendor/lenis.min.js" defer></script>
+    <script src="./src/main.js" defer></script>
+    <script type="module" src="./src/a2kama.js"></script>
+  </head>
+  <body>
+    <div id="frame">
+      <div id="root">
+        <main class="showcase">
+          <div class="showcase-content">
+            <div class="unlock-stage">
+              <section
+                class="showcase-page siri-page layout-only-page"
+                id="siri"
+                aria-label="Siri 콘텐츠 레이아웃"
+              >
+                <div class="layout-grid layout-grid-siri">
+                  <div class="layout-slot layout-copy-slot">
+                    <!-- Siri 제목과 설명을 입력하세요. -->
+                  </div>
+                  <div class="layout-slot layout-feature-slot">
+                    <!-- Siri 시각 콘텐츠를 입력하세요. -->
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section
+              class="showcase-page glass-page"
+              id="glass"
+              data-page="glass"
+              aria-labelledby="glass-title"
+            >
+              <div class="page-chrome">
+                <span>Material study</span>
+                <span>02 / 05</span>
+              </div>
+
+              <div class="glass-heading">
+                <p class="section-kicker">Liquid Glass</p>
+                <h1 id="glass-title">Just the<br />surface.</h1>
+                <p>
+                  실제 재질 효과를 넣기 전, 투명도와 콘텐츠 대비를 확인하는 조절
+                  영역입니다.
+                </p>
+              </div>
+
+              <div class="glass-scene" data-glass-scene>
+                <div class="opacity-panel">
+                  <div class="control-label-row">
+                    <span>Surface opacity</span>
+                    <strong data-opacity-output>34%</strong>
+                  </div>
+                  <div class="opacity-slider-row">
+                    <div
+                      class="opacity-endpoint opacity-endpoint-low"
+                      aria-hidden="true"
+                    >
+                      <i></i><i></i>
+                    </div>
+                    <div
+                      class="div-slider light-slider liquid-slider"
+                      data-range="glass-opacity"
+                      data-min="8"
+                      data-max="68"
+                      data-value="34"
+                      role="slider"
+                      tabindex="0"
+                      aria-label="Glass 배경 투명도"
+                      aria-valuemin="8"
+                      aria-valuemax="68"
+                      aria-valuenow="34"
+                    >
+                      <div class="slider-track">
+                        <div class="slider-fill"></div>
+                        <div class="slider-thumb"><i></i></div>
+                      </div>
+                    </div>
+                    <div
+                      class="opacity-endpoint opacity-endpoint-high"
+                      aria-hidden="true"
+                    >
+                      <i></i><i></i>
+                    </div>
+                  </div>
+                  <p>투명 배경과 테두리만 적용된 준비 상태입니다.</p>
+                </div>
+              </div>
+
+              <div class="page-note">
+                <span>02</span>
+                <p>Opacity · Layer · Contrast</p>
+              </div>
+            </section>
+
+            <section
+              class="showcase-page navigation-page layout-only-page"
+              id="navigation"
+              data-page="navigation"
+              aria-label="Navigation 콘텐츠 레이아웃"
+            >
+              <div class="layout-grid layout-grid-navigation">
+                <div class="layout-slot layout-copy-slot">
+                  <!-- Navigation 제목과 설명을 입력하세요. -->
+                </div>
+                <div class="layout-window-slot">
+                  <div class="layout-sidebar-slot"><!-- 사이드 콘텐츠 --></div>
+                  <div class="layout-main-slot">
+                    <div class="layout-wide-card"><!-- 주요 콘텐츠 --></div>
+                    <div class="layout-small-card-row">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="showcase-page controls-page layout-only-page"
+              id="controls"
+              data-page="controls"
+              aria-label="Controls 콘텐츠 레이아웃"
+            >
+              <div class="layout-grid layout-grid-controls">
+                <div class="layout-slot layout-copy-slot">
+                  <!-- Controls 제목과 설명을 입력하세요. -->
+                </div>
+                <div class="layout-card-grid">
+                  <div class="layout-card"><!-- 컴포넌트 1 --></div>
+                  <div class="layout-card"><!-- 컴포넌트 2 --></div>
+                  <div class="layout-card"><!-- 컴포넌트 3 --></div>
+                  <div class="layout-card"><!-- 컴포넌트 4 --></div>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="showcase-page feedback-page layout-only-page"
+              id="feedback"
+              data-page="feedback"
+              aria-label="Feedback 콘텐츠 레이아웃"
+            >
+              <div class="layout-grid layout-grid-feedback">
+                <div class="layout-slot layout-copy-slot">
+                  <!-- Feedback 제목과 설명을 입력하세요. -->
+                </div>
+                <div class="layout-device-slot"><!-- 큰 시각 콘텐츠 --></div>
+                <div class="layout-stack-slot">
+                  <div><!-- 보조 콘텐츠 1 --></div>
+                  <div><!-- 보조 콘텐츠 2 --></div>
+                  <div><!-- 보조 콘텐츠 3 --></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <nav
+          class="bottom-dock"
+          data-dock
+          aria-label="페이지 내비게이션. 선택된 항목을 좌우로 끌어 이동할 수 있습니다."
+        >
+          <span
+            class="dock-highlight"
+            data-dock-highlight
+            aria-hidden="true"
+          ></span>
+          <button
+            type="button"
+            data-page-target="siri"
+            aria-label="Siri 페이지"
+          >
+            <span class="dock-icon dock-icon-siri">✦</span><small>Siri</small>
+          </button>
+          <button
+            type="button"
+            data-page-target="glass"
+            aria-label="Glass 페이지"
+          >
+            <span class="dock-icon dock-icon-glass">◐</span><small>Glass</small>
+          </button>
+          <button
+            type="button"
+            data-page-target="navigation"
+            aria-label="Navigate 페이지"
+          >
+            <span class="dock-icon dock-icon-navigation">≡</span
+            ><small>Navigate</small>
+          </button>
+          <button
+            type="button"
+            data-page-target="controls"
+            aria-label="Controls 페이지"
+          >
+            <span class="dock-icon dock-icon-controls">⌁</span
+            ><small>Controls</small>
+          </button>
+          <button
+            type="button"
+            data-page-target="feedback"
+            aria-label="Feedback 페이지"
+          >
+            <span class="dock-icon dock-icon-feedback">●</span
+            ><small>Feedback</small>
+          </button>
+        </nav>
+
+        <div
+          class="lock-screen"
+          role="dialog"
+          aria-modal="true"
+          aria-label="첫 화면. 위로 밀어서 시작하세요."
+        >
+          <div class="lock-background" aria-hidden="true">
+            <div class="wallpaper">
+              <img
+                class="wallpaper-front"
+                style="
+                  position: absolute;
+                  width: 100%;
+                  top: 0;
+                  left: 0;
+                  height: 100%;
+                  object-fit: cover;
+                  z-index: 1;
+                "
+                src="./src/front.png"
+              />
+              <img
+                class="wallpaper-back"
+                style="
+                  position: absolute;
+                  width: 100%;
+                  top: 0;
+                  left: 0;
+                  height: 100%;
+                  object-fit: cover;
+                "
+                src="./src/test.png"
+              />
+            </div>
+          </div>
+          <div
+            class="lock-interface"
+            data-a2kama="lockGlass"
+            data-mirage-travel="traveler 5"
+            data-mirage-select="include-self"
+          >
+            <div
+              data-mirage-sandwich="front"
+              data-mirage-filter="end"
+              style="width: 100%; height: 100%"
+            >
+              <time class="lock-time" data-lock-time datetime=""></time>
+              <!-- 첫 화면 콘텐츠를 넣을 수 있는 빈 영역입니다. -->
+              <button class="unlock-hint" type="button" data-unlock>
+                <span>위로 밀어서 시작하기</span>
+                <i></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

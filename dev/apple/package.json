@@ -1,0 +1,19 @@
+{
+  "name": "vanilla-apple-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "install:ci": "npm ci",
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/dev.mjs",
+    "test": "npm run build && node --test tests/vanilla-site.test.mjs",
+    "validate": "node scripts/validate-artifact.mjs",
+    "lint": "node --check src/main.js && node --check scripts/build.mjs && node --check scripts/dev.mjs"
+  },
+  "displayName": "Vanilla Apple Design Lab"
+}
