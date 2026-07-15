@@ -423,11 +423,19 @@ document.addEventListener("DOMContentLoaded", () => {
             (1 - clamp((progress - 0.95) / 0.05));
         const backgroundOpacity = transitionMode === "forward" ? forwardBackground : reverseBackground;
         const glassOpacity = transitionMode === "forward" ? forwardGlass : reverseGlass;
+        const lockInterface = document.querySelector(".lock-interface");
+        const lockBackground = document.querySelector(".lock-background");
+
         lockScreen.style.setProperty("--unlock", progress.toFixed(4));
-        lockScreen.style.setProperty("--unlock-translate", `${-(progress * viewportHeight * 1.02)}px`);
-        lockScreen.style.setProperty("--lock-background-opacity", backgroundOpacity.toFixed(4));
-        lockScreen.style.setProperty("--lock-glass-opacity", glassOpacity.toFixed(4));
         lockScreen.style.setProperty("--system-opacity", (1 - clamp((progress - 0.88) / 0.1)).toFixed(4));
+        
+        if (window.gsap && lockInterface && lockBackground) {
+            gsap.set(lockInterface, { y: -(progress * viewportHeight * 1.02) });
+            gsap.set(lockBackground, { opacity: backgroundOpacity });
+        } else {
+            lockScreen.style.setProperty("--unlock-translate", `${-(progress * viewportHeight * 1.02)}px`);
+            lockScreen.style.setProperty("--lock-background-opacity", backgroundOpacity.toFixed(4));
+        }
         const isPast = progress > 0.995;
         lockScreen.classList.toggle("is-past", isPast);
         lockScreen.setAttribute("aria-hidden", String(isPast));

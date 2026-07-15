@@ -691,7 +691,6 @@ button {
 .lock-background {
   position: absolute;
   inset: 0;
-  opacity: var(--lock-background-opacity);
   will-change: opacity;
 }
 .lock-background::after {
@@ -703,7 +702,8 @@ button {
 .wallpaper {
   position: absolute;
   inset: -6%;
-  background: linear-gradient(155deg, #39325e 0%, #8d6d91 43%, #f2a77c 100%);
+  /* background: linear-gradient(155deg, #39325e 0%, #8d6d91 43%, #f2a77c 100%); */
+  /* background-image: url("test.png"); */
 }
 .wallpaper-light {
   position: absolute;
@@ -719,13 +719,6 @@ button {
     transparent 63%
   );
   transform: translate(-50%, -50%);
-}
-.wallpaper-shape {
-  position: absolute;
-  left: 50%;
-  bottom: -11%;
-  border-radius: 48% 52% 0 0 / 58% 60% 0 0;
-  transform: translateX(-50%);
 }
 .shape-back {
   width: min(1000px, 88vw);
@@ -760,9 +753,9 @@ button {
 .lock-interface {
   position: absolute;
   inset: 0;
-  transform: translate3d(0, var(--unlock-translate, 0), 0);
   background-color: rgba(0, 0, 0, 0.16);
-  border-radius: 28px;
+  border-radius: var(--frame-radius);
+
   will-change: transform;
 }
 .lock-time {
@@ -1036,4 +1029,7 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
-#frame > canvas { z-index: 100 !important; }
+#frame > canvas {
+  z-index: 100 !important;
+  position: fixed !important;
+}
