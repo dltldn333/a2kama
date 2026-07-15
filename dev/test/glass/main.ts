@@ -2,7 +2,7 @@ import a2kama from "a2kama";
 import { a2kGlass, a2kWater } from "a2kama/presets";
 import gsap from "gsap";
 
-console.log("a2kama imported:", a2kama);
+// console.log("a2kama imported:", a2kama);
 
 // 1. Create recipes
 const glassRecipe = a2kGlass.normal({

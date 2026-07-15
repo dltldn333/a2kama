@@ -105,7 +105,7 @@ class A2kama {
 
         if (el instanceof HTMLElement) {
           // Apply mirage attributes required by the engine for travelers
-          el.dataset.mirageTravel = "traveler";
+          // el.dataset.mirageTravel = "traveler";
           // el.dataset.mirageFilter = "exclude-self";
           el.dataset.mirageDom = "hide";
 
@@ -125,7 +125,7 @@ class A2kama {
 
     // Default configuration based on dev reference
     const defaultConfig: MirageConfig = {
-      quality: "high",
+      quality: "medium",
       mode: "overlay",
       travelerClipArea: "50px",
       ...config,

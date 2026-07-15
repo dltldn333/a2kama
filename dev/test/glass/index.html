@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a2kama Vanilla Example</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Arial", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      #root {
+        background: linear-gradient(135deg, #000000, #333);
+        padding: 50px;
+      }
+
+      .box {
+        width: 200px;
+        height: 80px;
+        /* background: #eee; */
+        margin: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 40px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .btn {
+        padding: 15px 30px;
+        font-size: 16px;
+        margin: 20px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: none;
+        background: #fff;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Background to show refraction clearly */
+    </style>
+  </head>
+  <body>
+    <!-- Root container for mirage engine -->
+    <div id="root">
+      <h1 style="color: #fff">a2kama Glass Test</h1>
+
+      <button class="btn">Glass Button</button>
+      <div
+        data-a2kama="myGlass"
+        data-mirage-travel="traveler 2"
+        
+        class="box"
+        style="
+          position: fixed;
+          top: 0px;
+          left: 0px;
+          z-index: 20;
+          background-color: rgba(0, 0, 0, 0.2);
+          /* background-color: rgba(0, 0, 0, 0.4); */
+        "
+      >
+        <!-- Glass Box -->
+      </div>
+      <div
+        class="box"
+        style="background-color: rgba(0, 100, 255, 0.2); height: 1000px"
+      >
+        Water Box
+      </div>
+
+      <div
+        id="controls"
+        style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: rgba(255, 255, 255, 0.9);
+          padding: 20px;
+          border-radius: 10px;
+          z-index: 100;
+          font-family: monospace;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        "
+      >
+        <h3 style="margin: 0 0 10px 0">Glass Options</h3>
+        <label
+          >Zoom: <span id="val-zoom"></span><br /><input
+            type="range"
+            id="zoom"
+            min="0.5"
+            max="3.0"
+            step="0.1"
+            value="1.0"
+        /></label>
+        <label
+          >Depth: <span id="val-depth"></span><br /><input
+            type="range"
+            id="depth"
+            min="0"
+            max="200"
+            step="1"
+            value="120"
+        /></label>
+        <label
+          >Bevel Width: <span id="val-bevelWidth"></span><br /><input
+            type="range"
+            id="bevelWidth"
+            min="0"
+            max="100"
+            step="1"
+            value="15"
+        /></label>
+        <label
+          >Bevel Curve: <span id="val-bevelCurve"></span><br /><input
+            type="range"
+            id="bevelCurve"
+            min="0.1"
+            max="10"
+            step="0.1"
+            value="3.0"
+        /></label>
+        <label
+          >Refraction: <span id="val-refraction"></span><br /><input
+            type="range"
+            id="refraction"
+            min="0"
+            max="100"
+            step="1"
+            value="50"
+        /></label>
+        <label
+          >Splay: <span id="val-splay"></span><br /><input
+            type="range"
+            id="splay"
+            min="0"
+            max="100"
+            step="1"
+            value="0"
+        /></label>
+        <label
+          >Frost: <span id="val-frost"></span><br /><input
+            type="range"
+            id="frost"
+            min="0"
+            max="20"
+            step="0.1"
+            value="0"
+        /></label>
+        <label
+          >Dispersion: <span id="val-dispersion"></span><br /><input
+            type="range"
+            id="dispersion"
+            min="0"
+            max="1000"
+            step="10"
+            value="0"
+        /></label>
+        <label
+          >Light Direction: <span id="val-lightDirection"></span><br /><input
+            type="range"
+            id="lightDirection"
+            min="0"
+            max="360"
+            step="1"
+            value="45"
+        /></label>
+        <label
+          >Light Intensity: <span id="val-lightIntensity"></span><br /><input
+            type="range"
+            id="lightIntensity"
+            min="0"
+            max="2"
+            step="0.1"
+            value="0.6"
+        /></label>
+        <label
+          >Light Symmetry: <span id="val-lightSymmetry"></span><br /><input
+            type="range"
+            id="lightSymmetry"
+            min="0"
+            max="1"
+            step="0.01"
+            value="1.0"
+        /></label>
+      </div>
+
+      <button id="temp-btn" data-a2kama="myGlass" class="btn">
+        Temporary Button
+      </button>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
