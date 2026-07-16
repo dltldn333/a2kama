@@ -635,6 +635,14 @@ document.addEventListener("DOMContentLoaded", () => {
     dragMoved = false;
     isDockDragging = true;
     console.log("--- Dock Highlight Selected ---");
+
+    // const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
+    // const highlightStyle = { color: "blue" };
+    // for(const dockBtn of dockBtns){
+    //   dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyle)}`;
+    // }
+    
+    
     gsap.killTweensOf(dockHighlight);
     gsap.ticker.remove(updateDockPhysics);
     gsap.ticker.add(updateDockPhysics);

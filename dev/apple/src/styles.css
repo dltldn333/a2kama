@@ -642,7 +642,7 @@ button {
   border-radius: 50px;
   transform-origin: center;
   will-change: transform, width, height;
-  background-color: rgba(255, 0, 0, 0.8) !important;
+  background-color: rgba(255, 0, 0, 0.3) !important;
   pointer-events: none;
 }
 .dock-icon {

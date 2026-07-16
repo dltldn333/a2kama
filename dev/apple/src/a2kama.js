@@ -1,5 +1,6 @@
 import a2kama from "a2kama";
 import { a2kGlass } from "a2kama/presets";
+import { transform } from "typescript";
 
 // Fix mirage-engine scroll sync by overriding window.scrollY to match Lenis showcase wrapper
 const showcase = document.querySelector(".showcase");
@@ -69,8 +70,22 @@ a2kama.register("lockGlass", lockGlassRecipe);
 a2kama.register("dockGlass", dockGlassRecipe);
 a2kama.register("dockBtnGlass", dockBtnGlassRecipe);
 
+// dock control
+
+// const dock = document.querySelector(".bottom-dock");
+// const dockStyleOn4 = { height: "200px" };
+// dock.dataset.mirageTravel = `native 2  + JSON.stringify(dockStyleOn4)`;
+
+const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
+const highlightStyleOn3 = { color: "black" };
+const highlightStyleOn4 = { color: "blue" };
+for (const dockBtn of dockBtns) {
+  dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
+  dockBtn.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
+}
+
 // Initialize a2kama with quality scaling to fix mirage-engine performance
 
 const rootNode = document.querySelector("#root");
-// a2kama.init(rootNode, { quality: "medium", layer: "selected" });
-a2kama.init(rootNode, { quality: "medium", layer: 26 });
+a2kama.init(rootNode, { quality: "medium", layer: "selected" });
+// a2kama.init(rootNode, { quality: "medium", layer: 26 });
