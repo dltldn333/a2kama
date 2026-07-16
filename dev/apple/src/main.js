@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       x: physicsLeft,
       y: 0,
       width: renderedWidth,
-      scaleX: 1,
+      scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
       rotation: 0,
       transformOrigin: "center center",
@@ -241,6 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       return;
     }
+
     if (isAlreadyStretched) {
       gsap.to(dockHighlight, {
         x: targetX,
@@ -435,14 +436,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dock) return;
     const viewportHeight = getViewportHeight();
     const progress = clamp(scroll / Math.max(viewportHeight, 1));
-    const opacity =
-      scroll >= viewportHeight
-        ? 1
-        : transitionMode === "forward"
-          ? clamp((progress - 0.84) / 0.12)
-          : clamp(progress / 0.12);
+    // Only show dock when fully scrolled past the lock screen (2nd page)
+    const opacity = progress > 0.995 ? 1 : 0;
     dock.style.setProperty("--dock-opacity", opacity.toFixed(4));
     dock.classList.toggle("is-visible", opacity > 0.5);
+
+    // Toggle mirage engine rendering dynamically
+    dock.setAttribute(
+      "data-mirage-select",
+      opacity > 0.5 ? "include-tree" : "",
+    );
     if (!isDockDragging && !dockSelectionLocked) {
       const activePoint = points[nearestPageIndex(scroll, points)];
       activateDockButton(activePoint?.id ?? "siri");
@@ -459,6 +462,11 @@ document.addEventListener("DOMContentLoaded", () => {
       clamp((progress - 0.06) / 0.08) * (1 - clamp((progress - 0.95) / 0.05));
     const backgroundOpacity =
       transitionMode === "forward" ? forwardBackground : reverseBackground;
+
+    // front.png fades out at the very end (between 0.95 and 1.0)
+    // and reappears as soon as the user scrolls back up (progress < 1.0)
+    const frontOpacity = 1 - clamp((progress - 0.95) / 0.05);
+
     const glassOpacity =
       transitionMode === "forward" ? forwardGlass : reverseGlass;
     const lockInterface = document.querySelector(".lock-interface");
@@ -475,13 +483,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.gsap && lockInterface && lockBackground) {
       gsap.set(lockInterface, { y: -(progress * viewportHeight * 1.02) });
       gsap.set(lockBackground, { opacity: backgroundOpacity });
-      
+
       // Keep wallpaper wrapper opacity at 1 so children can have independent opacities
       if (wallpaper) gsap.set(wallpaper, { opacity: 1 });
-      
-      // Only fade out the back image, leave the front image fully visible
-      if (wallpaperBack) gsap.set(wallpaperBack, { opacity: backgroundOpacity });
-      if (wallpaperFront) gsap.set(wallpaperFront, { opacity: 1 });
+
+      // Only fade out the back image early, and fade out the front image at the very end
+      if (wallpaperBack)
+        gsap.set(wallpaperBack, { opacity: backgroundOpacity });
+      if (wallpaperFront) gsap.set(wallpaperFront, { opacity: frontOpacity });
     } else {
       lockScreen.style.setProperty(
         "--unlock-translate",
@@ -625,6 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
     physicsRightVelocity = 0;
     dragMoved = false;
     isDockDragging = true;
+    console.log("--- Dock Highlight Selected ---");
     gsap.killTweensOf(dockHighlight);
     gsap.ticker.remove(updateDockPhysics);
     gsap.ticker.add(updateDockPhysics);
@@ -635,7 +645,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.set(dockHighlight, {
       x: dragX,
       width: dragWidth,
-      scaleX: 1,
+      scaleX: dragBaseScaleY,
       scaleY: dragBaseScaleY,
       y: 0,
       transformOrigin: "center center",
@@ -684,6 +694,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pointerId = dockPointerId;
     dockPointerId = null;
     isDockDragging = false;
+    console.log("--- Dock Highlight Released ---");
     gsap.ticker.remove(updateDockPhysics);
     dock.classList.remove("is-dragging");
     if (dock.hasPointerCapture(pointerId))

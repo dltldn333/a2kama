@@ -37,6 +37,19 @@ const dockGlassRecipe = a2kGlass.normal({
   splay: 0,
 });
 
+const dockBtnGlassRecipe = a2kGlass.normal({
+  lightDirection: 45,
+  lightIntensity: 0.6,
+  lightSymmetry: 1,
+  refraction: 20,
+  depth: 30,
+  dispersion: 100,
+  frost: 0,
+  bevelWidth: 15,
+  bevelCurve: 3.0,
+  zoom: 1.0,
+  splay: 0,
+});
 
 const lockGlassRecipe = a2kGlass.normal({
   lightDirection: 45,
@@ -54,8 +67,10 @@ const lockGlassRecipe = a2kGlass.normal({
 
 a2kama.register("lockGlass", lockGlassRecipe);
 a2kama.register("dockGlass", dockGlassRecipe);
+a2kama.register("dockBtnGlass", dockBtnGlassRecipe);
 
 // Initialize a2kama with quality scaling to fix mirage-engine performance
 
 const rootNode = document.querySelector("#root");
-a2kama.init(rootNode, { quality: "medium", layer: "selected" });
+// a2kama.init(rootNode, { quality: "medium", layer: "selected" });
+a2kama.init(rootNode, { quality: "medium", layer: 26 });
