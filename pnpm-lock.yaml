@@ -35,7 +35,7 @@ importers:
         version: link:../presets
       mirage-engine:
         specifier: latest
-        version: 0.3.8(three@0.160.1)
+        version: 0.3.11(three@0.160.1)
       three:
         specifier: ^0.160.1
         version: 0.160.1
@@ -286,21 +286,21 @@ packages:
   '@microsoft/tsdoc@0.14.2':
     resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
 
-  '@mirage-engine/core@0.3.8':
-    resolution: {integrity: sha512-IMQ4Z0zDOS93kkrb4E8+DLlSBomMq6QaVubQqgpzJV0lcGEANxge7Xo0JKGTwOpsgUI+wiNiaGcgX4yc6nKtYA==}
+  '@mirage-engine/core@0.3.11':
+    resolution: {integrity: sha512-xhTHIJD9GxQlzf9I9fo7pp/c80GA0TXVAo5yiwfFSTfuQRfsTujJkEq3D7Ce5shY7EmsmnO4/i1UblT1nJmj0w==}
     peerDependencies:
       three: ^0.160.0
 
-  '@mirage-engine/dom-tracker@0.3.9':
-    resolution: {integrity: sha512-tzlGIdlErdp4Xx9R06qjQpwTbYSDn0sKDSYqpFqq/iiea/UDC0KKN+kWq/eF00MSKfd4Z8qejXpbForCg8hzgA==}
+  '@mirage-engine/dom-tracker@0.3.10':
+    resolution: {integrity: sha512-NcgqSKpAKJWr1BRgKtRdKQeptfXOoUsut5nG6biOGbjMKn3n1rney2somy2FAGDBrT7ehR3lkU2oJgrBkAAGog==}
 
-  '@mirage-engine/painter@1.0.3':
-    resolution: {integrity: sha512-s4i4zVDjxrWhFwNkyRKCFqi67PbSAY8JoprhtC4SrBppwnOOg1G45wRqxLvw1tzh2gmH1wpGk7gu7dyYG6ukkg==}
+  '@mirage-engine/painter@1.0.4':
+    resolution: {integrity: sha512-UeUwpMGh5HmSM1p2J6atTq9pLxxW8y+DgF1XRDKtszygFRpBp9YGAW562PeG+VBozm+Cf5t3y/O91CWhANe6sQ==}
     peerDependencies:
       three: ^0.160.0
 
-  '@mirage-engine/sandwich@0.2.7':
-    resolution: {integrity: sha512-AvUTXZvqHX97Nw1djzoKec/od1OyBJIe8GoVn9ITGyZ/yWBhRtnMRXP1JQwDUD//vATycjebK3nAl/gL4FMbqQ==}
+  '@mirage-engine/sandwich@0.2.8':
+    resolution: {integrity: sha512-TW9trNkhirINPtbLu/7orIbTj5ME2yvj9cOWRhrAxBdj2qx7xtFveeVFfEFJdVfSRKxIZsXzEJt47UjGw2PJNQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -670,8 +670,8 @@ packages:
     resolution: {integrity: sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mirage-engine@0.3.8:
-    resolution: {integrity: sha512-xC0J+jkUQdIS0snkbHN+e0WKxqxpenN9TwI9Qhkigk+fg4SxgGncm7HBMzTVNTvjL8ExfKxf4FcyBFIIDI4/Vg==}
+  mirage-engine@0.3.11:
+    resolution: {integrity: sha512-ukwZXdkPpJMuV4nQJfrUI85WPAmXSji1iz4H/7RF0EbCyxjziuoE+BQWYztciMUuFuaXIixFbJhz/1s9rJ2UIg==}
     peerDependencies:
       three: ^0.160.0
 
@@ -1241,23 +1241,23 @@ snapshots:
 
   '@microsoft/tsdoc@0.14.2': {}
 
-  '@mirage-engine/core@0.3.8(three@0.160.1)':
+  '@mirage-engine/core@0.3.11(three@0.160.1)':
     dependencies:
-      '@mirage-engine/dom-tracker': 0.3.9
-      '@mirage-engine/painter': 1.0.3(three@0.160.1)
+      '@mirage-engine/dom-tracker': 0.3.10
+      '@mirage-engine/painter': 1.0.4(three@0.160.1)
       '@types/three': 0.181.0
       three: 0.160.1
 
-  '@mirage-engine/dom-tracker@0.3.9': {}
+  '@mirage-engine/dom-tracker@0.3.10': {}
 
-  '@mirage-engine/painter@1.0.3(three@0.160.1)':
+  '@mirage-engine/painter@1.0.4(three@0.160.1)':
     dependencies:
       '@types/three': 0.181.0
       three: 0.160.1
 
-  '@mirage-engine/sandwich@0.2.7':
+  '@mirage-engine/sandwich@0.2.8':
     dependencies:
-      '@mirage-engine/dom-tracker': 0.3.9
+      '@mirage-engine/dom-tracker': 0.3.10
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -1633,11 +1633,11 @@ snapshots:
     dependencies:
       brace-expansion: 2.1.1
 
-  mirage-engine@0.3.8(three@0.160.1):
+  mirage-engine@0.3.11(three@0.160.1):
     dependencies:
-      '@mirage-engine/core': 0.3.8(three@0.160.1)
-      '@mirage-engine/painter': 1.0.3(three@0.160.1)
-      '@mirage-engine/sandwich': 0.2.7
+      '@mirage-engine/core': 0.3.11(three@0.160.1)
+      '@mirage-engine/painter': 1.0.4(three@0.160.1)
+      '@mirage-engine/sandwich': 0.2.8
       three: 0.160.1
 
   mri@1.2.0: {}

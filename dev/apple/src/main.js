@@ -226,9 +226,10 @@ document.addEventListener("DOMContentLoaded", () => {
       dockHighlight.offsetWidth;
     const currentScaleY =
       Number(gsap.getProperty(dockHighlight, "scaleY")) || 1;
+    const currentScaleX =
+      Number(gsap.getProperty(dockHighlight, "scaleX")) || 1;
     const isAlreadyStretched =
-      Math.abs(currentWidth - targetWidth) > 2 ||
-      Math.abs(currentScaleY - 1) > 0.04;
+      Math.abs(currentScaleX - 1) > 0.04 || Math.abs(currentScaleY - 1) > 0.04;
     gsap.killTweensOf(dockHighlight);
     if (!animate) {
       gsap.set(dockHighlight, {
@@ -263,13 +264,20 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     const stretchedX = direction > 0 ? targetX - edgeLag : targetX;
     const stretchedWidth = targetWidth + edgeLag;
+    const targetScale = ((dock.offsetHeight + 2) / Math.max(dockHighlight.offsetHeight, 1)) * 1.1;
     const timeline = gsap.timeline();
     timeline
       .to(dockHighlight, {
+        scaleX: targetScale,
+        scaleY: targetScale,
+        duration: 0.08,
+        ease: "power2.out",
+      })
+      .to(dockHighlight, {
         x: stretchedX,
         width: stretchedWidth,
-        scaleX: 1,
-        scaleY: targetWidth / stretchedWidth,
+        scaleX: targetScale,
+        scaleY: (targetWidth / stretchedWidth) * targetScale,
         y: 0,
         transformOrigin: "center center",
         duration: 0.14,
@@ -623,7 +631,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dragX = dragOriginX;
     dragWidth = dockHighlight.offsetWidth;
     dragHeight = dockHighlight.offsetHeight;
-    dragBaseScaleY = (dock.offsetHeight + 2) / Math.max(dragHeight, 1);
+    dragBaseScaleY = ((dock.offsetHeight + 2) / Math.max(dragHeight, 1)) * 1.1;
     dragVelocityX = 0;
     dragLastX = dragX;
     dragLastTime = performance.now();
