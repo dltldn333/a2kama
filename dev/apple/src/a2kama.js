@@ -81,13 +81,16 @@ dock.dataset.mirageTravel += ` native 4 ${JSON.stringify(dockStyleOn4)}`;
 
 const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
 const dockBtnsText = document.querySelectorAll(".dock-buttons-group button small");
-const highlightStyleOn3 = { color: "black" };
-const highlightStyleOn4 = { color: "blue" };
-for (const dockBtn of dockBtns) {
-  dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
-  dockBtn.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
-  dockBtnsText.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
-  dockBtnsText.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
+// const highlightStyleOn3 = { color: "black" };
+const highlightStyleOn4 = { color: "#3641d6" };
+for (let i = 0; i < dockBtns.length; i++) {
+  const dockBtn = dockBtns[i];
+  const dockBtnText = dockBtnsText[i];
+  dockBtn.dataset.mirageTravel = ` native 4 ${JSON.stringify(highlightStyleOn4)}`;
+  
+  if (dockBtnText) {
+    dockBtnText.dataset.mirageTravel = ` native 4 ${JSON.stringify(highlightStyleOn4)}`;
+  }
 }
 
 // Initialize a2kama with quality scaling to fix mirage-engine performance
