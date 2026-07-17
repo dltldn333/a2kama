@@ -573,7 +573,7 @@ button {
   z-index: 50;
   left: 50%;
   bottom: max(14px, env(safe-area-inset-bottom));
-  width: min(calc(100% - 32px), 560px);
+  width: min(calc(100% - 32px), 420px);
   padding: 5px;
 
   border-radius: 50px;

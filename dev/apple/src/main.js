@@ -266,12 +266,12 @@ document.addEventListener("DOMContentLoaded", () => {
         border: "none",
         rotation: 0,
         transformOrigin: "center center",
-        duration: 0.2,
+        duration: 0.3,
         ease: "power3.out",
       });
       if (window.a2kama) {
         const options = window.a2kama.getOptions(dockHighlight);
-        if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.2, ease: "power3.out" });
+        if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.3, ease: "power3.out" });
       }
       return;
     }
@@ -289,12 +289,12 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: targetScale,
         scaleY: targetScale,
         backgroundColor: "rgba(0, 0, 0, 0)",
-        duration: 0.08,
+        duration: 0.12,
         ease: "power2.out",
         onStart: () => {
           if (window.a2kama) {
             const options = window.a2kama.getOptions(dockHighlight);
-            if (options) gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.08, ease: "power2.out" });
+            if (options) gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.12, ease: "power2.out" });
           }
         }
       })
@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleY: (targetWidth / stretchedWidth) * targetScale,
         y: 0,
         transformOrigin: "center center",
-        duration: 0.14,
+        duration: 0.28,
         ease: "power3.inOut",
       })
       .to(dockHighlight, {
@@ -314,12 +314,12 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
-        duration: 0.15,
+        duration: 0.25,
         ease: "power3.out",
         onStart: () => {
           if (window.a2kama) {
             const options = window.a2kama.getOptions(dockHighlight);
-            if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.15, ease: "power3.out" });
+            if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.25, ease: "power3.out" });
           }
         }
       });

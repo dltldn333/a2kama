@@ -1,6 +1,5 @@
 import a2kama from "a2kama";
 import { a2kGlass } from "a2kama/presets";
-import { transform } from "typescript";
 
 // Fix mirage-engine scroll sync by overriding window.scrollY to match Lenis showcase wrapper
 const showcase = document.querySelector(".showcase");
@@ -46,7 +45,7 @@ const dockBtnGlassRecipe = a2kGlass.normal({
   lightSymmetry: 1,
   refraction: 20,
   depth: 120,
-  dispersion: 50,
+  dispersion: 100,
   frost: 0,
   bevelWidth: 10,
   bevelCurve: 3.0,
