@@ -211,9 +211,16 @@ document.addEventListener("DOMContentLoaded", () => {
       width: renderedWidth,
       scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
+      backgroundColor: "rgba(0, 0, 0, 0)",
       rotation: 0,
       transformOrigin: "center center",
     });
+    if (window.a2kama) {
+      const options = window.a2kama.getOptions(dockHighlight);
+      if (options) {
+        gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.1 });
+      }
+    }
   };
   const moveDockHighlight = (button, animate = true) => {
     if (!dock || !dockHighlight) return;
@@ -236,10 +243,15 @@ document.addEventListener("DOMContentLoaded", () => {
         x: targetX,
         y: 0,
         width: targetWidth,
-        scaleX: 1,
+        border: "none",
         scaleY: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
         transformOrigin: "center center",
       });
+      if (window.a2kama) {
+        const options = window.a2kama.getOptions(dockHighlight);
+        if (options) gsap.set(options, { depth: 0, lightDirection: 0, lightIntensity: 0 });
+      }
       return;
     }
 
@@ -250,11 +262,17 @@ document.addEventListener("DOMContentLoaded", () => {
         width: targetWidth,
         scaleX: 1,
         scaleY: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        border: "none",
         rotation: 0,
         transformOrigin: "center center",
         duration: 0.2,
         ease: "power3.out",
       });
+      if (window.a2kama) {
+        const options = window.a2kama.getOptions(dockHighlight);
+        if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.2, ease: "power3.out" });
+      }
       return;
     }
     const edgeLag = clamp(
@@ -270,8 +288,15 @@ document.addEventListener("DOMContentLoaded", () => {
       .to(dockHighlight, {
         scaleX: targetScale,
         scaleY: targetScale,
+        backgroundColor: "rgba(0, 0, 0, 0)",
         duration: 0.08,
         ease: "power2.out",
+        onStart: () => {
+          if (window.a2kama) {
+            const options = window.a2kama.getOptions(dockHighlight);
+            if (options) gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.08, ease: "power2.out" });
+          }
+        }
       })
       .to(dockHighlight, {
         x: stretchedX,
@@ -288,8 +313,15 @@ document.addEventListener("DOMContentLoaded", () => {
         width: targetWidth,
         scaleX: 1,
         scaleY: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
         duration: 0.15,
         ease: "power3.out",
+        onStart: () => {
+          if (window.a2kama) {
+            const options = window.a2kama.getOptions(dockHighlight);
+            if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.15, ease: "power3.out" });
+          }
+        }
       });
   };
   const activateDockButton = (pageId, animate = true, forceMove = false) => {
@@ -642,7 +674,8 @@ document.addEventListener("DOMContentLoaded", () => {
     physicsRightVelocity = 0;
     dragMoved = false;
     isDockDragging = true;
-    console.log("--- Dock Highlight Selected ---");
+    // console.log("--- Dock Highlight Selected ---");
+    
 
     // const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
     // const highlightStyle = { color: "blue" };
@@ -710,7 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const pointerId = dockPointerId;
     dockPointerId = null;
     isDockDragging = false;
-    console.log("--- Dock Highlight Released ---");
+    // console.log("--- Dock Highlight Released ---");
     gsap.ticker.remove(updateDockPhysics);
     dock.classList.remove("is-dragging");
     if (dock.hasPointerCapture(pointerId))

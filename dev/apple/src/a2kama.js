@@ -24,6 +24,8 @@ if (showcase) {
   });
 }
 
+window.a2kama = a2kama;
+
 const dockGlassRecipe = a2kGlass.normal({
   lightDirection: 45,
   lightIntensity: 0.6,
@@ -75,14 +77,17 @@ a2kama.register("dockBtnGlass", dockBtnGlassRecipe);
 const dock = document.querySelector(".bottom-dock");
 // const dockStyleOn4 = { height: "60px" };
 const dockStyleOn4 = { height: "56px", transform: "translateY(5px)" };
-dock.dataset.mirageTravel = `native 4  + ${JSON.stringify(dockStyleOn4)}`;
+dock.dataset.mirageTravel += ` native 4 ${JSON.stringify(dockStyleOn4)}`;
 
 const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
+const dockBtnsText = document.querySelectorAll(".dock-buttons-group button small");
 const highlightStyleOn3 = { color: "black" };
 const highlightStyleOn4 = { color: "blue" };
 for (const dockBtn of dockBtns) {
   dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
   dockBtn.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
+  dockBtnsText.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
+  dockBtnsText.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
 }
 
 // Initialize a2kama with quality scaling to fix mirage-engine performance
