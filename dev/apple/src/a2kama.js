@@ -43,10 +43,10 @@ const dockBtnGlassRecipe = a2kGlass.normal({
   lightIntensity: 0.6,
   lightSymmetry: 1,
   refraction: 20,
-  depth: 30,
-  dispersion: 100,
+  depth: 120,
+  dispersion: 50,
   frost: 0,
-  bevelWidth: 15,
+  bevelWidth: 10,
   bevelCurve: 3.0,
   zoom: 1.0,
   splay: 0,
@@ -74,15 +74,15 @@ a2kama.register("dockBtnGlass", dockBtnGlassRecipe);
 
 const dock = document.querySelector(".bottom-dock");
 // const dockStyleOn4 = { height: "60px" };
-const dockStyleOn4 = { height: "56px", transform: "translateY(6px)" };
-dock.dataset.mirageTravel = `native 3  + ${JSON.stringify(dockStyleOn4)}`;
+const dockStyleOn4 = { height: "56px", transform: "translateY(5px)" };
+dock.dataset.mirageTravel = `native 4  + ${JSON.stringify(dockStyleOn4)}`;
 
 const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
 const highlightStyleOn3 = { color: "black" };
 const highlightStyleOn4 = { color: "blue" };
 for (const dockBtn of dockBtns) {
   dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyleOn3)}`;
-  // dockBtn.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
+  dockBtn.dataset.mirageTravel = `native 4 ${JSON.stringify(highlightStyleOn4)}`;
 }
 
 // Initialize a2kama with quality scaling to fix mirage-engine performance
