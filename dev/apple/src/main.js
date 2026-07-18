@@ -244,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         y: 0,
         width: targetWidth,
         border: "none",
+        scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
         transformOrigin: "center center",
