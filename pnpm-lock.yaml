@@ -35,7 +35,7 @@ importers:
         version: link:../presets
       mirage-engine:
         specifier: latest
-        version: 0.3.12(three@0.160.1)
+        version: 0.3.14(three@0.160.1)
       three:
         specifier: ^0.160.1
         version: 0.160.1
@@ -286,8 +286,8 @@ packages:
   '@microsoft/tsdoc@0.14.2':
     resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
 
-  '@mirage-engine/core@0.3.12':
-    resolution: {integrity: sha512-UX31ibFA9BFQisXwzVI6n9vnP6A0N4Fg7VSOgIgD29UdVRjBMAcyQqLo1zmjVEdrihs7JwK+j9mn6Q9ySre8Kw==}
+  '@mirage-engine/core@0.3.14':
+    resolution: {integrity: sha512-3UiOGyJ3QNWrykG9fvxfO7T41ZuRDZ0csl6ysVU9DNqbRBr/LR5Ng7xAyZNQB2HLlxvnNtnPxMtYu5TYnMSMBg==}
     peerDependencies:
       three: ^0.160.0
 
@@ -670,8 +670,8 @@ packages:
     resolution: {integrity: sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mirage-engine@0.3.12:
-    resolution: {integrity: sha512-O3S7W1U2V7gS13ljPjstrTFjycqgrI+NwjvKOGBFqJ1MxvpKf1fWHmDyxlDNZcVLgwxqkOQn9btmCuhYvofcdQ==}
+  mirage-engine@0.3.14:
+    resolution: {integrity: sha512-7UPPsJT5+qRSLxr4w5vQ/hiAXxmHauJ9bOzz8tbEknfQLHpC3nuVo3KMeG6zznXoSUACs6iAQEIufnUVHUP5dQ==}
     peerDependencies:
       three: ^0.160.0
 
@@ -1241,7 +1241,7 @@ snapshots:
 
   '@microsoft/tsdoc@0.14.2': {}
 
-  '@mirage-engine/core@0.3.12(three@0.160.1)':
+  '@mirage-engine/core@0.3.14(three@0.160.1)':
     dependencies:
       '@mirage-engine/dom-tracker': 0.3.10
       '@mirage-engine/painter': 1.0.4(three@0.160.1)
@@ -1633,9 +1633,9 @@ snapshots:
     dependencies:
       brace-expansion: 2.1.1
 
-  mirage-engine@0.3.12(three@0.160.1):
+  mirage-engine@0.3.14(three@0.160.1):
     dependencies:
-      '@mirage-engine/core': 0.3.12(three@0.160.1)
+      '@mirage-engine/core': 0.3.14(three@0.160.1)
       '@mirage-engine/painter': 1.0.4(three@0.160.1)
       '@mirage-engine/sandwich': 0.2.8
       three: 0.160.1

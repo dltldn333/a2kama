@@ -636,7 +636,7 @@ button {
   z-index: 1;
   top: 5px;
   left: 5px;
-  /* width: 80px; */
+  width: 80px;
   height: 56px;
   display: block;
   border-radius: 50px;

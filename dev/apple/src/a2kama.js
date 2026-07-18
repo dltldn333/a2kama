@@ -75,7 +75,8 @@ a2kama.register("dockBtnGlass", dockBtnGlassRecipe);
 
 const dock = document.querySelector(".bottom-dock");
 // const dockStyleOn4 = { height: "60px" };
-const dockStyleOn4 = { height: "56px", transform: "translateY(5px)" };
+// const dockStyleOn4 = { height: "56px", transform: "translateY(5px)" };
+const dockStyleOn4 = { transform: "scaleY(0.9)" };
 dock.dataset.mirageTravel += ` native 4 ${JSON.stringify(dockStyleOn4)}`;
 
 const dockBtns = document.querySelectorAll(".dock-buttons-group button span");

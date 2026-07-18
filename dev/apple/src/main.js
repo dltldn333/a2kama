@@ -690,7 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.ticker.add(updateDockPhysics);
     dock.classList.add("is-dragging");
     dock.setPointerCapture(event.pointerId);
-    lenis.stop();
+    // lenis.stop();
     previewDockButton(getDockButtonAt(dragX, dragWidth));
     gsap.set(dockHighlight, {
       x: dragX,
@@ -749,7 +749,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dock.classList.remove("is-dragging");
     if (dock.hasPointerCapture(pointerId))
       dock.releasePointerCapture(pointerId);
-    lenis.start();
+    // lenis.start();
     const firstButton = dockButtons[0];
     const lastButton = dockButtons[dockButtons.length - 1];
     const activeButton = dockButtons.find((button) =>
