@@ -21,13 +21,29 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper: scrollViewport,
     content: scrollContent,
     eventsTarget: window,
-    autoRaf: true,
+    autoRaf: false, // Turn off autoRaf to manually control RAF order
     smoothWheel: true,
     syncTouch: true,
     wheelMultiplier: 0.82,
     touchMultiplier: 1.02,
     anchors: { duration: 0.9 },
   });
+
+  // Manually start the RAF loop for Lenis
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Initialize a2kama AFTER Lenis RAF is registered!
+  // This is the true fix: Lenis RAF must run before mirage-engine RAF!
+  if (window.initA2kama) {
+    window.initA2kama();
+  } else {
+    // Fallback if script loaded out of order
+    setTimeout(() => { if (window.initA2kama) window.initA2kama(); }, 100);
+  }
   const getViewportHeight = () =>
     scrollViewport.clientHeight || root.clientHeight || window.innerHeight;
   const setViewportHeight = () =>
@@ -218,7 +234,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.a2kama) {
       const options = window.a2kama.getOptions(dockHighlight);
       if (options) {
-        gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.1 });
+        gsap.to(options, {
+          depth: 120,
+          lightDirection: 45,
+          lightIntensity: 0.6,
+          duration: 0.1,
+        });
       }
     }
   };
@@ -251,7 +272,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (window.a2kama) {
         const options = window.a2kama.getOptions(dockHighlight);
-        if (options) gsap.set(options, { depth: 0, lightDirection: 0, lightIntensity: 0 });
+        if (options)
+          gsap.set(options, { depth: 0, lightDirection: 0, lightIntensity: 0 });
       }
       return;
     }
@@ -272,7 +294,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (window.a2kama) {
         const options = window.a2kama.getOptions(dockHighlight);
-        if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.3, ease: "power3.out" });
+        if (options)
+          gsap.to(options, {
+            depth: 0,
+            lightDirection: 0,
+            lightIntensity: 0,
+            duration: 0.3,
+            ease: "power3.out",
+          });
       }
       return;
     }
@@ -283,7 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     const stretchedX = direction > 0 ? targetX - edgeLag : targetX;
     const stretchedWidth = targetWidth + edgeLag;
-    const targetScale = ((dock.offsetHeight + 2) / Math.max(dockHighlight.offsetHeight, 1)) * 1.1;
+    const targetScale =
+      ((dock.offsetHeight + 2) / Math.max(dockHighlight.offsetHeight, 1)) * 1.1;
     const timeline = gsap.timeline();
     timeline
       .to(dockHighlight, {
@@ -295,9 +325,16 @@ document.addEventListener("DOMContentLoaded", () => {
         onStart: () => {
           if (window.a2kama) {
             const options = window.a2kama.getOptions(dockHighlight);
-            if (options) gsap.to(options, { depth: 120, lightDirection: 45, lightIntensity: 0.6, duration: 0.12, ease: "power2.out" });
+            if (options)
+              gsap.to(options, {
+                depth: 120,
+                lightDirection: 45,
+                lightIntensity: 0.6,
+                duration: 0.12,
+                ease: "power2.out",
+              });
           }
-        }
+        },
       })
       .to(dockHighlight, {
         x: stretchedX,
@@ -320,9 +357,16 @@ document.addEventListener("DOMContentLoaded", () => {
         onStart: () => {
           if (window.a2kama) {
             const options = window.a2kama.getOptions(dockHighlight);
-            if (options) gsap.to(options, { depth: 0, lightDirection: 0, lightIntensity: 0, duration: 0.25, ease: "power3.out" });
+            if (options)
+              gsap.to(options, {
+                depth: 0,
+                lightDirection: 0,
+                lightIntensity: 0,
+                duration: 0.25,
+                ease: "power3.out",
+              });
           }
-        }
+        },
       });
   };
   const activateDockButton = (pageId, animate = true, forceMove = false) => {
@@ -676,15 +720,13 @@ document.addEventListener("DOMContentLoaded", () => {
     dragMoved = false;
     isDockDragging = true;
     // console.log("--- Dock Highlight Selected ---");
-    
 
     // const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
     // const highlightStyle = { color: "blue" };
     // for(const dockBtn of dockBtns){
     //   dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyle)}`;
     // }
-    
-    
+
     gsap.killTweensOf(dockHighlight);
     gsap.ticker.remove(updateDockPhysics);
     gsap.ticker.add(updateDockPhysics);
@@ -820,3 +862,4 @@ document.addEventListener("DOMContentLoaded", () => {
     lenis.destroy();
   };
 });
+
