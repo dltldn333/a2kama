@@ -261,13 +261,24 @@ export const a2kGlass = {
           
           vec4 newBaseColor = vec4(uBgColor.rgb, uBgColor.a);
           if (uGradientCount > 0) {
-            vec4 gradColor = calculateGradientLayer(vUv);
+            vec4 gradColor = calculateGradientLayer(p); // use p instead of vUv to match base shader
             newBaseColor = blendSrcOver(gradColor, newBaseColor);
           }
-          newBaseColor = blendSrcOver(newBaseColor, texColorDisp);
-          finalColor = blendSrcOver(borderLayer, newBaseColor);
+          
+          // 1. Blend background tint (newBaseColor) over the refracted texture
+          vec4 glassBase = blendSrcOver(newBaseColor, texColorDisp);
+          
+          // 2. Blend border over the glass base
+          vec4 glassyMain = blendSrcOver(borderLayer, glassBase);
+          
+          // 3. Mask the glassy body to the rounded box so it doesn't bleed out to the bounding box
+          glassyMain.a *= bgMask;
+          
+          // 4. Add specular highlights (masked by bgMask)
+          glassyMain.rgb += vec3(1.0) * (dirLight * lightIntensity) * bgMask;
 
-          finalColor.rgb += vec3(1.0) * (dirLight * lightIntensity);
+          // 5. Finally, blend glassyMain over the existing shadowLayer
+          finalColor = blendSrcOver(glassyMain, shadowLayer);
         `,
       },
       optionMap: {

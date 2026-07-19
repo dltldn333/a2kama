@@ -35,7 +35,7 @@ importers:
         version: link:../presets
       mirage-engine:
         specifier: latest
-        version: 0.3.14(three@0.160.1)
+        version: 0.3.15(three@0.160.1)
       three:
         specifier: ^0.160.1
         version: 0.160.1
@@ -286,16 +286,16 @@ packages:
   '@microsoft/tsdoc@0.14.2':
     resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
 
-  '@mirage-engine/core@0.3.14':
-    resolution: {integrity: sha512-3UiOGyJ3QNWrykG9fvxfO7T41ZuRDZ0csl6ysVU9DNqbRBr/LR5Ng7xAyZNQB2HLlxvnNtnPxMtYu5TYnMSMBg==}
+  '@mirage-engine/core@0.3.15':
+    resolution: {integrity: sha512-NXTe448F5gCdWMd49vxJN251dM2/18pb4fOG4ykL+e/RfPX3YWHMzuyjiSkNqfJeH5LrEs9I4KN8c0Ek1XSZxA==}
     peerDependencies:
       three: ^0.160.0
 
   '@mirage-engine/dom-tracker@0.3.10':
     resolution: {integrity: sha512-NcgqSKpAKJWr1BRgKtRdKQeptfXOoUsut5nG6biOGbjMKn3n1rney2somy2FAGDBrT7ehR3lkU2oJgrBkAAGog==}
 
-  '@mirage-engine/painter@1.0.4':
-    resolution: {integrity: sha512-UeUwpMGh5HmSM1p2J6atTq9pLxxW8y+DgF1XRDKtszygFRpBp9YGAW562PeG+VBozm+Cf5t3y/O91CWhANe6sQ==}
+  '@mirage-engine/painter@1.0.5':
+    resolution: {integrity: sha512-rZWAhInOMglJsLsuIVqNQZwLrEONeQXg9OiE6WBEP/K/U2l8DQouXlEHM/gJKVa5WCRsN1gFVXmkoNFpvooFvw==}
     peerDependencies:
       three: ^0.160.0
 
@@ -670,8 +670,8 @@ packages:
     resolution: {integrity: sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mirage-engine@0.3.14:
-    resolution: {integrity: sha512-7UPPsJT5+qRSLxr4w5vQ/hiAXxmHauJ9bOzz8tbEknfQLHpC3nuVo3KMeG6zznXoSUACs6iAQEIufnUVHUP5dQ==}
+  mirage-engine@0.3.15:
+    resolution: {integrity: sha512-fgbN9TZ19Fa+s9HnIpxoM00U2V5AmjctDS73C8Qo6DZDsenqpHk7Vw5L9hndtCTj3pvwdZqRv2cqeIYwLHX+NQ==}
     peerDependencies:
       three: ^0.160.0
 
@@ -1241,16 +1241,16 @@ snapshots:
 
   '@microsoft/tsdoc@0.14.2': {}
 
-  '@mirage-engine/core@0.3.14(three@0.160.1)':
+  '@mirage-engine/core@0.3.15(three@0.160.1)':
     dependencies:
       '@mirage-engine/dom-tracker': 0.3.10
-      '@mirage-engine/painter': 1.0.4(three@0.160.1)
+      '@mirage-engine/painter': 1.0.5(three@0.160.1)
       '@types/three': 0.181.0
       three: 0.160.1
 
   '@mirage-engine/dom-tracker@0.3.10': {}
 
-  '@mirage-engine/painter@1.0.4(three@0.160.1)':
+  '@mirage-engine/painter@1.0.5(three@0.160.1)':
     dependencies:
       '@types/three': 0.181.0
       three: 0.160.1
@@ -1633,10 +1633,10 @@ snapshots:
     dependencies:
       brace-expansion: 2.1.1
 
-  mirage-engine@0.3.14(three@0.160.1):
+  mirage-engine@0.3.15(three@0.160.1):
     dependencies:
-      '@mirage-engine/core': 0.3.14(three@0.160.1)
-      '@mirage-engine/painter': 1.0.4(three@0.160.1)
+      '@mirage-engine/core': 0.3.15(three@0.160.1)
+      '@mirage-engine/painter': 1.0.5(three@0.160.1)
       '@mirage-engine/sandwich': 0.2.8
       three: 0.160.1
 

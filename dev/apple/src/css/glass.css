@@ -56,9 +56,9 @@
   place-items: center;
   overflow: hidden;
   border-radius: 50px;
-  /* border: 1px solid rgba(0, 0, 0, 0.2); */
-  /* background: rgba(, 0, 0, 0.1); */
-  /* box-shadow: 0 3px 9px rgba(20, 26, 36, 0.13); */
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  /* background: rgba(255, 255, 255, 1); */
+  box-shadow: 0 3px 9px rgba(20, 26, 36, 0.13);
   transform: translate(-50%, -50%);
   will-change: width, height;
 }
