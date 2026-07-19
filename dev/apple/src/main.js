@@ -42,7 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.initA2kama();
   } else {
     // Fallback if script loaded out of order
-    setTimeout(() => { if (window.initA2kama) window.initA2kama(); }, 100);
+    setTimeout(() => {
+      if (window.initA2kama) window.initA2kama();
+    }, 100);
   }
   const getViewportHeight = () =>
     scrollViewport.clientHeight || root.clientHeight || window.innerHeight;
@@ -228,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
       backgroundColor: "rgba(0, 0, 0, 0)",
-      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
       rotation: 0,
       transformOrigin: "center center",
     });
@@ -269,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.0)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
         transformOrigin: "center center",
       });
       if (window.a2kama) {
@@ -288,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.0)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
         border: "none",
         rotation: 0,
         transformOrigin: "center center",
@@ -344,6 +346,8 @@ document.addEventListener("DOMContentLoaded", () => {
         width: stretchedWidth,
         scaleX: targetScale,
         scaleY: (targetWidth / stretchedWidth) * targetScale,
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         y: 0,
         transformOrigin: "center center",
         duration: 0.28,
@@ -401,21 +405,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const roundedValue = Math.round(value);
     control.dataset.value = String(value);
     control.style.setProperty("--range-progress", `${progress * 100}%`);
-    
+
     // Calculate bidirectional fill variables
     const progressPercent = progress * 100;
-    let fillLeft = 'auto';
-    let fillRight = 'auto';
-    let fillWidth = '8px';
+    let fillLeft = "auto";
+    let fillRight = "auto";
+    let fillWidth = "8px";
 
     if (progress >= 0.5) {
-      fillLeft = 'calc(50% - 4px)';
+      fillLeft = "calc(50% - 4px)";
       fillWidth = `max(8px, calc(${progressPercent}% - 50% + 4px))`;
     } else {
-      fillRight = 'calc(50% - 4px)';
+      fillRight = "calc(50% - 4px)";
       fillWidth = `max(8px, calc(50% + 4px - ${progressPercent}%))`;
     }
-    
+
     control.style.setProperty("--fill-left", fillLeft);
     control.style.setProperty("--fill-right", fillRight);
     control.style.setProperty("--fill-width", fillWidth);
@@ -761,6 +765,8 @@ document.addEventListener("DOMContentLoaded", () => {
       width: dragWidth,
       scaleX: dragBaseScaleY,
       scaleY: dragBaseScaleY,
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
       y: 0,
       transformOrigin: "center center",
     });
@@ -884,4 +890,3 @@ document.addEventListener("DOMContentLoaded", () => {
     lenis.destroy();
   };
 });
-
