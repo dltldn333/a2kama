@@ -10,10 +10,73 @@
 }
 
 .glass-output{
+  position: relative;
   border-radius: 40px;
   width: 100%;
   height: 100%;
   background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-dock-dummy {
+  position: absolute;
+  bottom: 30px;
+  width: 460px;
+  max-width: calc(100% - 32px);
+  height: 84px;
+  border-radius: 42px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px rgba(16, 17, 23, 0.12);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  isolation: isolate;
+}
+
+.dummy-buttons {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.dummy-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 90px;
+  height: 72px;
+  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.dummy-icon {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 2px;
+}
+
+.dummy-btn.active {
+  color: #4b23a9;
+}
+
+.dummy-highlight {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 96px;
+  height: 72px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 36px;
+  z-index: 1;
 }
 
 .slider-wrap {
