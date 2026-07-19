@@ -1,0 +1,218 @@
+/* Empty content layouts */
+.layout-only-page {
+  display: flex;
+  align-items: center;
+}
+.siri-page {
+  background: #0b0c11;
+}
+.navigation-page {
+  background: #e9e9eb;
+}
+.controls-page {
+  background: #d9d8d5;
+}
+.feedback-page {
+  background: #12141a;
+}
+
+.layout-grid {
+  width: 100%;
+  height: min(72vh, 720px);
+  min-height: 430px;
+  margin: 0 auto;
+}
+
+.layout-grid-siri,
+.layout-grid-navigation,
+.layout-grid-controls {
+  display: grid;
+  grid-template-columns: minmax(290px, 0.72fr) minmax(520px, 1.28fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 112px);
+}
+
+.layout-slot,
+.layout-window-slot,
+.layout-card,
+.layout-device-slot,
+.layout-stack-slot > div {
+  border: 1px solid rgba(17, 18, 23, 0.12);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.siri-page .layout-slot,
+.feedback-page .layout-slot,
+.feedback-page .layout-device-slot,
+.feedback-page .layout-stack-slot > div {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.layout-copy-slot {
+  width: 100%;
+  height: 58%;
+  min-height: 250px;
+  border-radius: 32px;
+}
+
+.layout-feature-slot {
+  width: 100%;
+  height: 100%;
+  border-radius: 38px;
+}
+
+.layout-window-slot {
+  display: grid;
+  grid-template-columns: 29% 1fr;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 34px;
+}
+
+.layout-sidebar-slot {
+  border-right: 1px solid rgba(17, 18, 23, 0.1);
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.layout-main-slot {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 16px;
+  padding: clamp(18px, 2.4vw, 34px);
+}
+
+.layout-wide-card,
+.layout-small-card-row > div {
+  border: 1px solid rgba(17, 18, 23, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.layout-small-card-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  height: 25%;
+  min-height: 72px;
+}
+
+.layout-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+}
+
+.layout-card {
+  border-radius: 26px;
+}
+
+.layout-grid-feedback {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.66fr) minmax(280px, 0.88fr) minmax(
+      280px,
+      1fr
+    );
+  align-items: center;
+  gap: clamp(18px, 3vw, 44px);
+}
+
+.layout-device-slot {
+  width: 100%;
+  height: 100%;
+  border-radius: 38px;
+}
+
+.layout-stack-slot {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 14px;
+  height: 78%;
+}
+
+.layout-stack-slot > div {
+  border-radius: 24px;
+}
+
+@media (max-width: 1050px) {
+  .layout-grid-siri,
+  .layout-grid-navigation,
+  .layout-grid-controls {
+    grid-template-columns: minmax(260px, 0.66fr) minmax(420px, 1.34fr);
+    gap: 36px;
+  }
+  .layout-grid-feedback {
+    grid-template-columns: minmax(210px, 0.6fr) minmax(240px, 0.82fr) minmax(
+        240px,
+        1fr
+      );
+    gap: 20px;
+  }
+}
+@media (max-width: 760px) {
+  .layout-grid {
+    height: 100%;
+    min-height: 0;
+  }
+  .layout-grid-siri,
+  .layout-grid-navigation,
+  .layout-grid-controls {
+    grid-template-columns: 1fr;
+    grid-template-rows: 31% 1fr;
+    gap: 12px;
+  }
+  .layout-copy-slot {
+    height: 100%;
+    min-height: 0;
+    border-radius: 22px;
+  }
+  .layout-feature-slot,
+  .layout-window-slot {
+    border-radius: 27px;
+  }
+  .layout-window-slot {
+    grid-template-columns: 28% 1fr;
+  }
+  .layout-main-slot {
+    gap: 9px;
+    padding: 12px;
+  }
+  .layout-wide-card {
+    border-radius: 18px;
+  }
+  .layout-small-card-row {
+    min-height: 54px;
+    gap: 7px;
+  }
+  .layout-small-card-row > div {
+    border-radius: 14px;
+  }
+  .layout-card-grid {
+    gap: 8px;
+  }
+  .layout-card {
+    border-radius: 20px;
+  }
+  .layout-grid-feedback {
+    grid-template-columns: 1fr 1.08fr;
+    grid-template-rows: 30% 1fr;
+    gap: 9px;
+  }
+  .layout-grid-feedback .layout-copy-slot {
+    grid-column: 1 / -1;
+  }
+  .layout-device-slot {
+    border-radius: 26px;
+  }
+  .layout-stack-slot {
+    height: 100%;
+    gap: 8px;
+  }
+  .layout-stack-slot > div {
+    border-radius: 18px;
+  }
+}
