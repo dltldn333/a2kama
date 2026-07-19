@@ -41,8 +41,11 @@
 }
 .slider-fill {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--range-progress);
+  top: 0;
+  bottom: 0;
+  left: var(--fill-left, 0%);
+  right: var(--fill-right, auto);
+  width: var(--fill-width, var(--range-progress));
   border-radius: inherit;
   background: #0a7cff;
 }

@@ -228,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
       backgroundColor: "rgba(0, 0, 0, 0)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
       rotation: 0,
       transformOrigin: "center center",
     });
@@ -268,6 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.0)",
         transformOrigin: "center center",
       });
       if (window.a2kama) {
@@ -286,6 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.0)",
         border: "none",
         rotation: 0,
         transformOrigin: "center center",
@@ -398,10 +401,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const roundedValue = Math.round(value);
     control.dataset.value = String(value);
     control.style.setProperty("--range-progress", `${progress * 100}%`);
+    
+    // Calculate bidirectional fill variables
+    const progressPercent = progress * 100;
+    let fillLeft = 'auto';
+    let fillRight = 'auto';
+    let fillWidth = '8px';
+
+    if (progress >= 0.5) {
+      fillLeft = 'calc(50% - 4px)';
+      fillWidth = `max(8px, calc(${progressPercent}% - 50% + 4px))`;
+    } else {
+      fillRight = 'calc(50% - 4px)';
+      fillWidth = `max(8px, calc(50% + 4px - ${progressPercent}%))`;
+    }
+    
+    control.style.setProperty("--fill-left", fillLeft);
+    control.style.setProperty("--fill-right", fillRight);
+    control.style.setProperty("--fill-width", fillWidth);
+
     control.setAttribute("aria-valuenow", String(roundedValue));
     if (control.dataset.range === "glass-opacity") {
       glassScene?.style.setProperty("--glass-alpha", (value / 100).toFixed(3));
-      if (opacityOutput) opacityOutput.textContent = `${roundedValue}%`;
+      if (opacityOutput) opacityOutput.textContent = `${roundedValue}`;
     }
   };
   const rangeHandlers = rangeControls.map((control) => {
