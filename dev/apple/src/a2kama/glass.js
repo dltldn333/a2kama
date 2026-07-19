@@ -22,3 +22,10 @@ const sliderThumb = document.querySelector(".slider-thumb");
 sliderThumb.dataset.mirageTravel = `traveler 2`;
 sliderThumb.dataset.a2kama = "thumbGlass";
 sliderThumb.dataset.mirageSelect = "include-self";
+
+const glassDockDummy = document.querySelector(".glass-dock-dummy");
+
+glassDockDummy.dataset.mirageTravel = `traveler 2`;
+glassDockDummy.dataset.a2kama = "thumbGlass";
+glassDockDummy.dataset.mirageSelect = "include-tree";
+
