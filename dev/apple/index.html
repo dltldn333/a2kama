@@ -44,65 +44,23 @@
               data-page="glass"
               aria-labelledby="glass-title"
             >
-              <div class="page-chrome">
-                <span>Material study</span>
-                <span>02 / 05</span>
-              </div>
-
-              <div class="glass-heading">
-                <p class="section-kicker">Liquid Glass</p>
-                <h1 id="glass-title">Just the<br />surface.</h1>
-                <p>
-                  실제 재질 효과를 넣기 전, 투명도와 콘텐츠 대비를 확인하는 조절
-                  영역입니다.
-                </p>
-              </div>
-
-              <div class="glass-scene" data-glass-scene>
-                <div class="opacity-panel">
-                  <div class="control-label-row">
-                    <span>Surface opacity</span>
-                    <strong data-opacity-output>34%</strong>
-                  </div>
-                  <div class="opacity-slider-row">
-                    <div
-                      class="opacity-endpoint opacity-endpoint-low"
-                      aria-hidden="true"
-                    >
-                      <i></i><i></i>
-                    </div>
-                    <div
-                      class="div-slider light-slider liquid-slider"
-                      data-range="glass-opacity"
-                      data-min="8"
-                      data-max="68"
-                      data-value="34"
-                      role="slider"
-                      tabindex="0"
-                      aria-label="Glass 배경 투명도"
-                      aria-valuemin="8"
-                      aria-valuemax="68"
-                      aria-valuenow="34"
-                    >
-                      <div class="slider-track">
-                        <div class="slider-fill"></div>
-                        <div class="slider-thumb"><i></i></div>
-                      </div>
-                    </div>
-                    <div
-                      class="opacity-endpoint opacity-endpoint-high"
-                      aria-hidden="true"
-                    >
-                      <i></i><i></i>
-                    </div>
-                  </div>
-                  <p>투명 배경과 테두리만 적용된 준비 상태입니다.</p>
+              <div
+                class="div-slider light-slider liquid-slider"
+                data-range="glass-opacity"
+                data-min="8"
+                data-max="68"
+                data-value="34"
+                role="slider"
+                tabindex="0"
+                aria-label="Glass 배경 투명도"
+                aria-valuemin="8"
+                aria-valuemax="68"
+                aria-valuenow="34"
+              >
+                <div class="slider-track">
+                  <div class="slider-fill"></div>
+                  <div class="slider-thumb"><i></i></div>
                 </div>
-              </div>
-
-              <div class="page-note">
-                <span>02</span>
-                <p>Opacity · Layer · Contrast</p>
               </div>
             </section>
 
@@ -184,9 +142,9 @@
             class="dock-highlight"
             data-dock-highlight
             aria-hidden="true"
-            style="z-index: 20;"
+            style="z-index: 20"
           ></span>
-          <div class="dock-buttons-group" style="z-index: 11;">
+          <div class="dock-buttons-group" style="z-index: 11">
             <button
               type="button"
               data-page-target="siri"
