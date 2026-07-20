@@ -10,7 +10,7 @@
 
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 8px 24px rgba(16, 17, 23, 0.12);
+  box-shadow: 0 0 24px rgba(16, 17, 23, 0.12);
   opacity: var(--dock-opacity);
   transform: translateX(-50%);
   transition: opacity 0.16s linear;
