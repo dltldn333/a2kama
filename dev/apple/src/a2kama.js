@@ -6,6 +6,7 @@ import "./a2kama/layout.js";
 import "./a2kama/glass.js";
 import "./a2kama/dock.js";
 import "./a2kama/lock.js";
+import "./a2kama/siri.js";
 
 // We now export the initialized function to be called after Lenis in main.js
 window.initA2kama = function() {
