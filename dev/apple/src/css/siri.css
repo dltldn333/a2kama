@@ -105,11 +105,7 @@
   width: 300px;
   height: 200px;
   border-radius: 100px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 40%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
   transform-origin: top center;
   isolation: isolate;
 }
@@ -177,7 +173,7 @@
     flex-direction: column; /* 다시 상하 배치로 */
     padding: 5vh 5vw;
   }
-  
+
   .siri-controls-wrap {
     flex-direction: row; /* 모바일에서는 가로 배치로 */
     width: 100%;
@@ -185,7 +181,7 @@
     padding: 0 30px; /* 좌우 여백 */
     border-radius: 100px;
   }
-  
+
   .siri-btn {
     padding: 12px 0;
   }
