@@ -63,7 +63,6 @@
   aspect-ratio: 1/1;
   border-radius: 20px;
   object-fit: cover;
-  background-color: #f0f0f0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
@@ -140,7 +139,7 @@
   transform: translateY(-50%);
   width: 96px;
   height: 72px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 36px;
   z-index: 1;
 }
