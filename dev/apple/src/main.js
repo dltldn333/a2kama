@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
       backgroundColor: "rgba(0, 0, 0, 0.02)",
-      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
       rotation: 0,
       transformOrigin: "center center",
     });
@@ -400,6 +400,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const setRangeValue = (control, nextValue) => {
     const min = Number(control.dataset.min ?? 0);
     const max = Number(control.dataset.max ?? 100);
+
+    // ── Snap zone: 양 끝 15% 구간은 각 맥스값으로 스냅 ──────────────────────
+    if (control.dataset.range === "glass-opacity") {
+      const range = max - min;
+      if (nextValue >= max - range * 0.05) nextValue = max;
+      else if (nextValue <= min + range * 0.05) nextValue = min;
+    }
+
     const value = clamp(nextValue, min, max);
     const progress = (value - min) / Math.max(max - min, 1);
     const roundedValue = Math.round(value);
@@ -428,6 +436,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (control.dataset.range === "glass-opacity") {
       glassScene?.style.setProperty("--glass-alpha", (value / 100).toFixed(3));
       if (opacityOutput) opacityOutput.textContent = `${roundedValue}`;
+
+      // ── 아이콘 밀기 애니메이션 ────────────────────────────────────────────
+      // 슬라이더 thumb이 맥스에 스냅될 때 해당 쪽 아이콘을 20px 밀어냄
+      const sliderWrap = control.closest(".slider-wrap");
+      const icons = sliderWrap?.querySelectorAll("img");
+      if (icons?.length >= 2) {
+        const [leftIcon, rightIcon] = icons;
+        if (value === min) {
+          gsap.to(leftIcon,  { x: -20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(rightIcon, { x:   0, duration: 0.25, ease: "power2.out" });
+        } else if (value === max) {
+          gsap.to(rightIcon, { x:  20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(leftIcon,  { x:   0, duration: 0.25, ease: "power2.out" });
+        } else {
+          gsap.to(leftIcon,  { x: 0, duration: 0.25, ease: "power2.out" });
+          gsap.to(rightIcon, { x: 0, duration: 0.25, ease: "power2.out" });
+        }
+      }
     }
   };
   const rangeHandlers = rangeControls.map((control) => {
