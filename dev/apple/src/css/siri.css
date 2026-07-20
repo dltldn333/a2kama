@@ -1,0 +1,96 @@
+/* siri.css — glass.css의 완전한 복제 (siri-page 스코프) */
+
+.siri-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20vh 10vw;
+  gap: 20px;
+  background: #eeeeee;
+  color: black;
+  flex-direction: column;
+}
+
+.siri-output {
+  position: relative;
+  border-radius: 40px;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.siri-page .bg-grid-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  clip-path: inset(0 round 40px);
+}
+
+.siri-page .bg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: max-content max-content;
+  gap: 20px;
+  width: 100%;
+  padding: 24px;
+  animation: bgMoveUpDown 6s infinite alternate;
+}
+
+.siri-page .bg-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.siri-page .bg-item img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.siri-page .bg-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+.siri-page .bg-item-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+.siri-page .bg-item-subtitle {
+  font-size: 15px;
+  color: #666;
+}
+
+
+@media (max-width: 1050px) {
+  .siri-page {
+    grid-template-columns: minmax(260px, 0.66fr) minmax(420px, 1.34fr);
+    gap: 36px;
+  }
+}
+
+@media (max-width: 760px) {
+  .siri-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 18px;
+  }
+}
