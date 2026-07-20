@@ -444,13 +444,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (icons?.length >= 2) {
         const [leftIcon, rightIcon] = icons;
         if (value === min) {
-          gsap.to(leftIcon,  { x: -20, duration: 0.35, ease: "back.out(1.5)" });
-          gsap.to(rightIcon, { x:   0, duration: 0.25, ease: "power2.out" });
+          gsap.to(leftIcon, { x: -20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(rightIcon, { x: 0, duration: 0.25, ease: "power2.out" });
         } else if (value === max) {
-          gsap.to(rightIcon, { x:  20, duration: 0.35, ease: "back.out(1.5)" });
-          gsap.to(leftIcon,  { x:   0, duration: 0.25, ease: "power2.out" });
+          gsap.to(rightIcon, { x: 20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(leftIcon, { x: 0, duration: 0.25, ease: "power2.out" });
         } else {
-          gsap.to(leftIcon,  { x: 0, duration: 0.25, ease: "power2.out" });
+          gsap.to(leftIcon, { x: 0, duration: 0.25, ease: "power2.out" });
           gsap.to(rightIcon, { x: 0, duration: 0.25, ease: "power2.out" });
         }
       }
@@ -641,6 +641,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const isPast = progress > 0.995;
     lockScreen.classList.toggle("is-past", isPast);
     lockScreen.setAttribute("aria-hidden", String(isPast));
+
+    // Siri Circle GSAP dynamic animation
+    const siriCircle = document.querySelector(".siri-circle");
+    if (siriCircle && window.gsap) {
+      const siriDist = Math.abs(progress - 1.0);
+      const shouldBeVisible = siriDist < 0.2; // Show within 20% distance
+
+      if (shouldBeVisible && !siriCircle.classList.contains("is-visible")) {
+        siriCircle.classList.add("is-visible");
+        gsap.killTweensOf(siriCircle);
+        // Set initial hidden state then animate in with delay
+        gsap.set(siriCircle, { scaleX: 1, scaleY: 0, opacity: 0 });
+        gsap.to(siriCircle, {
+          scaleY: 1,
+          opacity: 1,
+          duration: 1.0,
+          delay: 0.35, // 살짝 기다렸다가
+          ease: "elastic.out(1, 0.65)", // 좀 더 다이나믹하게
+        });
+      } else if (
+        !shouldBeVisible &&
+        siriCircle.classList.contains("is-visible")
+      ) {
+        siriCircle.classList.remove("is-visible");
+        gsap.killTweensOf(siriCircle);
+        // Animate out quickly
+        gsap.to(siriCircle, {
+          scaleY: 0,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in",
+        });
+      }
+    }
+
     updateDock(scroll);
   };
   const goToPage = (targetIndex, duration = 0.82, onSettled) => {

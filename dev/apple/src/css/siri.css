@@ -4,9 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20vh 10vw;
+  padding: 10vh 10vw;
   gap: 20px;
-  background: #eeeeee;
+  background: #111;
   color: black;
   flex-direction: column;
 }
@@ -63,8 +63,9 @@
   flex-direction: column;
   gap: 4px;
   padding: 0 8px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 .siri-page .bg-item-title {
@@ -78,6 +79,40 @@
   color: #666;
 }
 
+.dynamic-island {
+  position: absolute;
+  top: 60px;
+  width: 160px;
+  height: 40px;
+  border-radius: 100px;
+  background: black;
+  isolation: isolate;
+}
+
+.dynamic-island span {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #111;
+  right: 10px;
+  top: 10px;
+}
+
+.siri-circle {
+  position: absolute;
+  top: 30px;
+  width: 300px;
+  height: 200px;
+  border-radius: 100px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  transform-origin: top center;
+  isolation: isolate;
+}
 
 @media (max-width: 1050px) {
   .siri-page {
