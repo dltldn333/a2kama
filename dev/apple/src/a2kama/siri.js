@@ -7,7 +7,7 @@ const siriGlassRecipe = a2kGlass.normal({
   lightSymmetry: 1,
   refraction: 120,
   depth: 40,
-  dispersion: 0,
+  dispersion: 120,
   frost: 0,
   bevelWidth: 10,
   bevelCurve: 3.0,

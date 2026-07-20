@@ -40,6 +40,11 @@
   width: 100%;
   padding: 24px;
   animation: bgMoveUpDown 6s infinite alternate;
+  animation-play-state: paused;
+}
+
+.glass-page.is-active-page .bg-grid {
+  animation-play-state: running;
 }
 
 @keyframes bgMoveUpDown {

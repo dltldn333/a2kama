@@ -42,6 +42,11 @@
   width: 100%;
   padding: 24px;
   animation: bgMoveUpDown 8s infinite alternate;
+  animation-play-state: paused;
+}
+
+.siri-page.is-active-page .bg-grid {
+  animation-play-state: running;
 }
 
 .siri-page .bg-item {

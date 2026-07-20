@@ -359,6 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scaleX: 1,
         scaleY: 1,
         backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
         duration: 0.25,
         ease: "power3.out",
         onStart: () => {
@@ -385,6 +386,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isActive) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
     });
+    
+    // 현재 활성화된 페이지 요소에 클래스 부여
+    document.querySelectorAll(".showcase-page").forEach(page => {
+      page.classList.toggle("is-active-page", page.id === displayId);
+    });
+
     if (displayId === activeDockId && !forceMove) return;
     const activeButton = dockButtons.find(
       (button) => button.dataset.pageTarget === displayId,
