@@ -156,6 +156,8 @@ if (siriBtns.length > 0 && siriCircle) {
           scale: 1.0, // 다른 상태로 전환될 때 scale을 다시 1로 리셋
         };
 
+        const defaultGradient =
+          "linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%)";
         const fullGradient =
           "linear-gradient(rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)";
 
@@ -165,6 +167,7 @@ if (siriBtns.length > 0 && siriCircle) {
             targetProps.height = 200;
             targetProps.opacity = 1;
             targetProps.borderRadius = 100;
+            targetProps.backgroundImage = defaultGradient;
             targetProps.ease = "elastic.out(1, 0.65)";
             targetProps.duration = 1.0;
             // default 애니메이션 완료 후 숨쉬기(breathe) 무한 루프 시작
@@ -185,19 +188,21 @@ if (siriBtns.length > 0 && siriCircle) {
             targetProps.width = 400;
             targetProps.height = 100;
             targetProps.borderRadius = 100;
-            // targetProps.background = fullGradient;
+            targetProps.backgroundImage = fullGradient;
             targetProps.opacity = 1;
             break;
           case "text":
             targetProps.width = "90% ";
             targetProps.height = 200;
             targetProps.borderRadius = 40;
+            targetProps.backgroundImage = fullGradient;
             targetProps.opacity = 1;
             break;
           case "contents":
             targetProps.width = "90% ";
             targetProps.height = "80%";
             targetProps.borderRadius = 40;
+            targetProps.backgroundImage = fullGradient;
             targetProps.opacity = 1;
             targetProps.duration = 0.8;
             break;
