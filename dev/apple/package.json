@@ -16,5 +16,8 @@
     "validate": "node scripts/validate-artifact.mjs",
     "lint": "node --check src/main.js && node --check scripts/build.mjs && node --check scripts/dev.mjs"
   },
-  "displayName": "Vanilla Apple Design Lab"
+  "displayName": "Vanilla Apple Design Lab",
+  "dependencies": {
+    "@rive-app/webgl": "^2.37.0"
+  }
 }

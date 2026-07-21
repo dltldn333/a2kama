@@ -118,3 +118,34 @@ if (siriBtns.length > 0 && siriCircle) {
     });
   });
 }
+
+// --- Initialize Rive Animation on top of Siri ---
+const siriCanvas = document.getElementById("siri-canvas");
+let siriRiveInstance = null;
+
+if (siriCanvas && window.rive) {
+  siriRiveInstance = new window.rive.Rive({
+    src: "./src/siri.riv",
+    canvas: siriCanvas,
+    autoplay: true,
+    stateMachines: "State Machine 1",
+    useDevicePixelRatio: true, // 추가: 고해상도(레티나) 디스플레이에서 픽셀 깨짐 방지
+    layout: new window.rive.Layout({
+      fit: window.rive.Fit.Contain,
+      alignment: window.rive.Alignment.Center,
+    }),
+    onLoad: () => {
+      siriRiveInstance.resizeDrawingSurfaceToCanvas();
+    },
+  });
+
+  // Handle resizing smoothly during GSAP animations
+  if (siriCircle) {
+    const resizeObserver = new ResizeObserver(() => {
+      if (siriRiveInstance) {
+        siriRiveInstance.resizeDrawingSurfaceToCanvas();
+      }
+    });
+    resizeObserver.observe(siriCircle);
+  }
+}
