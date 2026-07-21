@@ -82,7 +82,7 @@
   pointer-events: none;
 }
 .dock-icon {
-  height: 23px;
+  height: 30px;
   display: grid;
   place-items: center;
   font-size: 19px;

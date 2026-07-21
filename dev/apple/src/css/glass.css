@@ -94,9 +94,11 @@
   position: absolute;
   bottom: 30px;
   width: 460px;
+  transform: scale(1.5);
+  transform-origin: bottom center;
   max-width: calc(100% - 32px);
   height: 84px;
-  border-radius: 42px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 24px rgba(16, 17, 23, 0.12);
   display: flex;
@@ -145,7 +147,7 @@
   width: 96px;
   height: 72px;
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 36px;
+  border-radius: 999px;
   z-index: 1;
 }
 
