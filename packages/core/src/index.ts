@@ -157,3 +157,6 @@ class A2kama {
 const a2kama = new A2kama();
 export default a2kama;
 export * from "./types";
+// @ts-ignore
+import * as THREE from "three";
+export { THREE };
