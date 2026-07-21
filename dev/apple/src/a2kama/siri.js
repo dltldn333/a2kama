@@ -25,6 +25,25 @@ siriGlassRecipe.shader.uniforms.uRiveOpacity = {
   value: 0.8,
   type: "float",
 };
+// 구슬을 상하로 이동시키기 위한 Y 오프셋 유니폼 추가
+siriGlassRecipe.shader.uniforms.uRiveOffsetY = {
+  value: 0.0,
+  type: "float",
+};
+// 왜곡 적용 여부를 조절하기 위한 유니폼 (1.0 = 적용, 0.0 = 미적용)
+siriGlassRecipe.shader.uniforms.uRiveDistort = {
+  value: 1.0,
+  type: "float",
+};
+// 구슬의 가로/세로 크기를 독립적으로 조절하는 스케일 유니폼
+siriGlassRecipe.shader.uniforms.uRiveScaleX = {
+  value: 1.0,
+  type: "float",
+};
+siriGlassRecipe.shader.uniforms.uRiveScaleY = {
+  value: 1.0,
+  type: "float",
+};
 
 siriGlassRecipe.shader.colorModifier =
   siriGlassRecipe.shader.colorModifier.replace(
@@ -32,11 +51,17 @@ siriGlassRecipe.shader.colorModifier =
     `
   // 글래스 쉐이더에서 계산된 왜곡값(distortDir, pushDist, refStrength)을
   // 메시의 로컬 UV(vUv) 스케일에 맞게 변환하여 동일한 굴절 왜곡을 적용합니다.
+  // uRiveDistort 값을 곱해 필요에 따라 왜곡을 켜거나 끌 수 있습니다.
   vec2 localPixelToUv = 1.0 / uSize;
-  vec2 localDistortOffset = distortDir * pushDist * refStrength * localPixelToUv;
+  vec2 localDistortOffset = distortDir * pushDist * refStrength * localPixelToUv * uRiveDistort;
   
-  // UV 기준점을 중앙(0.5)으로 맞추고 80% 사이즈(1.0 / 0.8 = 1.25)로 축소합니다.
-  vec2 finalUv = (vUv + localDistortOffset - 0.5) * 1.4 + 0.5;
+  vec2 localUv = vUv + localDistortOffset;
+  // text 상태일 때 구슬을 하단으로 내리기 위해 Y축 오프셋을 적용합니다.
+  // uRiveOffsetY가 0.5이면 vUv.y=0(하단)일 때 텍스처의 0.5(중앙)를 샘플링하게 되어 정확히 반이 잘립니다.
+  localUv.y += uRiveOffsetY;
+  
+  // UV 기준점을 중앙(0.5)으로 맞추고 스케일을 적용합니다. (기본 1.4배 축소 * 개별 스케일)
+  vec2 finalUv = (localUv - 0.5) * 1.4 * vec2(uRiveScaleX, uRiveScaleY) + 0.5;
   
   // 세로 위치 조절 (값을 더하면 텍스처는 아래로 내려갑니다)
   finalUv.y += 0.05; // 5% 아래로 이동
@@ -122,8 +147,8 @@ window.updateSiriCircleAnimation = function (progress) {
 
 // --- Add interaction logic for Siri buttons ---
 const siriBtns = document.querySelectorAll(".siri-btn");
-// Rive 투명도 애니메이션을 위한 프록시 객체
-const siriUniforms = { riveOpacity: 0.8 };
+// Rive 투명도, 위치, 왜곡 및 크기 애니메이션을 위한 프록시 객체
+const siriUniforms = { riveOpacity: 0.8, riveOffsetY: 0.0, riveDistort: 1.0, riveScaleX: 1.0, riveScaleY: 1.0 };
 const siriThinkCanvasDOM = document.getElementById("siri-think-canvas");
 
 if (siriBtns.length > 0 && siriCircle) {
@@ -146,14 +171,22 @@ if (siriBtns.length > 0 && siriCircle) {
         window.gsap.killTweensOf(siriCircle);
         window.gsap.killTweensOf(siriUniforms); // 이전 투명도 애니메이션 정지
 
-        // 상태가 'default'일 때만 Rive 텍스처를 0.8로 보이고, 나머지는 0으로 숨깁니다.
+        // 추가로 'text' 상태일 때는 왜곡(distort)을 0으로 만들어 원형을 유지하게 하고, 스케일을 줄여 크게 만듭니다.
         window.gsap.to(siriUniforms, {
-          riveOpacity: state === "default" ? 0.8 : 0.0,
+          riveOpacity: (state === "default" || state === "text") ? 0.8 : 0.0,
+          riveOffsetY: state === "text" ? 0.28 : 0.0, // 쉐이더 연산(+0.05 보정)을 고려하여 0.35로 맞춤
+          riveDistort: state === "text" ? 0.0 : 1.0,
+          riveScaleX: state === "text" ? 1.35 : 1.0, // 가로 넓이를 80% 정도로 제한 (값이 커질수록 화면에서 좁아짐)
+          riveScaleY: state === "text" ? 0.45 : 1.0, // 세로 높이는 웅장하게 2.2배 크게 유지
           duration: 0.4,
           onUpdate: () => {
             if (a2kama.engine) {
               a2kama.engine.updateUniforms(siriCircle, {
                 uRiveOpacity: siriUniforms.riveOpacity,
+                uRiveOffsetY: siriUniforms.riveOffsetY,
+                uRiveDistort: siriUniforms.riveDistort,
+                uRiveScaleX: siriUniforms.riveScaleX,
+                uRiveScaleY: siriUniforms.riveScaleY,
               });
             }
           },
