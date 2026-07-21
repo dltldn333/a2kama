@@ -151,6 +151,10 @@ const siriBtns = document.querySelectorAll(".siri-btn");
 const siriUniforms = { riveOpacity: 0.8, riveOffsetY: 0.0, riveDistort: 1.0, riveScaleX: 1.0, riveScaleY: 1.0 };
 const siriThinkCanvasDOM = document.getElementById("siri-think-canvas");
 
+// Rive 인스턴스 전역 관리 (상태 변경 시 최적화를 위해 사용)
+let siriRiveInstance = null;
+let siriThinkRiveInstance = null;
+
 if (siriBtns.length > 0 && siriCircle) {
   siriBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -163,9 +167,24 @@ if (siriBtns.length > 0 && siriCircle) {
 
       if (state === "off") {
         window.updateSiriCircleAnimation(2.0); // 1.0 보다 큰 값으로 거리를 주어 사라지게 함
+        if (siriRiveInstance) siriRiveInstance.pause();
+        if (siriThinkRiveInstance) siriThinkRiveInstance.pause();
       } else {
         if (!siriCircle.classList.contains("is-visible")) {
           window.updateSiriCircleAnimation(1.0); // Show it
+        }
+
+        // 성능 최적화: 뷰에 보이는 Rive 인스턴스만 재생하고, 안 보이는 건 일시 정지합니다.
+        if (state === "default" || state === "text") {
+          if (siriRiveInstance) siriRiveInstance.play();
+        } else {
+          if (siriRiveInstance) siriRiveInstance.pause();
+        }
+
+        if (state === "thinking") {
+          if (siriThinkRiveInstance) siriThinkRiveInstance.play();
+        } else {
+          if (siriThinkRiveInstance) siriThinkRiveInstance.pause();
         }
 
         window.gsap.killTweensOf(siriCircle);
@@ -272,7 +291,6 @@ if (siriBtns.length > 0 && siriCircle) {
 
 // --- Initialize Rive Animation on top of Siri ---
 const siriCanvas = document.getElementById("siri-canvas");
-let siriRiveInstance = null;
 
 if (siriCanvas && window.rive) {
   // WebGL 텍스처 업로드 시 사이즈 변경으로 인한 크래시를 막기 위해 해상도 고정
@@ -284,7 +302,7 @@ if (siriCanvas && window.rive) {
     canvas: siriCanvas,
     autoplay: true,
     stateMachines: "State Machine 1",
-    useDevicePixelRatio: false, // 고정 해상도 사용을 위해 false
+    useDevicePixelRatio: true,
     layout: new window.rive.Layout({
       fit: window.rive.Fit.Contain,
       alignment: window.rive.Alignment.Center,
@@ -317,8 +335,11 @@ if (siriCanvas && window.rive) {
       });
 
       // Update the texture on every frame since Rive is animating
+      // 성능 최적화: riveOpacity가 0보다 클 때만 GPU로 텍스처를 업로드합니다.
       const updateTexture = () => {
-        if (riveTexture) riveTexture.needsUpdate = true;
+        if (riveTexture && siriUniforms.riveOpacity > 0.0) {
+          riveTexture.needsUpdate = true;
+        }
         requestAnimationFrame(updateTexture);
       };
       updateTexture();
@@ -333,7 +354,7 @@ if (siriThinkCanvas && window.rive) {
   // HTML 캔버스 해상도는 선명도를 위해 512x512 고정 (CSS에서 80x80으로 줄여 보여짐)
   siriThinkCanvas.width = 512;
   siriThinkCanvas.height = 512;
-  new window.rive.Rive({
+  siriThinkRiveInstance = new window.rive.Rive({
     src: "./src/siri_think.riv",
     canvas: siriThinkCanvas,
     autoplay: true,
