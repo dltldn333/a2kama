@@ -41,7 +41,7 @@
   gap: 20px;
   width: 100%;
   padding: 24px;
-  animation: bgMoveUpDown 8s infinite alternate;
+  animation: bgMoveUpDown 12s infinite alternate;
   animation-play-state: paused;
 }
 
@@ -107,7 +107,7 @@
 .siri-circle {
   position: absolute;
   top: 30px;
-  width: 300px;
+  width: 280px;
   height: 200px;
   border-radius: 100px;
   background: linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);

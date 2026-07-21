@@ -17,11 +17,19 @@ const siriGlassRecipe = a2kGlass.normal({
 });
 
 // --- Rive 텍스처를 글래스 쉐이더에 합치기 위한 커스텀 쉐이더 인젝션 ---
-siriGlassRecipe.shader.uniforms.uRiveTexture = { value: null, type: "sampler2D" };
+siriGlassRecipe.shader.uniforms.uRiveTexture = {
+  value: null,
+  type: "sampler2D",
+};
+siriGlassRecipe.shader.uniforms.uRiveOpacity = {
+  value: 0.8,
+  type: "float",
+};
 
-siriGlassRecipe.shader.colorModifier = siriGlassRecipe.shader.colorModifier.replace(
-  "finalColor = blendSrcOver(glassyMain, shadowLayer);",
-  `
+siriGlassRecipe.shader.colorModifier =
+  siriGlassRecipe.shader.colorModifier.replace(
+    "finalColor = blendSrcOver(glassyMain, shadowLayer);",
+    `
   // 글래스 쉐이더에서 계산된 왜곡값(distortDir, pushDist, refStrength)을
   // 메시의 로컬 UV(vUv) 스케일에 맞게 변환하여 동일한 굴절 왜곡을 적용합니다.
   vec2 localPixelToUv = 1.0 / uSize;
@@ -31,10 +39,10 @@ siriGlassRecipe.shader.colorModifier = siriGlassRecipe.shader.colorModifier.repl
   vec2 finalUv = (vUv + localDistortOffset - 0.5) * 1.4 + 0.5;
   
   // 세로 위치 조절 (값을 더하면 텍스처는 아래로 내려갑니다)
-  finalUv.y += 0.03; // 5% 아래로 이동
+  finalUv.y += 0.05; // 5% 아래로 이동
 
   // --- Rive 애니메이션 전체 투명도 (구슬 + 그림자) ---
-  float riveOpacity = 0.8; // 0.0(투명) ~ 1.0(불투명) 사이로 조절하세요.
+  float riveOpacity = uRiveOpacity; // 유니폼으로 받아 상태에 따라 동적으로 투명도 애니메이션 처리
 
   // 1. Rive 텍스처 뒤에 깔릴 넓고 뿌연 그림자 생성 (계단 현상 방지를 위해 49-tap(7x7)으로 촘촘하게 샘플링)
   float shadowBlurStep = 10.0; // 간격을 줄여 계단 현상(Banding) 제거
@@ -71,8 +79,8 @@ siriGlassRecipe.shader.colorModifier = siriGlassRecipe.shader.colorModifier.repl
   
   // 최종적으로 그림자와 블렌딩
   finalColor = blendSrcOver(glassyWithRive, shadowLayer);
-  `
-);
+  `,
+  );
 
 a2kama.register("siriGlass", siriGlassRecipe);
 
@@ -91,7 +99,7 @@ window.updateSiriCircleAnimation = function (progress) {
     siriCircle.classList.add("is-visible");
     window.gsap.killTweensOf(siriCircle);
     // Set initial hidden state then animate in with delay
-    window.gsap.set(siriCircle, { width: "300px", height: 0, opacity: 0 });
+    window.gsap.set(siriCircle, { width: "280px", height: 0, opacity: 0 });
     window.gsap.to(siriCircle, {
       height: 200,
       opacity: 1,
@@ -114,6 +122,9 @@ window.updateSiriCircleAnimation = function (progress) {
 
 // --- Add interaction logic for Siri buttons ---
 const siriBtns = document.querySelectorAll(".siri-btn");
+// Rive 투명도 애니메이션을 위한 프록시 객체
+const siriUniforms = { riveOpacity: 0.8 };
+
 if (siriBtns.length > 0 && siriCircle) {
   siriBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -126,10 +137,23 @@ if (siriBtns.length > 0 && siriCircle) {
 
       if (window.gsap) {
         window.gsap.killTweensOf(siriCircle);
+        window.gsap.killTweensOf(siriUniforms); // 이전 투명도 애니메이션 정지
+
+        // 상태가 'default'일 때만 Rive 텍스처를 0.8로 보이고, 나머지는 0으로 숨깁니다.
+        window.gsap.to(siriUniforms, {
+          riveOpacity: state === "default" ? 0.8 : 0.0,
+          duration: 0.4,
+          onUpdate: () => {
+            if (a2kama.engine) {
+              a2kama.engine.updateUniforms(siriCircle, { uRiveOpacity: siriUniforms.riveOpacity });
+            }
+          }
+        });
 
         let targetProps = {
           duration: 0.6,
           ease: "power3.out",
+          scale: 1.0, // 다른 상태로 전환될 때 scale을 다시 1로 리셋
         };
 
         const fullGradient =
@@ -137,12 +161,25 @@ if (siriBtns.length > 0 && siriCircle) {
 
         switch (state) {
           case "default":
-            targetProps.width = 300;
+            targetProps.width = 280;
             targetProps.height = 200;
             targetProps.opacity = 1;
             targetProps.borderRadius = 100;
             targetProps.ease = "elastic.out(1, 0.65)";
             targetProps.duration = 1.0;
+            // default 애니메이션 완료 후 숨쉬기(breathe) 무한 루프 시작
+            targetProps.onComplete = () => {
+              if (window.gsap && siriCircle) {
+                window.gsap.to(siriCircle, {
+                  scale: 1.05, // width/height 대신 scale로 커졌다 작아지게 처리
+                  duration: 2.0,
+                  ease: "sine.inOut",
+                  yoyo: true, // 커졌다 작아졌다 반복
+                  repeat: -1, // 무한 루프
+                  transformOrigin: "center center" // 커질 때 중심축을 중앙으로 변경
+                });
+              }
+            };
             break;
           case "thinking":
             targetProps.width = 400;
@@ -233,4 +270,19 @@ if (siriCanvas && window.rive) {
     };
     injectRiveToMirage();
   }
+}
+
+// --- 처음 로드 시에도 기본(default) 숨쉬기 애니메이션 시작 ---
+if (window.gsap && siriCircle) {
+  // 약간의 딜레이 후 숨쉬기 시작 (초기 렌더링 안정화)
+  setTimeout(() => {
+    window.gsap.to(siriCircle, {
+      scale: 1.05,
+      duration: 2.0,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+      transformOrigin: "center center"
+    });
+  }, 1000);
 }

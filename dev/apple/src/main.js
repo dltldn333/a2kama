@@ -658,14 +658,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (shouldBeVisible && !siriCircle.classList.contains("is-visible")) {
         siriCircle.classList.add("is-visible");
         gsap.killTweensOf(siriCircle);
-        // Set initial hidden state then animate in with delay
-        gsap.set(siriCircle, { scaleX: 1, scaleY: 0, opacity: 0 });
+        // Set initial hidden state then animate in with delay (top center 기준)
+        gsap.set(siriCircle, { scaleX: 1, scaleY: 0, opacity: 0, transformOrigin: "top center" });
         gsap.to(siriCircle, {
           scaleY: 1,
           opacity: 1,
           duration: 1.0,
           delay: 0.35, // 살짝 기다렸다가
           ease: "elastic.out(1, 0.65)", // 좀 더 다이나믹하게
+          onComplete: () => {
+            // 등장 애니메이션이 끝난 후 숨쉬기 시작 (이때는 중앙을 기준으로 스케일!)
+            gsap.to(siriCircle, {
+              scale: 1.05,
+              duration: 2.0,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              transformOrigin: "center center"
+            });
+          }
         });
       } else if (
         !shouldBeVisible &&
@@ -673,12 +684,13 @@ document.addEventListener("DOMContentLoaded", () => {
       ) {
         siriCircle.classList.remove("is-visible");
         gsap.killTweensOf(siriCircle);
-        // Animate out quickly
+        // Animate out quickly (top center 기준)
         gsap.to(siriCircle, {
           scaleY: 0,
           opacity: 0,
           duration: 0.35,
           ease: "power2.in",
+          transformOrigin: "top center"
         });
       }
     }
