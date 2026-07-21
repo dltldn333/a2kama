@@ -52,6 +52,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.dock-buttons-group button svg {
+  color: #000000;
+}
+
 .dock-buttons-group button.is-active {
   cursor: grab;
 }

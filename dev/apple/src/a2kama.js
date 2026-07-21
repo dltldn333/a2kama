@@ -12,4 +12,5 @@ import "./a2kama/siri.js";
 window.initA2kama = function() {
   const rootNode = document.querySelector("#root");
   a2kama.init(rootNode, { quality: "midium", layer: "selected" });
+  // a2kama.init(rootNode, { quality: "midium", layer:  27});
 };

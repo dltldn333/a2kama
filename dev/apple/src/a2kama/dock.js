@@ -39,7 +39,7 @@ if (dock) {
   dock.dataset.mirageTravel += ` native 4 ${JSON.stringify(dockStyleOn4)}`;
 }
 
-const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
+const dockBtns = document.querySelectorAll(".dock-buttons-group button svg");
 const dockBtnsText = document.querySelectorAll(".dock-buttons-group button small");
 const highlightStyleOn4 = { color: "#3641d6" };
 for (let i = 0; i < dockBtns.length; i++) {
