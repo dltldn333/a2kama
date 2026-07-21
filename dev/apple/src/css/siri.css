@@ -116,7 +116,7 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  padding-left: 20px; /* 왼쪽 여백 20px */
+  padding-left: 10px; /* 왼쪽 여백 20px */
 }
 
 .siri-controls-wrap {

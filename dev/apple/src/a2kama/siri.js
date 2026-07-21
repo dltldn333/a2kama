@@ -311,6 +311,18 @@ if (siriThinkCanvas && window.rive) {
       alignment: window.rive.Alignment.Center,
     }),
   });
+  
+  // 띵크 구슬이 천천히 90% 크기로 작아졌다 커지는 숨쉬기 애니메이션 무한 반복
+  if (window.gsap) {
+    window.gsap.to(siriThinkCanvas, {
+      scale: 0.9,
+      duration: 1.5,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+      transformOrigin: "center center",
+    });
+  }
 }
 
 // --- 처음 로드 시에도 기본(default) 숨쉬기 애니메이션 시작 ---

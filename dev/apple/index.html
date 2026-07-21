@@ -90,7 +90,14 @@
                     >
                       <canvas
                         id="siri-think-canvas"
-                        style="width: 100%; height: 100%; opacity: 0"
+                        style="
+                          width: 100%;
+                          height: 100%;
+                          opacity: 0;
+                          filter: brightness(0) invert(1)
+                            drop-shadow(0 0 2px rgba(255, 255, 255, 1))
+                            drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+                        "
                       ></canvas>
                     </div>
                   </div>
