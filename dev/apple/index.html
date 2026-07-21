@@ -77,6 +77,22 @@
                         pointer-events: none;
                       "
                     ></canvas>
+                    <!-- mirage-engine이 투명도를 덮어쓰는 것을 방지하기 위해 껍데기(div)에 sandwich를 적용하고, 실제 캔버스의 투명도를 조절합니다. -->
+                    <div
+                      data-mirage-sandwich="front"
+                      data-mirage-filter="end"
+                      style="
+                        width: 80px;
+                        height: 80px;
+                        pointer-events: none;
+                        z-index: 10;
+                      "
+                    >
+                      <canvas
+                        id="siri-think-canvas"
+                        style="width: 100%; height: 100%; opacity: 0"
+                      ></canvas>
+                    </div>
                   </div>
                 </div>
                 <div class="siri-controls-wrap">

@@ -41,7 +41,7 @@
   gap: 20px;
   width: 100%;
   padding: 24px;
-  animation: bgMoveUpDown 12s infinite alternate;
+  animation: bgMoveUpDown 14s infinite alternate;
   animation-play-state: paused;
 }
 
@@ -114,6 +114,9 @@
   box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.3);
   transform-origin: top center;
   isolation: isolate;
+  display: flex;
+  align-items: center;
+  padding-left: 20px; /* 왼쪽 여백 20px */
 }
 
 .siri-controls-wrap {

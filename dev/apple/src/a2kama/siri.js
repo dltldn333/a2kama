@@ -124,18 +124,25 @@ window.updateSiriCircleAnimation = function (progress) {
 const siriBtns = document.querySelectorAll(".siri-btn");
 // Rive 투명도 애니메이션을 위한 프록시 객체
 const siriUniforms = { riveOpacity: 0.8 };
+const siriThinkCanvasDOM = document.getElementById("siri-think-canvas");
 
 if (siriBtns.length > 0 && siriCircle) {
   siriBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      // 1. Update active class
+      // 1. Manage button active states
       siriBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      // 2. Animate Siri Circle based on button text
-      const state = btn.textContent.trim().toLowerCase();
+      // 2. Animate Siri Circle based on state
+      const state = btn.innerText.toLowerCase();
 
-      if (window.gsap) {
+      if (state === "off") {
+        window.updateSiriCircleAnimation(2.0); // 1.0 보다 큰 값으로 거리를 주어 사라지게 함
+      } else {
+        if (!siriCircle.classList.contains("is-visible")) {
+          window.updateSiriCircleAnimation(1.0); // Show it
+        }
+
         window.gsap.killTweensOf(siriCircle);
         window.gsap.killTweensOf(siriUniforms); // 이전 투명도 애니메이션 정지
 
@@ -145,10 +152,20 @@ if (siriBtns.length > 0 && siriCircle) {
           duration: 0.4,
           onUpdate: () => {
             if (a2kama.engine) {
-              a2kama.engine.updateUniforms(siriCircle, { uRiveOpacity: siriUniforms.riveOpacity });
+              a2kama.engine.updateUniforms(siriCircle, {
+                uRiveOpacity: siriUniforms.riveOpacity,
+              });
             }
-          }
+          },
         });
+
+        // DOM 캔버스(Think) 투명도 조절
+        if (siriThinkCanvasDOM) {
+          window.gsap.to(siriThinkCanvasDOM, {
+            opacity: state === "thinking" ? 1.0 : 0.0,
+            duration: 0.4
+          });
+        }
 
         let targetProps = {
           duration: 0.6,
@@ -179,7 +196,7 @@ if (siriBtns.length > 0 && siriCircle) {
                   ease: "sine.inOut",
                   yoyo: true, // 커졌다 작아졌다 반복
                   repeat: -1, // 무한 루프
-                  transformOrigin: "center center" // 커질 때 중심축을 중앙으로 변경
+                  transformOrigin: "center center", // 커질 때 중심축을 중앙으로 변경
                 });
               }
             };
@@ -262,19 +279,38 @@ if (siriCanvas && window.rive) {
       riveTexture.flipY = false; // Y축 방향이 WebGL과 일치하도록 플립 방지
 
       // Inject the texture uniform directly into the glass mesh!
-      a2kama.engine.updateUniforms(siriCircle, { uRiveTexture: riveTexture });
+      a2kama.engine.updateUniforms(siriCircle, {
+        uRiveTexture: riveTexture,
+      });
 
       // Update the texture on every frame since Rive is animating
       const updateTexture = () => {
-        if (riveTexture) {
-          riveTexture.needsUpdate = true;
-        }
+        if (riveTexture) riveTexture.needsUpdate = true;
         requestAnimationFrame(updateTexture);
       };
       updateTexture();
     };
     injectRiveToMirage();
   }
+}
+
+// 두 번째 캔버스(Think) Rive 초기화 (HTML 요소 그대로 유지)
+const siriThinkCanvas = document.getElementById("siri-think-canvas");
+if (siriThinkCanvas && window.rive) {
+  // HTML 캔버스 해상도는 선명도를 위해 512x512 고정 (CSS에서 80x80으로 줄여 보여짐)
+  siriThinkCanvas.width = 512;
+  siriThinkCanvas.height = 512;
+  new window.rive.Rive({
+    src: "./src/siri_think.riv",
+    canvas: siriThinkCanvas,
+    autoplay: true,
+    stateMachines: "State Machine 1", // 기본 상태 머신 이름
+    useDevicePixelRatio: false,
+    layout: new window.rive.Layout({
+      fit: window.rive.Fit.Contain,
+      alignment: window.rive.Alignment.Center,
+    }),
+  });
 }
 
 // --- 처음 로드 시에도 기본(default) 숨쉬기 애니메이션 시작 ---
@@ -287,7 +323,7 @@ if (window.gsap && siriCircle) {
       ease: "sine.inOut",
       yoyo: true,
       repeat: -1,
-      transformOrigin: "center center"
+      transformOrigin: "center center",
     });
   }, 1000);
 }
