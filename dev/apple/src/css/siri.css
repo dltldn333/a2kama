@@ -111,10 +111,10 @@
   height: 200px;
   border-radius: 100px;
   background: linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+  box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.3);
   transform-origin: top center;
   isolation: isolate;
 }
-
 
 .siri-controls-wrap {
   display: flex;

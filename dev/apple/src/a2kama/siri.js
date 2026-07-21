@@ -6,14 +6,14 @@ const siriGlassRecipe = a2kGlass.normal({
   lightDirection: 45,
   lightIntensity: 1.0,
   lightSymmetry: 1,
-  refraction: 120,
+  refraction: 150,
   depth: 40,
   dispersion: 120,
   frost: 0,
-  bevelWidth: 10,
+  bevelWidth: 15,
   bevelCurve: 3.0,
   zoom: 1.0,
-  splay: 50,
+  splay: 100,
 });
 
 // --- Rive 텍스처를 글래스 쉐이더에 합치기 위한 커스텀 쉐이더 인젝션 ---
@@ -27,11 +27,47 @@ siriGlassRecipe.shader.colorModifier = siriGlassRecipe.shader.colorModifier.repl
   vec2 localPixelToUv = 1.0 / uSize;
   vec2 localDistortOffset = distortDir * pushDist * refStrength * localPixelToUv;
   
-  // 왜곡이 적용된 UV로 Rive 캔버스 샘플링
-  vec4 riveColor = texture2D(uRiveTexture, vUv + localDistortOffset);
+  // UV 기준점을 중앙(0.5)으로 맞추고 80% 사이즈(1.0 / 0.8 = 1.25)로 축소합니다.
+  vec2 finalUv = (vUv + localDistortOffset - 0.5) * 1.4 + 0.5;
   
-  // 글래스 표면 위에 Rive 컬러를 블렌딩
-  vec4 glassyWithRive = blendSrcOver(riveColor, glassyMain);
+  // 세로 위치 조절 (값을 더하면 텍스처는 아래로 내려갑니다)
+  finalUv.y += 0.03; // 5% 아래로 이동
+
+  // --- Rive 애니메이션 전체 투명도 (구슬 + 그림자) ---
+  float riveOpacity = 0.8; // 0.0(투명) ~ 1.0(불투명) 사이로 조절하세요.
+
+  // 1. Rive 텍스처 뒤에 깔릴 넓고 뿌연 그림자 생성 (계단 현상 방지를 위해 49-tap(7x7)으로 촘촘하게 샘플링)
+  float shadowBlurStep = 10.0; // 간격을 줄여 계단 현상(Banding) 제거
+  vec2 sOff = shadowBlurStep * localPixelToUv;
+  float shadowAlpha = 0.0;
+  for(float x = -3.0; x <= 3.0; x += 1.0) {
+      for(float y = -3.0; y <= 3.0; y += 1.0) {
+          shadowAlpha += texture2D(uRiveTexture, finalUv + vec2(x, y) * sOff).a;
+      }
+  }
+  shadowAlpha /= 49.0;
+
+  // 2. 글래스 베이스에 그림자 먼저 합성 (까맣게 어두워짐)
+  vec4 glassyWithRive = glassyMain;
+  float shadowIntensity = 1.0; // 그림자의 진하기
+  // 그림자 전체에 riveOpacity 적용
+  glassyWithRive.rgb = mix(glassyWithRive.rgb, vec3(0.0), shadowAlpha * shadowIntensity * bgMask * riveOpacity);
+
+  // 3. 원래 구슬 그리기 (약간의 Frosted 효과 유지)
+  float blurAmount = 2.0;
+  vec2 bOff = blurAmount * localPixelToUv;
+  vec4 riveColor = vec4(0.0);
+  for(float x = -1.0; x <= 1.0; x += 1.0) {
+      for(float y = -1.0; y <= 1.0; y += 1.0) {
+          riveColor += texture2D(uRiveTexture, finalUv + vec2(x, y) * bOff);
+      }
+  }
+  riveColor /= 9.0;
+  riveColor.a *= bgMask;
+  
+  // 4. 그림자가 깔린 글래스 위에 구슬을 Additive Blending으로 발광시키기
+  // 구슬 전체에 riveOpacity 적용
+  glassyWithRive.rgb += riveColor.rgb * riveColor.a * riveOpacity;
   
   // 최종적으로 그림자와 블렌딩
   finalColor = blendSrcOver(glassyWithRive, shadowLayer);
