@@ -337,8 +337,10 @@
   align-items: center;
   justify-content: flex-start;
   background: #ffffff;
-  padding: 60px 40px;
-  overflow-y: auto;
+  padding: 60px 40px 100px; /* added bottom padding */
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
 }
 
 .arch-container {
