@@ -8,7 +8,7 @@
       content="Apple 디자인을 웹의 기본 기술로 재해석하는 인터랙티브 레이아웃 실험."
     />
     <meta name="codex-preview" content="development" />
-    <title>Vanilla Apple Lab</title>
+    <title>Glass Lab</title>
     <link rel="icon" href="./favicon.svg" />
     <link rel="stylesheet" href="./src/styles.css" />
     <script src="./vendor/gsap.min.js" defer></script>
@@ -18,6 +18,10 @@
     <script src="./src/main.js" defer></script>
   </head>
   <body>
+    <div id="loading-screen" style="position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease-in-out;">
+      <canvas id="loading-siri-canvas" width="100" height="100" style="width: 100px; height: 100px; filter: brightness(0) invert(1) drop-shadow(0 0 2px rgba(255, 255, 255, 1)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));"></canvas>
+    </div>
+
     <div id="frame">
       <div id="root">
         <main class="showcase">
@@ -549,7 +553,7 @@
                   height: 100%;
                   object-fit: cover;
                 "
-                src="./src/test.png"
+                src="./src/img/wall.jpg"
               />
             </div>
           </div>

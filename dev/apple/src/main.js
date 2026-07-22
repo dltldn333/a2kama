@@ -2,6 +2,35 @@ const Lenis = window.Lenis;
 const gsap = window.gsap;
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 document.addEventListener("DOMContentLoaded", () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  const loadingCanvas = document.getElementById("loading-siri-canvas");
+  let loadingRiveInstance = null;
+
+  if (loadingScreen && loadingCanvas && window.rive) {
+    loadingRiveInstance = new window.rive.Rive({
+      src: "./src/siri_think.riv",
+      canvas: loadingCanvas,
+      autoplay: true,
+      stateMachines: "State Machine 1",
+      layout: new window.rive.Layout({
+        fit: window.rive.Fit.Contain,
+        alignment: window.rive.Alignment.Center,
+      }),
+    });
+  }
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      if (loadingScreen) {
+        loadingScreen.style.opacity = "0";
+        setTimeout(() => {
+          loadingScreen.remove();
+          if (loadingRiveInstance) loadingRiveInstance.cleanup();
+        }, 800);
+      }
+    }, 800); // 800ms delay to let initial random renders settle
+  });
+
   const root = document.querySelector("#root");
   const scrollViewport = document.querySelector(".showcase");
   const scrollContent = document.querySelector(".showcase-content");
