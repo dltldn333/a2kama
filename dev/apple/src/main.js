@@ -2,6 +2,35 @@ const Lenis = window.Lenis;
 const gsap = window.gsap;
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 document.addEventListener("DOMContentLoaded", () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  const loadingCanvas = document.getElementById("loading-siri-canvas");
+  let loadingRiveInstance = null;
+
+  if (loadingScreen && loadingCanvas && window.rive) {
+    loadingRiveInstance = new window.rive.Rive({
+      src: "/siri_think.riv",
+      canvas: loadingCanvas,
+      autoplay: true,
+      stateMachines: "State Machine 1",
+      layout: new window.rive.Layout({
+        fit: window.rive.Fit.Contain,
+        alignment: window.rive.Alignment.Center,
+      }),
+    });
+  }
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      if (loadingScreen) {
+        loadingScreen.style.opacity = "0";
+        setTimeout(() => {
+          loadingScreen.remove();
+          if (loadingRiveInstance) loadingRiveInstance.cleanup();
+        }, 800);
+      }
+    }, 800); // 800ms delay to let initial random renders settle
+  });
+
   const root = document.querySelector("#root");
   const scrollViewport = document.querySelector(".showcase");
   const scrollContent = document.querySelector(".showcase-content");
@@ -21,13 +50,31 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper: scrollViewport,
     content: scrollContent,
     eventsTarget: window,
-    autoRaf: true,
+    autoRaf: false, // Turn off autoRaf to manually control RAF order
     smoothWheel: true,
     syncTouch: true,
     wheelMultiplier: 0.82,
     touchMultiplier: 1.02,
     anchors: { duration: 0.9 },
   });
+
+  // Manually start the RAF loop for Lenis
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Initialize a2kama AFTER Lenis RAF is registered!
+  // This is the true fix: Lenis RAF must run before mirage-engine RAF!
+  if (window.initA2kama) {
+    window.initA2kama();
+  } else {
+    // Fallback if script loaded out of order
+    setTimeout(() => {
+      if (window.initA2kama) window.initA2kama();
+    }, 100);
+  }
   const getViewportHeight = () =>
     scrollViewport.clientHeight || root.clientHeight || window.innerHeight;
   const setViewportHeight = () =>
@@ -209,11 +256,24 @@ document.addEventListener("DOMContentLoaded", () => {
       x: physicsLeft,
       y: 0,
       width: renderedWidth,
-      scaleX: 1,
+      scaleX: dragBaseScaleY,
       scaleY: areaPreservingScaleY,
+      backgroundColor: "rgba(0, 0, 0, 0.02)",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
       rotation: 0,
       transformOrigin: "center center",
     });
+    if (window.a2kama) {
+      const options = window.a2kama.getOptions(dockHighlight);
+      if (options) {
+        gsap.to(options, {
+          depth: 120,
+          lightDirection: 45,
+          lightIntensity: 0.6,
+          duration: 0.1,
+        });
+      }
+    }
   };
   const moveDockHighlight = (button, animate = true) => {
     if (!dock || !dockHighlight) return;
@@ -226,21 +286,31 @@ document.addEventListener("DOMContentLoaded", () => {
       dockHighlight.offsetWidth;
     const currentScaleY =
       Number(gsap.getProperty(dockHighlight, "scaleY")) || 1;
+    const currentScaleX =
+      Number(gsap.getProperty(dockHighlight, "scaleX")) || 1;
     const isAlreadyStretched =
-      Math.abs(currentWidth - targetWidth) > 2 ||
-      Math.abs(currentScaleY - 1) > 0.04;
+      Math.abs(currentScaleX - 1) > 0.04 || Math.abs(currentScaleY - 1) > 0.04;
     gsap.killTweensOf(dockHighlight);
     if (!animate) {
       gsap.set(dockHighlight, {
         x: targetX,
         y: 0,
         width: targetWidth,
+        border: "none",
         scaleX: 1,
         scaleY: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
         transformOrigin: "center center",
       });
+      if (window.a2kama) {
+        const options = window.a2kama.getOptions(dockHighlight);
+        if (options)
+          gsap.set(options, { depth: 0, lightDirection: 0, lightIntensity: 0 });
+      }
       return;
     }
+
     if (isAlreadyStretched) {
       gsap.to(dockHighlight, {
         x: targetX,
@@ -248,11 +318,25 @@ document.addEventListener("DOMContentLoaded", () => {
         width: targetWidth,
         scaleX: 1,
         scaleY: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
+        border: "none",
         rotation: 0,
         transformOrigin: "center center",
-        duration: 0.2,
+        duration: 0.3,
         ease: "power3.out",
       });
+      if (window.a2kama) {
+        const options = window.a2kama.getOptions(dockHighlight);
+        if (options)
+          gsap.to(options, {
+            depth: 0,
+            lightDirection: 0,
+            lightIntensity: 0,
+            duration: 0.3,
+            ease: "power3.out",
+          });
+      }
       return;
     }
     const edgeLag = clamp(
@@ -262,16 +346,40 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     const stretchedX = direction > 0 ? targetX - edgeLag : targetX;
     const stretchedWidth = targetWidth + edgeLag;
+    const targetScale =
+      ((dock.offsetHeight + 2) / Math.max(dockHighlight.offsetHeight, 1)) * 1.1;
     const timeline = gsap.timeline();
     timeline
       .to(dockHighlight, {
+        scaleX: targetScale,
+        scaleY: targetScale,
+        backgroundColor: "rgba(0, 0, 0, 0.02)",
+        duration: 0.12,
+        ease: "power2.out",
+        onStart: () => {
+          if (window.a2kama) {
+            const options = window.a2kama.getOptions(dockHighlight);
+            if (options)
+              gsap.to(options, {
+                depth: 120,
+                lightDirection: 45,
+                lightIntensity: 0.6,
+                duration: 0.12,
+                ease: "power2.out",
+              });
+          }
+        },
+      })
+      .to(dockHighlight, {
         x: stretchedX,
         width: stretchedWidth,
-        scaleX: 1,
-        scaleY: targetWidth / stretchedWidth,
+        scaleX: targetScale,
+        scaleY: (targetWidth / stretchedWidth) * targetScale,
+        backgroundColor: "rgba(0, 0, 0, 0.02)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         y: 0,
         transformOrigin: "center center",
-        duration: 0.14,
+        duration: 0.28,
         ease: "power3.inOut",
       })
       .to(dockHighlight, {
@@ -279,8 +387,23 @@ document.addEventListener("DOMContentLoaded", () => {
         width: targetWidth,
         scaleX: 1,
         scaleY: 1,
-        duration: 0.15,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.0)",
+        duration: 0.25,
         ease: "power3.out",
+        onStart: () => {
+          if (window.a2kama) {
+            const options = window.a2kama.getOptions(dockHighlight);
+            if (options)
+              gsap.to(options, {
+                depth: 0,
+                lightDirection: 0,
+                lightIntensity: 0,
+                duration: 0.25,
+                ease: "power3.out",
+              });
+          }
+        },
       });
   };
   const activateDockButton = (pageId, animate = true, forceMove = false) => {
@@ -292,6 +415,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isActive) button.setAttribute("aria-current", "page");
       else button.removeAttribute("aria-current");
     });
+    
+    // 현재 활성화된 페이지 요소에 클래스 부여
+    document.querySelectorAll(".showcase-page").forEach(page => {
+      page.classList.toggle("is-active-page", page.id === displayId);
+    });
+
     if (displayId === activeDockId && !forceMove) return;
     const activeButton = dockButtons.find(
       (button) => button.dataset.pageTarget === displayId,
@@ -307,15 +436,60 @@ document.addEventListener("DOMContentLoaded", () => {
   const setRangeValue = (control, nextValue) => {
     const min = Number(control.dataset.min ?? 0);
     const max = Number(control.dataset.max ?? 100);
+
+    // ── Snap zone: 양 끝 15% 구간은 각 맥스값으로 스냅 ──────────────────────
+    if (control.dataset.range === "glass-opacity") {
+      const range = max - min;
+      if (nextValue >= max - range * 0.05) nextValue = max;
+      else if (nextValue <= min + range * 0.05) nextValue = min;
+    }
+
     const value = clamp(nextValue, min, max);
     const progress = (value - min) / Math.max(max - min, 1);
     const roundedValue = Math.round(value);
     control.dataset.value = String(value);
     control.style.setProperty("--range-progress", `${progress * 100}%`);
+
+    // Calculate bidirectional fill variables
+    const progressPercent = progress * 100;
+    let fillLeft = "auto";
+    let fillRight = "auto";
+    let fillWidth = "8px";
+
+    if (progress >= 0.5) {
+      fillLeft = "calc(50% - 4px)";
+      fillWidth = `max(8px, calc(${progressPercent}% - 50% + 4px))`;
+    } else {
+      fillRight = "calc(50% - 4px)";
+      fillWidth = `max(8px, calc(50% + 4px - ${progressPercent}%))`;
+    }
+
+    control.style.setProperty("--fill-left", fillLeft);
+    control.style.setProperty("--fill-right", fillRight);
+    control.style.setProperty("--fill-width", fillWidth);
+
     control.setAttribute("aria-valuenow", String(roundedValue));
     if (control.dataset.range === "glass-opacity") {
       glassScene?.style.setProperty("--glass-alpha", (value / 100).toFixed(3));
-      if (opacityOutput) opacityOutput.textContent = `${roundedValue}%`;
+      if (opacityOutput) opacityOutput.textContent = `${roundedValue}`;
+
+      // ── 아이콘 밀기 애니메이션 ────────────────────────────────────────────
+      // 슬라이더 thumb이 맥스에 스냅될 때 해당 쪽 아이콘을 20px 밀어냄
+      const sliderWrap = control.closest(".slider-wrap");
+      const icons = sliderWrap?.querySelectorAll("img");
+      if (icons?.length >= 2) {
+        const [leftIcon, rightIcon] = icons;
+        if (value === min) {
+          gsap.to(leftIcon, { x: -20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(rightIcon, { x: 0, duration: 0.25, ease: "power2.out" });
+        } else if (value === max) {
+          gsap.to(rightIcon, { x: 20, duration: 0.35, ease: "back.out(1.5)" });
+          gsap.to(leftIcon, { x: 0, duration: 0.25, ease: "power2.out" });
+        } else {
+          gsap.to(leftIcon, { x: 0, duration: 0.25, ease: "power2.out" });
+          gsap.to(rightIcon, { x: 0, duration: 0.25, ease: "power2.out" });
+        }
+      }
     }
   };
   const rangeHandlers = rangeControls.map((control) => {
@@ -435,14 +609,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dock) return;
     const viewportHeight = getViewportHeight();
     const progress = clamp(scroll / Math.max(viewportHeight, 1));
-    const opacity =
-      scroll >= viewportHeight
-        ? 1
-        : transitionMode === "forward"
-          ? clamp((progress - 0.84) / 0.12)
-          : clamp(progress / 0.12);
+    // Only show dock when fully scrolled past the lock screen (2nd page)
+    const opacity = progress > 0.995 ? 1 : 0;
     dock.style.setProperty("--dock-opacity", opacity.toFixed(4));
     dock.classList.toggle("is-visible", opacity > 0.5);
+
+    // Toggle mirage engine rendering dynamically
+    dock.setAttribute(
+      "data-mirage-select",
+      opacity > 0.5 ? "include-tree" : "",
+    );
     if (!isDockDragging && !dockSelectionLocked) {
       const activePoint = points[nearestPageIndex(scroll, points)];
       activateDockButton(activePoint?.id ?? "siri");
@@ -459,6 +635,11 @@ document.addEventListener("DOMContentLoaded", () => {
       clamp((progress - 0.06) / 0.08) * (1 - clamp((progress - 0.95) / 0.05));
     const backgroundOpacity =
       transitionMode === "forward" ? forwardBackground : reverseBackground;
+
+    // front.png fades out at the very end (between 0.95 and 1.0)
+    // and reappears as soon as the user scrolls back up (progress < 1.0)
+    const frontOpacity = 1 - clamp((progress - 0.95) / 0.05);
+
     const glassOpacity =
       transitionMode === "forward" ? forwardGlass : reverseGlass;
     const lockInterface = document.querySelector(".lock-interface");
@@ -475,13 +656,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.gsap && lockInterface && lockBackground) {
       gsap.set(lockInterface, { y: -(progress * viewportHeight * 1.02) });
       gsap.set(lockBackground, { opacity: backgroundOpacity });
-      
+
       // Keep wallpaper wrapper opacity at 1 so children can have independent opacities
       if (wallpaper) gsap.set(wallpaper, { opacity: 1 });
-      
-      // Only fade out the back image, leave the front image fully visible
-      if (wallpaperBack) gsap.set(wallpaperBack, { opacity: backgroundOpacity });
-      if (wallpaperFront) gsap.set(wallpaperFront, { opacity: 1 });
+
+      // Only fade out the back image early, and fade out the front image at the very end
+      if (wallpaperBack)
+        gsap.set(wallpaperBack, { opacity: backgroundOpacity });
+      if (wallpaperFront) gsap.set(wallpaperFront, { opacity: frontOpacity });
     } else {
       lockScreen.style.setProperty(
         "--unlock-translate",
@@ -495,6 +677,53 @@ document.addEventListener("DOMContentLoaded", () => {
     const isPast = progress > 0.995;
     lockScreen.classList.toggle("is-past", isPast);
     lockScreen.setAttribute("aria-hidden", String(isPast));
+
+    // Siri Circle GSAP dynamic animation
+    const siriCircle = document.querySelector(".siri-circle");
+    if (siriCircle && window.gsap) {
+      const siriDist = Math.abs(progress - 1.0);
+      const shouldBeVisible = siriDist < 0.2; // Show within 20% distance
+
+      if (shouldBeVisible && !siriCircle.classList.contains("is-visible")) {
+        siriCircle.classList.add("is-visible");
+        gsap.killTweensOf(siriCircle);
+        // Set initial hidden state then animate in with delay (top center 기준)
+        gsap.set(siriCircle, { scaleX: 1, scaleY: 0, opacity: 0, transformOrigin: "top center" });
+        gsap.to(siriCircle, {
+          scaleY: 1,
+          opacity: 1,
+          duration: 1.0,
+          delay: 0.35, // 살짝 기다렸다가
+          ease: "elastic.out(1, 0.65)", // 좀 더 다이나믹하게
+          onComplete: () => {
+            // 등장 애니메이션이 끝난 후 숨쉬기 시작 (이때는 중앙을 기준으로 스케일!)
+            gsap.to(siriCircle, {
+              scale: 1.05,
+              duration: 2.0,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              transformOrigin: "center center"
+            });
+          }
+        });
+      } else if (
+        !shouldBeVisible &&
+        siriCircle.classList.contains("is-visible")
+      ) {
+        siriCircle.classList.remove("is-visible");
+        gsap.killTweensOf(siriCircle);
+        // Animate out quickly (top center 기준)
+        gsap.to(siriCircle, {
+          scaleY: 0,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in",
+          transformOrigin: "top center"
+        });
+      }
+    }
+
     updateDock(scroll);
   };
   const goToPage = (targetIndex, duration = 0.82, onSettled) => {
@@ -614,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dragX = dragOriginX;
     dragWidth = dockHighlight.offsetWidth;
     dragHeight = dockHighlight.offsetHeight;
-    dragBaseScaleY = (dock.offsetHeight + 2) / Math.max(dragHeight, 1);
+    dragBaseScaleY = ((dock.offsetHeight + 2) / Math.max(dragHeight, 1)) * 1.1;
     dragVelocityX = 0;
     dragLastX = dragX;
     dragLastTime = performance.now();
@@ -625,18 +854,28 @@ document.addEventListener("DOMContentLoaded", () => {
     physicsRightVelocity = 0;
     dragMoved = false;
     isDockDragging = true;
+    // console.log("--- Dock Highlight Selected ---");
+
+    // const dockBtns = document.querySelectorAll(".dock-buttons-group button span");
+    // const highlightStyle = { color: "blue" };
+    // for(const dockBtn of dockBtns){
+    //   dockBtn.dataset.mirageTravel = `native 3 ${JSON.stringify(highlightStyle)}`;
+    // }
+
     gsap.killTweensOf(dockHighlight);
     gsap.ticker.remove(updateDockPhysics);
     gsap.ticker.add(updateDockPhysics);
     dock.classList.add("is-dragging");
     dock.setPointerCapture(event.pointerId);
-    lenis.stop();
+    // lenis.stop();
     previewDockButton(getDockButtonAt(dragX, dragWidth));
     gsap.set(dockHighlight, {
       x: dragX,
       width: dragWidth,
-      scaleX: 1,
+      scaleX: dragBaseScaleY,
       scaleY: dragBaseScaleY,
+      backgroundColor: "rgba(0, 0, 0, 0.02)",
+      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
       y: 0,
       transformOrigin: "center center",
     });
@@ -684,11 +923,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const pointerId = dockPointerId;
     dockPointerId = null;
     isDockDragging = false;
+    // console.log("--- Dock Highlight Released ---");
     gsap.ticker.remove(updateDockPhysics);
     dock.classList.remove("is-dragging");
     if (dock.hasPointerCapture(pointerId))
       dock.releasePointerCapture(pointerId);
-    lenis.start();
+    // lenis.start();
     const firstButton = dockButtons[0];
     const lastButton = dockButtons[dockButtons.length - 1];
     const activeButton = dockButtons.find((button) =>

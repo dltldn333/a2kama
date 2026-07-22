@@ -1,0 +1,129 @@
+:root {
+  --app-vh: 100vh;
+  --frame-gap: clamp(8px, 1.35vw, 18px);
+  --frame-radius: clamp(26px, 3.2vw, 44px);
+  --ink: #111217;
+  --paper: #f2f2f4;
+  --blue: #0a7cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  width: 100%;
+  height: 100%;
+  scroll-behavior: smooth;
+  background: #000;
+}
+html.lenis,
+html.lenis body {
+  height: 100%;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: var(--frame-gap);
+  overflow: hidden;
+  background: #000;
+  color: var(--ink);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+#frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--frame-radius);
+  background: #0b0c11;
+  isolation: isolate;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.showcase {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+}
+
+.showcase::-webkit-scrollbar {
+  display: none;
+}
+.showcase-content {
+  min-height: 100%;
+}
+
+.unlock-stage {
+  position: relative;
+  height: calc(var(--app-vh) * 2);
+  background: #0b0c11;
+}
+
+.showcase-page {
+  position: relative;
+  width: 100%;
+  height: var(--app-vh);
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(66px, 8vh, 88px) clamp(28px, 6.7vw, 104px) 108px;
+}
+
+.unlock-stage .showcase-page {
+  position: sticky;
+  top: 0;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+#frame > canvas {
+  z-index: 100 !important;
+  position: fixed !important;
+}
+@media (max-width: 1050px) {
+  .showcase-page {
+    padding-left: 42px;
+    padding-right: 42px;
+  }
+}
+@media (max-width: 760px) {
+  :root {
+    --frame-gap: 8px;
+    --frame-radius: 28px;
+  }
+  .showcase-page {
+    padding: 62px 16px 92px;
+  }
+}

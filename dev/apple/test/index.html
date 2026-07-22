@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Siri Standalone Test</title>
+    
+    <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/@rive-app/webgl2@2.20.0"></script>
+    
+    <style>
+      /* Reset & Basic Layout */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      
+      /* siri.css inlined */
+      .siri-page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        padding: 10vh 10vw;
+        gap: 20px;
+        background: #111;
+        color: black;
+        flex-direction: row;
+      }
+      .siri-output {
+        position: relative;
+        border-radius: 40px;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .bg-grid-container {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        clip-path: inset(0 round 40px);
+      }
+      .bg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: max-content max-content;
+        gap: 20px;
+        width: 100%;
+        padding: 24px;
+      }
+      .bg-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .bg-item img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: 20px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #ccc; /* fallback if src breaks */
+      }
+      .bg-item-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 0 8px;
+      }
+      .bg-item-title { font-size: 18px; font-weight: 700; color: #111; }
+      .bg-item-subtitle { font-size: 15px; color: #666; }
+      
+      .dynamic-island {
+        position: absolute;
+        top: 60px;
+        width: 160px;
+        height: 40px;
+        border-radius: 100px;
+        background: black;
+        isolation: isolate;
+      }
+      .dynamic-island span {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #111;
+        right: 10px;
+        top: 10px;
+      }
+      .siri-circle {
+        position: absolute;
+        top: 30px;
+        width: 280px;
+        height: 200px;
+        border-radius: 100px;
+        background: linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%);
+        box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.3);
+        transform-origin: top center;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+      }
+      .siri-controls-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        border-radius: 40px;
+        padding: 30px;
+        width: 180px;
+        height: 100%;
+        background-color: white;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
+      .siri-btn {
+        flex: 1;
+        width: 100%;
+        background: none;
+        border: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+        cursor: pointer;
+        padding: 0;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .siri-btn:hover {
+        color: #111;
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .siri-btn.active {
+        color: #111;
+        font-weight: 600;
+        background: rgba(0, 0, 0, 0.08);
+      }
+      .siri-btn.off-btn {
+        color: #ff3b30;
+      }
+      .siri-btn.off-btn:hover {
+        background: rgba(255, 59, 48, 0.1);
+      }
+      
+      @media (max-width: 1050px) {
+        .siri-page { padding: 8vh 5vw; }
+      }
+      @media (max-width: 760px) {
+        .siri-page { flex-direction: column; padding: 5vh 5vw; }
+        .siri-controls-wrap {
+          flex-direction: row; width: 100%; height: 80px; padding: 0 30px; border-radius: 100px;
+        }
+        .siri-btn { padding: 12px 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="siri-page">
+      <div class="siri-output">
+        <div class="bg-grid-container">
+          <div class="bg-grid">
+            <div class="bg-item">
+              <img src="../src/test.png" alt="Cover" />
+              <div class="bg-item-text">
+                <div class="bg-item-title">Podcast 1</div>
+                <div class="bg-item-subtitle">Wondery</div>
+              </div>
+            </div>
+            <div class="bg-item">
+              <img src="../src/test.png" alt="Cover" />
+              <div class="bg-item-text">
+                <div class="bg-item-title">Podcast 2</div>
+                <div class="bg-item-subtitle">SmartLess</div>
+              </div>
+            </div>
+            <div class="bg-item">
+              <img src="../src/test.png" alt="Cover" />
+              <div class="bg-item-text">
+                <div class="bg-item-title">Podcast 3</div>
+                <div class="bg-item-subtitle">Crime Junkie</div>
+              </div>
+            </div>
+            <div class="bg-item">
+              <img src="../src/test.png" alt="Cover" />
+              <div class="bg-item-text">
+                <div class="bg-item-title">Podcast 4</div>
+                <div class="bg-item-subtitle">The Daily</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dynamic-island">
+          <span></span>
+        </div>
+        
+        <div
+          class="siri-circle is-visible"
+          data-a2kama="siriGlass"
+          data-mirage-sandwich="front"
+        >
+          <!-- WebGL과 무관한 순수 HTML 캔버스: 글로우 효과와 함께 숨쉬기 펄스 애니메이션이 적용됩니다 -->
+          <canvas
+            id="siri-think-canvas"
+            width="512"
+            height="512"
+            style="width: 80px; height: 80px; filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.5)); opacity: 0; pointer-events: none;"
+          ></canvas>
+        </div>
+      </div>
+      
+      <div class="siri-controls-wrap">
+        <button class="siri-btn active">default</button>
+        <button class="siri-btn">thinking</button>
+        <button class="siri-btn">text</button>
+        <button class="siri-btn">contents</button>
+        <button class="siri-btn off-btn">off</button>
+      </div>
+    </div>
+    
+    <!-- 오프스크린 캔버스 (WebGL 텍스처로 주입됨) -->
+    <canvas id="siri-canvas" style="display: none;"></canvas>
+
+    <script type="module">
+      import a2kama from "a2kama";
+      import * as THREE from "three";
+      import { a2kGlass } from "a2kama/presets";
+
+      window.THREE = THREE;
+      window.a2kama = a2kama;
+
+      // 1. 커스텀 쉐이더 레시피 등록
+      const siriGlassRecipe = a2kGlass.normal({
+        refraction: 2.0,
+        depth: 200,
+        color: [0, 0, 0],
+        glassOpacity: 1.0,
+        reflection: 0.1,
+        roughness: 0.05,
+        zoom: 1.0,
+        splay: 100,
+      });
+
+      siriGlassRecipe.shader.uniforms.uRiveTexture = { value: null, type: "sampler2D" };
+      siriGlassRecipe.shader.uniforms.uRiveOpacity = { value: 0.8, type: "float" };
+      siriGlassRecipe.shader.uniforms.uRiveOffsetY = { value: 0.0, type: "float" };
+      siriGlassRecipe.shader.uniforms.uRiveDistort = { value: 1.0, type: "float" };
+      siriGlassRecipe.shader.uniforms.uRiveScaleX = { value: 1.0, type: "float" };
+      siriGlassRecipe.shader.uniforms.uRiveScaleY = { value: 1.0, type: "float" };
+
+      siriGlassRecipe.shader.colorModifier = siriGlassRecipe.shader.colorModifier.replace(
+        "finalColor = blendSrcOver(glassyMain, shadowLayer);",
+        `
+        vec2 localPixelToUv = 1.0 / uSize;
+        vec2 localDistortOffset = distortDir * pushDist * refStrength * localPixelToUv * uRiveDistort;
+        
+        vec2 localUv = vUv + localDistortOffset;
+        localUv.y += uRiveOffsetY;
+        
+        vec2 finalUv = (localUv - 0.5) * 1.4 * vec2(uRiveScaleX, uRiveScaleY) + 0.5;
+        finalUv.y += 0.05;
+
+        float riveOpacity = uRiveOpacity;
+        vec4 riveColor = vec4(0.0);
+        if(finalUv.x >= 0.0 && finalUv.x <= 1.0 && finalUv.y >= 0.0 && finalUv.y <= 1.0) {
+          riveColor = texture2D(uRiveTexture, finalUv);
+          riveColor.a *= riveOpacity;
+          riveColor.rgb *= riveOpacity;
+        }
+
+        vec4 preFinal = blendSrcOver(glassyMain, shadowLayer);
+        finalColor = blendSrcOver(preFinal, riveColor);
+        `
+      );
+
+      a2kama.register("siriGlass", siriGlassRecipe);
+      a2kama.init();
+
+      // 2. 인터랙션 스크립트
+      const siriCircle = document.querySelector(".siri-circle");
+      const siriBtns = document.querySelectorAll(".siri-btn");
+      const siriThinkCanvasDOM = document.getElementById("siri-think-canvas");
+      const siriUniforms = { riveOpacity: 0.8, riveOffsetY: 0.0, riveDistort: 1.0, riveScaleX: 1.0, riveScaleY: 1.0 };
+      
+      let siriRiveInstance = null;
+      let siriThinkRiveInstance = null;
+
+      window.updateSiriCircleAnimation = (scaleTarget = 1.0) => {
+        if (!siriCircle) return;
+        const rect = siriCircle.getBoundingClientRect();
+        if (scaleTarget > 1.5) {
+          siriCircle.classList.remove("is-visible");
+        } else {
+          siriCircle.classList.add("is-visible");
+        }
+      };
+
+      if (siriBtns.length > 0 && siriCircle) {
+        siriBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            siriBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const state = btn.innerText.toLowerCase();
+
+            if (state === "off") {
+              window.updateSiriCircleAnimation(2.0);
+              if (siriRiveInstance) siriRiveInstance.pause();
+              if (siriThinkRiveInstance) siriThinkRiveInstance.pause();
+            } else {
+              if (!siriCircle.classList.contains("is-visible")) {
+                window.updateSiriCircleAnimation(1.0);
+              }
+
+              if (state === "default" || state === "text") {
+                if (siriRiveInstance) siriRiveInstance.play();
+              } else {
+                if (siriRiveInstance) siriRiveInstance.pause();
+              }
+
+              if (state === "thinking") {
+                if (siriThinkRiveInstance) siriThinkRiveInstance.play();
+              } else {
+                if (siriThinkRiveInstance) siriThinkRiveInstance.pause();
+              }
+
+              window.gsap.killTweensOf(siriCircle);
+              window.gsap.killTweensOf(siriUniforms);
+
+              window.gsap.to(siriUniforms, {
+                riveOpacity: (state === "default" || state === "text") ? 0.8 : 0.0,
+                riveOffsetY: state === "text" ? 0.28 : 0.0,
+                riveDistort: state === "text" ? 0.0 : 1.0,
+                riveScaleX: state === "text" ? 1.35 : 1.0,
+                riveScaleY: state === "text" ? 0.45 : 1.0,
+                duration: 0.4,
+                onUpdate: () => {
+                  if (a2kama.engine) {
+                    a2kama.engine.updateUniforms(siriCircle, {
+                      uRiveOpacity: siriUniforms.riveOpacity,
+                      uRiveOffsetY: siriUniforms.riveOffsetY,
+                      uRiveDistort: siriUniforms.riveDistort,
+                      uRiveScaleX: siriUniforms.riveScaleX,
+                      uRiveScaleY: siriUniforms.riveScaleY,
+                    });
+                  }
+                },
+              });
+
+              if (siriThinkCanvasDOM) {
+                window.gsap.to(siriThinkCanvasDOM, {
+                  opacity: state === "thinking" ? 1.0 : 0.0,
+                  duration: 0.4
+                });
+              }
+
+              let targetProps = {
+                duration: 0.6,
+                ease: "power3.out",
+                scale: 1.0,
+              };
+
+              const defaultGradient = "linear-gradient(rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 100%)";
+              const fullGradient = "linear-gradient(rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)";
+
+              switch (state) {
+                case "default":
+                  targetProps.width = 280;
+                  targetProps.height = 200;
+                  targetProps.opacity = 1;
+                  targetProps.borderRadius = 100;
+                  targetProps.backgroundImage = defaultGradient;
+                  targetProps.ease = "elastic.out(1, 0.65)";
+                  targetProps.duration = 1.0;
+                  targetProps.onComplete = () => {
+                    if (window.gsap && siriCircle) {
+                      window.gsap.to(siriCircle, {
+                        scale: 1.05,
+                        duration: 2.0,
+                        ease: "sine.inOut",
+                        yoyo: true,
+                        repeat: -1,
+                        transformOrigin: "center center",
+                      });
+                    }
+                  };
+                  break;
+                case "thinking":
+                  targetProps.width = 400;
+                  targetProps.height = 100;
+                  targetProps.borderRadius = 100;
+                  targetProps.backgroundImage = fullGradient;
+                  targetProps.opacity = 1;
+                  break;
+                case "text":
+                  targetProps.width = "90%";
+                  targetProps.height = 200;
+                  targetProps.borderRadius = 40;
+                  targetProps.backgroundImage = fullGradient;
+                  targetProps.opacity = 1;
+                  break;
+                case "contents":
+                  targetProps.width = "90%";
+                  targetProps.height = "80%";
+                  targetProps.borderRadius = 40;
+                  targetProps.backgroundImage = fullGradient;
+                  targetProps.opacity = 1;
+                  targetProps.duration = 0.8;
+                  break;
+                case "off":
+                  targetProps.height = 0;
+                  targetProps.opacity = 0;
+                  targetProps.duration = 0.35;
+                  targetProps.ease = "power2.in";
+                  break;
+              }
+
+              window.gsap.to(siriCircle, targetProps);
+            }
+          });
+        });
+      }
+
+      // 3. Rive 초기화 로직
+      const siriCanvas = document.getElementById("siri-canvas");
+      if (siriCanvas && window.rive) {
+        siriCanvas.width = 512;
+        siriCanvas.height = 512;
+
+        siriRiveInstance = new window.rive.Rive({
+          src: "../src/siri.riv",
+          canvas: siriCanvas,
+          autoplay: true,
+          stateMachines: "State Machine 1",
+          useDevicePixelRatio: false,
+          layout: new window.rive.Layout({
+            fit: window.rive.Fit.Contain,
+            alignment: window.rive.Alignment.Center,
+          }),
+        });
+
+        if (siriCircle) {
+          const injectRiveToMirage = () => {
+            if (!a2kama.engine) {
+              requestAnimationFrame(injectRiveToMirage);
+              return;
+            }
+
+            const riveTexture = new THREE.CanvasTexture(siriCanvas);
+            riveTexture.colorSpace = THREE.SRGBColorSpace;
+            riveTexture.minFilter = THREE.LinearFilter;
+            riveTexture.magFilter = THREE.LinearFilter;
+            riveTexture.flipY = false;
+
+            a2kama.engine.updateUniforms(siriCircle, {
+              uRiveTexture: riveTexture,
+            });
+
+            const updateTexture = () => {
+              if (riveTexture && siriUniforms.riveOpacity > 0.0) {
+                riveTexture.needsUpdate = true;
+              }
+              requestAnimationFrame(updateTexture);
+            };
+            updateTexture();
+          };
+          injectRiveToMirage();
+        }
+      }
+
+      if (siriThinkCanvasDOM && window.rive) {
+        siriThinkCanvasDOM.width = 512;
+        siriThinkCanvasDOM.height = 512;
+        siriThinkRiveInstance = new window.rive.Rive({
+          src: "../src/siri_think.riv",
+          canvas: siriThinkCanvasDOM,
+          autoplay: true,
+          stateMachines: "State Machine 1",
+          useDevicePixelRatio: false,
+          layout: new window.rive.Layout({
+            fit: window.rive.Fit.Contain,
+            alignment: window.rive.Alignment.Center,
+          }),
+        });
+        
+        if (window.gsap) {
+          window.gsap.to(siriThinkCanvasDOM, {
+            scale: 0.9,
+            duration: 1.5,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            transformOrigin: "center center",
+          });
+        }
+      }
+
+      if (window.gsap && siriCircle) {
+        setTimeout(() => {
+          window.gsap.to(siriCircle, {
+            scale: 1.05,
+            duration: 2.0,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            transformOrigin: "center center",
+          });
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>

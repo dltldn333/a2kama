@@ -1,6 +1,6 @@
 {
   "name": "a2kama",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "src/index.ts",
   "exports": {
@@ -15,7 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
-    "@a2kama/presets": "workspace:*",
+    "@a2kama/presets": "^1.0.0",
     "mirage-engine": "latest",
     "three": "^0.160.1"
   }

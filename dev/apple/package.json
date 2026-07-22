@@ -2,6 +2,7 @@
   "name": "vanilla-apple-lab",
   "version": "1.0.0",
   "private": true,
+  "main": "index.html",
   "type": "module",
   "engines": {
     "node": ">=22.13.0"
@@ -15,5 +16,10 @@
     "validate": "node scripts/validate-artifact.mjs",
     "lint": "node --check src/main.js && node --check scripts/build.mjs && node --check scripts/dev.mjs"
   },
-  "displayName": "Vanilla Apple Design Lab"
+  "displayName": "Vanilla Apple Design Lab",
+  "dependencies": {
+    "@rive-app/webgl": "^2.37.0",
+    "a2kama": "^1.0.1",
+    "@a2kama/presets": "^1.0.0"
+  }
 }
