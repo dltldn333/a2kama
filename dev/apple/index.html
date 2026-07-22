@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Apple 디자인을 웹의 기본 기술로 재해석하는 인터랙티브 레이아웃 실험."
+    />
+    <meta name="codex-preview" content="development" />
+    <title>Glass Lab</title>
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script src="/vendor/gsap.min.js" defer></script>
+    <script src="/vendor/lenis.min.js" defer></script>
+    <script src="https://unpkg.com/@rive-app/webgl2@2.20.0"></script>
+    <script type="module" src="./src/a2kama.js"></script>
+    <script type="module" src="./src/main.js" defer></script>
+  </head>
+  <body>
+    <div id="loading-screen" style="position: fixed; inset: 0; background: #000; z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease-in-out;">
+      <canvas id="loading-siri-canvas" width="100" height="100" style="width: 100px; height: 100px; filter: brightness(0) invert(1) drop-shadow(0 0 2px rgba(255, 255, 255, 1)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));"></canvas>
+    </div>
+
+    <div id="frame">
+      <div id="root">
+        <main class="showcase">
+          <div class="showcase-content">
+            <div class="unlock-stage">
+              <section
+                class="showcase-page siri-page layout-only-page"
+                id="siri"
+                aria-label="Siri 콘텐츠 레이아웃"
+              >
+                <div class="siri-output">
+                  <div class="bg-grid-container">
+                    <div class="bg-grid">
+                      <div class="bg-item">
+                        <img src="src/img/desert.jpg" alt="Cover" />
+                        <div class="bg-item-text">
+                          <div class="bg-item-title">Desert</div>
+                          <div class="bg-item-subtitle">The dry land</div>
+                        </div>
+                      </div>
+                      <div class="bg-item">
+                        <img src="src/img/mountain.jpg" alt="Cover" />
+                        <div class="bg-item-text">
+                          <div class="bg-item-title">Mountain</div>
+                          <div class="bg-item-subtitle">The high place</div>
+                        </div>
+                      </div>
+                      <div class="bg-item">
+                        <img src="src/img/ocean.jpg" alt="Cover" />
+                        <div class="bg-item-text">
+                          <div class="bg-item-title">Ocean</div>
+                          <div class="bg-item-subtitle">The deep blue</div>
+                        </div>
+                      </div>
+                      <div class="bg-item">
+                        <img src="src/img/milky-way.jpg" alt="Cover" />
+                        <div class="bg-item-text">
+                          <div class="bg-item-title">Milky way</div>
+                          <div class="bg-item-subtitle">The night sky</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="dynamic-island">
+                    <span></span>
+                  </div>
+                  <div class="siri-circle" data-a2kama="siriGlass">
+                    <canvas
+                      id="siri-canvas"
+                      style="
+                        width: 100%;
+                        height: 100%;
+                        position: absolute;
+                        opacity: 0;
+                        top: 0;
+                        left: 0;
+                        pointer-events: none;
+                      "
+                    ></canvas>
+
+                    <!-- mirage-engine이 투명도를 덮어쓰는 것을 방지하기 위해 껍데기(div)에 sandwich를 적용하고, 실제 캔버스의 투명도를 조절합니다. -->
+                    <div
+                      id="siri-think-canvas-wrapper"
+                      data-mirage-sandwich="front"
+                      data-mirage-filter="end"
+                      style="
+                        width: 80px;
+                        height: 80px;
+                        pointer-events: none;
+                        z-index: 10;
+                      "
+                    >
+                      <canvas
+                        id="siri-think-canvas"
+                        style="
+                          width: 100%;
+                          height: 100%;
+                          opacity: 0;
+                          filter: brightness(0) invert(1)
+                            drop-shadow(0 0 2px rgba(255, 255, 255, 1))
+                            drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+                        "
+                      ></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="siri-controls-wrap">
+                  <button class="siri-btn active">default</button>
+                  <button class="siri-btn">thinking</button>
+                  <button class="siri-btn off-btn">off</button>
+                </div>
+              </section>
+            </div>
+
+            <section
+              class="showcase-page glass-page"
+              id="glass"
+              data-page="glass"
+              data-glass-scene
+              aria-labelledby="glass-title"
+            >
+              <div class="glass-output">
+                <div class="bg-grid-container">
+                  <div class="bg-grid">
+                    <div class="bg-item">
+                      <img src="src/img/desert.jpg" alt="Cover" />
+                      <div class="bg-item-text">
+                        <div class="bg-item-title">Desert</div>
+                        <div class="bg-item-subtitle">The dry land</div>
+                      </div>
+                    </div>
+                    <div class="bg-item">
+                      <img src="src/img/mountain.jpg" alt="Cover" />
+                      <div class="bg-item-text">
+                        <div class="bg-item-title">Mountain</div>
+                        <div class="bg-item-subtitle">The high place</div>
+                      </div>
+                    </div>
+                    <div class="bg-item">
+                      <img src="src/img/ocean.jpg" alt="Cover" />
+                      <div class="bg-item-text">
+                        <div class="bg-item-title">Ocean</div>
+                        <div class="bg-item-subtitle">The deep blue</div>
+                      </div>
+                    </div>
+                    <div class="bg-item">
+                      <img src="src/img/milky-way.jpg" alt="Cover" />
+                      <div class="bg-item-text">
+                        <div class="bg-item-title">Milky way</div>
+                        <div class="bg-item-subtitle">The night sky</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="glass-dock-dummy">
+                  <div class="dummy-highlight"></div>
+                  <div class="dummy-buttons">
+                    <div class="dummy-btn active">
+                      <svg
+                        class="dummy-icon"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 3L3 10h2v11h5v-7h4v7h5V10h2L12 3z" />
+                      </svg>
+                      <span>Home</span>
+                    </div>
+                    <div class="dummy-btn">
+                      <svg
+                        class="dummy-icon"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <rect x="4" y="4" width="6" height="6" rx="1.5" />
+                        <rect x="14" y="4" width="6" height="6" rx="1.5" />
+                        <rect x="4" y="14" width="6" height="6" rx="1.5" />
+                        <rect x="14" y="14" width="6" height="6" rx="1.5" />
+                      </svg>
+                      <span>New</span>
+                    </div>
+                    <div class="dummy-btn">
+                      <svg
+                        class="dummy-icon"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <rect x="7" y="3" width="10" height="2" rx="1" />
+                        <rect x="5" y="6" width="14" height="2" rx="1" />
+                        <rect x="3" y="9" width="18" height="13" rx="3" />
+                        <circle cx="12" cy="17" r="1.5" fill="white" />
+                        <path
+                          d="M9.5 14.5a3.5 3.5 0 0 1 5 0"
+                          fill="none"
+                          stroke="white"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                      <span>Library</span>
+                    </div>
+                    <div class="dummy-btn">
+                      <svg
+                        class="dummy-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="11" cy="11" r="6" />
+                        <path d="M20 20l-4.5-4.5" />
+                      </svg>
+                      <span>Search</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="slider-wrap">
+                <img src="src/svg/Slide0.svg" alt="" />
+                <div
+                  class="div-slider light-slider liquid-slider"
+                  data-range="glass-opacity"
+                  data-min="-100"
+                  data-max="100"
+                  data-value="0"
+                  role="slider"
+                  tabindex="0"
+                  aria-label="Glass 배경 투명도"
+                  aria-valuemin="-100"
+                  aria-valuemax="100"
+                  aria-valuenow="0"
+                >
+                  <div class="slider-track">
+                    <div class="slider-fill"></div>
+                    <div class="slider-thumb"></div>
+                  </div>
+                </div>
+                <img src="src/svg/Slide1.svg" alt="" />
+              </div>
+            </section>
+
+            <section
+              class="showcase-page info-page"
+              id="info"
+              data-page="info"
+              aria-label="Info 페이지"
+            >
+              <div class="info-container">
+                <h2 class="info-title">Contact & Info</h2>
+                <div class="info-grid">
+                  <a href="https://github.com/dltldn333" class="info-card" target="_blank">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="info-content">
+                      <h3>GitHub</h3>
+                      <p>dltldn333</p>
+                    </div>
+                  </a>
+                  <a href="https://velog.io/@dltldn333" class="info-card" target="_blank">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M12 0c-6.626 0-12 5.373-12 12s5.374 12 12 12 12-5.373 12-12-5.374-12-12-12zm-3.25 15.5h-2.5v-7h2.5v7zm6.5 0h-2.5v-7h2.5v7z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="info-content">
+                      <h3>Velog</h3>
+                      <p>dltldn333</p>
+                    </div>
+                  </a>
+                  <a href="https://www.linkedin.com/in/dltldn333" class="info-card" target="_blank">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="info-content">
+                      <h3>LinkedIn</h3>
+                      <p>이시우</p>
+                    </div>
+                  </a>
+                  <a href="mailto:dltldn333@gmail.com" class="info-card">
+                    <div class="info-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M12 12.713l-11.985-9.713h23.971l-11.986 9.713zm-5.425-1.822l-6.575-5.329v12.501l6.575-7.172zm10.85 0l6.575 7.172v-12.501l-6.575 5.329zm-1.557 1.261l-3.868 3.135-3.868-3.135-8.11 8.848h23.956l-8.11-8.848z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="info-content">
+                      <h3>Email</h3>
+                      <p>dltldn333@gmail.com</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+<section
+              class="showcase-page architecture-page"
+              id="architecture"
+              data-page="architecture"
+              aria-label="Architecture 페이지"
+            >
+              <div class="arch-container">
+                <h2 class="arch-title">Architecture & Concept Flow</h2>
+                <p class="arch-intro" style="color: #86868b; margin-bottom: 40px; text-align: center;">
+                  a2kama와 mirage-engine의 결합은 웹에서 네이티브 수준의 시각적 품질을 제공합니다.
+                </p>
+
+                <div class="arch-grid">
+                  <!-- 1. 개념 흐름 -->
+                  <div class="arch-card arch-full-card">
+                    <h3>1. Conceptual Flow</h3>
+                    <ul style="list-style-type: decimal; padding-left: 20px; line-height: 1.6; color: #a1a1a6;">
+                      <li><strong style="color: #f5f5f7;">HTML DOM:</strong> 브라우저 상의 실제 DOM 트리</li>
+                      <li><strong style="color: #f5f5f7;">MirageEngine:</strong> DOM 트리의 상태를 추적하여 WebGL Scene 내에 1:1 가상 복사본 생성</li>
+                      <li><strong style="color: #f5f5f7;">a2kama:</strong> 가상 복사본에 커스텀 GLSL 셰이더를 주입해 시각적 효과 부여</li>
+                      <li><strong style="color: #f5f5f7;">WebGL Canvas:</strong> 셰이더 연산 결과물을 최종 화면에 렌더링</li>
+                    </ul>
+                  </div>
+
+                  <!-- 2. mirage-engine 구조 -->
+                  <div class="arch-card arch-full-card">
+                    <h3>2. MirageEngine Structure</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                      <div>
+                        <h4 style="margin-bottom: 5px; color: #f5f5f7;">Syncer & Extractor</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          Mutation Observer로 DOM 변화를 감지하고, Extractor를 통해 복제 DOM 트리를 갱신 및 디바운싱 처리합니다.
+                        </p>
+                        
+                        <h4 style="margin-bottom: 5px; color: #f5f5f7;">Renderer</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          Three.js 씬을 초기화하고 Extractor의 트리를 기반으로 Mesh를 생성합니다.
+                        </p>
+                      </div>
+                      <div>
+                        <h4 style="margin-bottom: 5px; color: #f5f5f7;">Animator</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          60FPS 유지를 위해 디바운싱된 변화 사이의 중간 보간(움직임)을 부드럽게 채워 넣습니다.
+                        </p>
+
+                        <h4 style="margin-bottom: 5px; color: #f5f5f7;">painter & sandwich</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6;">
+                          DOM 데이터를 기반으로 텍스처를 생성하며(painter), 셰이더 효과 부분만 실제 DOM 사이에 정교하게 끼워 넣습니다(sandwich).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 3. a2kama의 역할 -->
+                  <div class="arch-card arch-full-card">
+                    <h3>3. The Role of a2kama</h3>
+                    <p style="color: #a1a1a6;">
+                      MirageEngine의 <strong>Travel</strong> 캡처본을 가져와 셰이더로 왜곡(Distortion/Refraction)합니다. 복잡한 셰이더 작성 없이 <strong>단순한 데이터 객체(Recipe)만으로 유리 질감을 제어</strong>하는 API 레이어입니다.
+                    </p>
+                  </div>
+
+                  <!-- 4. 유리 왜곡 과정 -->
+                  <div class="arch-card arch-full-card" style="margin-top: 20px;">
+                    <h3>유리 왜곡 생성 과정 (1/60초)</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                      <div>
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">1. DOM 변화 감지</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          DOM 재탐색은 무거운 작업이므로, 변화 감지 후 텀을 두고 디바운싱 처리합니다.
+                        </p>
+
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">2. 보간 (Interpolation)</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          DOM 탐색 빈도를 줄이고, GSAP 등의 움직임 데이터를 탈취해 Mesh에 동일한 보간을 전달합니다.
+                        </p>
+
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">3. 프레임 캡처</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          왜곡을 줄 영역의 GPU Pixel 데이터를 매 순간 가볍게 캡처합니다.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">4. 셰이더 왜곡</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          GPU의 병렬 연산을 활용해 수많은 픽셀에 동시다발적으로 수학적 왜곡(예: 굴절)을 지시합니다.
+                        </p>
+
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">5. 속성 주입 (Uniforms)</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6; margin-bottom: 15px;">
+                          주입 가능한 <code>uniform</code> 변수 데이터를 객체로 전달하여 토큰화된 유리 스타일(Recipe)을 완성합니다.
+                        </p>
+
+                        <h4 style="color: #f5f5f7; margin-bottom: 5px;">6. 동적 변형</h4>
+                        <p style="font-size: 0.9em; color: #a1a1a6;">
+                          이 모든 과정이 60FPS로 동작하며, 실제 엘리먼트처럼 완벽한 동적 상호작용을 만듭니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <nav
+          data-a2kama="dockGlass"
+          data-mirage-travel="traveler 3"
+          data-mirage-select="include-tree"
+          class="bottom-dock"
+          data-dock
+          aria-label="페이지 내비게이션. 선택된 항목을 좌우로 끌어 이동할 수 있습니다."
+        >
+          <span
+            data-a2kama="dockBtnGlass"
+            data-mirage-travel="traveler 4"
+            class="dock-highlight"
+            data-dock-highlight
+            aria-hidden="true"
+            style="z-index: 20"
+          ></span>
+          <div class="dock-buttons-group" style="z-index: 11">
+            <button
+              type="button"
+              data-page-target="siri"
+              aria-label="Siri 페이지"
+              class="is-active"
+            >
+              <svg
+                class="dock-icon"
+                color="#000000"
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 8C32.8366 8 40 15.1634 40 24C40 32.8366 32.8366 40 24 40C15.1634 40 8 32.8366 8 24C8 15.1634 15.1634 8 24 8ZM18.4 26C16.9011 25.8423 14.7134 25.7282 13.6 26.8C12.9608 27.4152 12.6767 29.2 13.6 31.2C14.5233 33.2 17.8553 36.8 24 36.8C30.057 36.8 34.4 31.6 34.4 30.8C34.4 28.8 31.2 28.4 27.6 28C24 27.6 22.125 26.3921 18.4 26ZM24 10.4C16.4889 10.4 10.4 16.4889 10.4 24C10.4 24.1044 10.4012 24.2086 10.4036 24.3125C10.4165 24.8732 11.0162 25.1959 11.5266 24.9633C13.209 24.1964 15.5574 23.378 17.7258 23.6063C21.6005 24.0141 23.8145 24.987 26.1695 25.5305C28.267 26.0145 30.9099 26.3084 35.8025 25.8675C36.7954 25.778 37.6 24.9969 37.6 24C37.6 16.4889 31.5111 10.4 24 10.4Z"
+                  fill="currentColor"
+                />
+              </svg>
+
+              <small>Siri</small>
+            </button>
+            <button
+              type="button"
+              data-page-target="glass"
+              aria-label="Glass 페이지"
+            >
+              <svg
+                class="dock-icon"
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M30.6316 9C32.2012 9 33.4737 10.3431 33.4737 12V16.2754C32.8598 16.1317 32.227 16.041 31.5789 16.0117V12C31.5789 11.4477 31.1548 11 30.6316 11H8.84211C8.31889 11 7.89474 11.4477 7.89474 12V29C7.89474 29.5523 8.31889 30 8.84211 30H11.9451C12.0905 30.692 12.2925 31.3611 12.5502 32H8.84211C7.27245 32 6 30.6569 6 29V12C6 10.3431 7.27245 9 8.84211 9H30.6316ZM30.1579 18.5C31.1053 18.5 33.4737 18.5 33.4737 21V29C33.4737 30.6569 32.2012 32 30.6316 32H18.3158C17.8421 32.5 18.3158 34.5 18.3158 34.5C18.3158 34.5 17.2872 33.8202 16.7384 33C16.1343 32.0971 15.5793 30.524 16.7384 30H30.6316C31.1548 30 31.5789 29.5523 31.5789 29V20.5C31.5789 20.5 31.3407 19.859 31.1053 19.5C30.8074 19.0459 30.1579 18.5 30.1579 18.5Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M40.1053 27.5C40.1053 22.2533 36.0758 18 31.1053 18H22.5789C17.6084 18 13.5789 22.2533 13.5789 27.5C13.5789 32.7467 17.6084 37 22.5789 37H31.1053C36.0758 37 40.1053 32.7467 40.1053 27.5ZM42 27.5C42 33.8513 37.1223 39 31.1053 39H22.5789C16.562 39 11.6842 33.8513 11.6842 27.5C11.6842 21.1487 16.5619 16 22.5789 16H31.1053C37.1223 16 42 21.1487 42 27.5Z"
+                  fill="currentColor"
+                />
+              </svg>
+
+              <small>Glass</small>
+            </button>
+            <button
+              type="button"
+              data-page-target="info"
+              aria-label="Info 페이지"
+            >
+              <svg
+                class="dock-icon"
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 8C32.8366 8 40 15.1634 40 24C40 32.8366 32.8366 40 24 40C15.1634 40 8 32.8366 8 24C8 15.1634 15.1634 8 24 8ZM24 10C16.268 10 10 16.268 10 24C10 26.9666 10.9228 29.7175 12.4971 31.9814C13.3385 33.1914 15 32.4738 15 31C15 27.6863 17.6863 25 21 25H27C30.3137 25 33 27.6863 33 31C33 32.4738 34.6615 33.1914 35.5029 31.9814C37.0772 29.7175 38 26.9666 38 24C38 16.268 31.732 10 24 10ZM24 13C26.7614 13 29 15.2386 29 18C29 20.7614 26.7614 23 24 23C21.2386 23 19 20.7614 19 18C19 15.2386 21.2386 13 24 13Z"
+                  fill="currentColor"
+                />
+              </svg>
+
+              <small>Info</small>
+            </button>
+            <button
+              type="button"
+              data-page-target="architecture"
+              aria-label="Architecture 페이지"
+            >
+              <svg
+                class="dock-icon"
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 8C32.8366 8 40 15.1634 40 24C40 32.8366 32.8366 40 24 40C15.1634 40 8 32.8366 8 24C8 15.1634 15.1634 8 24 8ZM31.9443 15.6455C31.9441 16.2866 31.3973 16.8064 30.7227 16.8066H25.0996C24.8299 16.8068 24.6116 17.0143 24.6113 17.2705C24.6113 18.2966 25.4865 19.1288 26.5664 19.1289H28.2773C30.4329 19.1289 32.2168 20.6439 32.5127 22.6143C32.5603 22.9317 32.8295 23.1934 33.167 23.1934H33.7773C34.4522 23.1934 34.9998 23.7133 35 24.3545V27.8389C34.9999 28.4802 34.4523 29 33.7773 29H30.1113C29.4364 29 28.8888 28.4802 28.8887 27.8389V24.3545C28.8889 23.7133 29.4364 23.1934 30.1113 23.1934H30.7227C31.06 23.1931 31.3401 22.9304 31.2734 22.6162C30.9917 21.2893 29.7569 20.29 28.2773 20.29H27.0557C25.7056 20.29 24.6113 21.3306 24.6113 22.6133C24.6113 22.674 24.6142 27.7121 24.6201 27.8066C24.6201 28.1935 24.9209 28.1934 25.2227 28.1934H25.833C26.5079 28.1934 27.0555 28.7133 27.0557 29.3545V32.8389C27.0556 33.4802 26.508 34 25.833 34H22.167C21.492 34 20.9444 33.4802 20.9443 32.8389V29.3545C20.9445 28.7133 21.4921 28.1934 22.167 28.1934H22.7773C23.0791 28.1934 23.3799 28.1935 23.3799 27.8066C23.3858 27.7121 23.3887 22.674 23.3887 22.6133C23.3887 21.3306 22.2944 20.29 20.9443 20.29H19.7227C18.2431 20.29 17.0083 21.2893 16.7266 22.6162C16.6599 22.9304 16.94 23.1931 17.2773 23.1934H17.8887C18.5636 23.1934 19.1111 23.7133 19.1113 24.3545V27.8389C19.1112 28.4802 18.5636 29 17.8887 29H14.2227C13.5477 29 13.0001 28.4802 13 27.8389V24.3545C13.0002 23.7133 13.5478 23.1934 14.2227 23.1934H14.833C15.1705 23.1934 15.4397 22.9317 15.4873 22.6143C15.7832 20.6439 17.5671 19.1289 19.7227 19.1289H21.4336C22.5135 19.1288 23.3887 18.2966 23.3887 17.2705C23.3884 17.0143 23.1701 16.8068 22.9004 16.8066H17.2773C16.6027 16.8064 16.0559 16.2866 16.0557 15.6455C16.0557 14.303 14.5747 13.5626 13.6684 14.5531C11.3902 17.043 10 20.359 10 24C10 31.732 16.268 38 24 38C31.732 38 38 31.732 38 24C38 20.359 36.6098 17.043 34.3316 14.5531C33.4253 13.5626 31.9443 14.303 31.9443 15.6455Z"
+                  fill
+                />
+              </svg>
+
+              <small>Architecture</small>
+            </button>
+          </div>
+        </nav>
+
+        <div
+          class="lock-screen"
+          role="dialog"
+          aria-modal="true"
+          aria-label="첫 화면. 위로 밀어서 시작하세요."
+        >
+          <div class="lock-background" aria-hidden="true">
+            <div class="wallpaper">
+              <!-- <img
+                class="wallpaper-front"
+                style="
+                  position: absolute;
+                  width: 100%;
+                  top: 0;
+                  left: 0;
+                  height: 100%;
+                  object-fit: cover;
+                  z-index: 1;
+                "
+                src="./src/front.png"
+              /> -->
+              <img
+                class="wallpaper-back"
+                style="
+                  position: absolute;
+                  width: 100%;
+                  top: 0;
+                  left: 0;
+                  height: 100%;
+                  object-fit: cover;
+                "
+                src="./src/img/wall.jpg"
+              />
+            </div>
+          </div>
+          <div
+            class="lock-interface"
+            data-a2kama="lockGlass"
+            data-mirage-travel="traveler 5"
+            data-mirage-select="include-self"
+          >
+            <div
+              data-mirage-sandwich="front"
+              data-mirage-filter="end"
+              style="width: 100%; height: 100%"
+            >
+              <time class="lock-time" data-lock-time datetime=""></time>
+              <!-- 첫 화면 콘텐츠를 넣을 수 있는 빈 영역입니다. -->
+              <button class="unlock-hint" type="button" data-unlock>
+                <span>위로 밀어서 시작하기</span>
+                <i></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
