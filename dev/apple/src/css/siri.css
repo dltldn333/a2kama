@@ -128,7 +128,7 @@
   border-radius: 40px;
   padding: 30px; /* 상하좌우 동일한 여백 */
   width: 180px;
-  height: 100%;
+  height: 280px;
   background-color: white;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
@@ -245,4 +245,92 @@
   font-size: 13px;
   color: #eeeeee;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* Siri Internal Contents */
+.siri-content-wrapper {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: white;
+  z-index: 10;
+  overflow: hidden;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.siri-text-content {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.siri-text-content h3 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  background: linear-gradient(135deg, #fff, #a1a1a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.siri-text-content p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  max-width: 80%;
+  line-height: 1.5;
+}
+
+.siri-full-content {
+  padding-top: 60px;
+}
+
+.siri-full-content .header {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.siri-full-content .content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.siri-full-content .content-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.siri-full-content .content-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.siri-full-content .content-card h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.siri-full-content .content-card p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
 }

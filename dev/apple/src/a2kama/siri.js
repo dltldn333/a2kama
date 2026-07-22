@@ -189,15 +189,18 @@ if (siriBtns.length > 0 && siriCircle) {
 
         window.gsap.killTweensOf(siriCircle);
         window.gsap.killTweensOf(siriUniforms); // 이전 투명도 애니메이션 정지
+        
 
-        // 추가로 'text' 상태일 때는 왜곡(distort)을 0으로 만들어 원형을 유지하게 하고, 스케일을 줄여 크게 만듭니다.
+
+        // 상태 변경에 따른 쉐이더 유니폼 애니메이션
         window.gsap.to(siriUniforms, {
-          riveOpacity: (state === "default" || state === "text") ? 0.8 : 0.0,
-          riveOffsetY: state === "text" ? 0.28 : 0.0, // 쉐이더 연산(+0.05 보정)을 고려하여 0.35로 맞춤
-          riveDistort: state === "text" ? 0.0 : 1.0,
-          riveScaleX: state === "text" ? 1.35 : 1.0, // 가로 넓이를 80% 정도로 제한 (값이 커질수록 화면에서 좁아짐)
-          riveScaleY: state === "text" ? 0.45 : 1.0, // 세로 높이는 웅장하게 2.2배 크게 유지
-          duration: 0.4,
+          riveOpacity: state === "default" ? 0.8 : 0.0,
+          riveOffsetY: 0.0,
+          riveDistort: 1.0,
+          riveScaleX: 1.0,
+          riveScaleY: 1.0,
+          duration: 0.8,
+          ease: "power2.inOut",
           onUpdate: () => {
             if (a2kama.engine) {
               a2kama.engine.updateUniforms(siriCircle, {
@@ -260,21 +263,7 @@ if (siriBtns.length > 0 && siriCircle) {
             targetProps.backgroundImage = fullGradient;
             targetProps.opacity = 1;
             break;
-          case "text":
-            targetProps.width = "90% ";
-            targetProps.height = 200;
-            targetProps.borderRadius = 40;
-            targetProps.backgroundImage = fullGradient;
-            targetProps.opacity = 1;
-            break;
-          case "contents":
-            targetProps.width = "90% ";
-            targetProps.height = "80%";
-            targetProps.borderRadius = 40;
-            targetProps.backgroundImage = fullGradient;
-            targetProps.opacity = 1;
-            targetProps.duration = 0.8;
-            break;
+
           case "off":
             targetProps.height = 0;
             targetProps.opacity = 0;
