@@ -18,6 +18,8 @@
   },
   "displayName": "Vanilla Apple Design Lab",
   "dependencies": {
-    "@rive-app/webgl": "^2.37.0"
+    "@rive-app/webgl": "^2.37.0",
+    "a2kama": "^1.0.1",
+    "@a2kama/presets": "^1.0.0"
   }
 }

@@ -287,7 +287,7 @@ if (siriCanvas && window.rive) {
   siriCanvas.height = 512;
 
   siriRiveInstance = new window.rive.Rive({
-    src: "./src/siri.riv",
+    src: "/siri.riv",
     canvas: siriCanvas,
     autoplay: true,
     stateMachines: "State Machine 1",
@@ -344,7 +344,7 @@ if (siriThinkCanvas && window.rive) {
   siriThinkCanvas.width = 512;
   siriThinkCanvas.height = 512;
   siriThinkRiveInstance = new window.rive.Rive({
-    src: "./src/siri_think.riv",
+    src: "/siri_think.riv",
     canvas: siriThinkCanvas,
     autoplay: true,
     stateMachines: "State Machine 1", // 기본 상태 머신 이름
