@@ -245,7 +245,47 @@
               id="architecture"
               data-page="architecture"
               aria-label="Architecture 페이지"
-            ></section>
+            >
+              <div class="arch-container">
+                <h2 class="arch-title">Architecture & Synergy</h2>
+                <p class="arch-intro">
+                  a2kama와 mirage-engine의 결합은 웹에서 네이티브 수준의 시각적 품질(Visual Fidelity)을 제공하기 위해 설계되었습니다. 이 섹션에서는 두 라이브러리의 아키텍처와 Apple 디자인 구현의 연관성을 설명합니다.
+                </p>
+                
+                <div class="arch-grid">
+                  <div class="arch-card">
+                    <h3>Mirage Engine (Core)</h3>
+                    <p>
+                      <strong>DOM-to-WebGL 동기화 엔진</strong><br/>
+                      Mirage Engine은 브라우저의 DOM 트리를 Three.js 기반의 WebGL 공간으로 투영(Project)합니다. 
+                      각 DOM 요소의 크기, 위치, 스타일 속성을 실시간으로 추출하여 3D Mesh로 매핑하며, 
+                      <code>Traveler</code> 레이어 시스템을 통해 특정 레이어를 분리 렌더링하고, 다중 렌더 타겟(MRT)을 활용하여 뒷배경을 블러 처리하거나 굴절시키는 등의 고급 포스트 프로세싱을 가능하게 합니다.
+                    </p>
+                  </div>
+                  
+                  <div class="arch-card">
+                    <h3>a2kama (API Layer)</h3>
+                    <p>
+                      <strong>선언적 시각 효과 라이브러리</strong><br/>
+                      a2kama는 Mirage Engine의 복잡한 WebGL 및 셰이더 로직을 <code>Recipe</code>(프리셋) 형태로 추상화합니다. 
+                      개발자는 복잡한 셰이더 코드 없이 <code>data-a2kama="myGlass"</code> 속성만으로 물리 기반 렌더링(PBR) 수준의 글래스모피즘(Glassmorphism), 빛 산란(Dispersion), 플라스틱 재질감을 DOM 요소에 즉시 적용할 수 있습니다.
+                    </p>
+                  </div>
+                  
+                  <div class="arch-card arch-full-card">
+                    <h3>Apple Design Implementation Synergy</h3>
+                    <p>
+                      Apple의 UI 디자인 언어는 <strong>유려한 애니메이션, 공간감(Depth), 그리고 실시간 배경 블러(Vibrancy)</strong>를 특징으로 합니다. 
+                      기존 CSS만으로는 성능 저하(프레임 드랍)와 표현의 한계(빛의 굴절, 색수차 등)가 명확하지만, 두 라이브러리의 결합은 이를 완벽히 해결합니다.
+                    </p>
+                    <p style="margin-top: 10px;">
+                      <strong>1. Real-time Vibrancy & Glassmorphism:</strong> Mirage Engine의 다이내믹 레이어링을 통해 Dock 메뉴나 모달 뒤의 배경을 실시간으로 캡처하여, Apple 특유의 입체적인 글래스 효과를 60FPS로 렌더링합니다.<br/>
+                      <strong>2. Seamless DOM Interaction:</strong> Hover, Click, Scroll과 같은 DOM 표준 인터랙션(GSAP, Lenis 등)을 유지한 채 시각적 표현만 WebGL로 즉시 동기화하므로, 웹의 편의성과 네이티브의 그래픽 품질을 동시에 취할 수 있습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             <section
               class="showcase-page info-page"
