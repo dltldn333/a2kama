@@ -165,6 +165,14 @@ if (siriBtns.length > 0 && siriCircle) {
       // 2. Animate Siri Circle based on state
       const state = btn.innerText.toLowerCase();
 
+      // DOM 캔버스(Think) 투명도 조절 (모든 상태에 적용)
+      if (siriThinkCanvasDOM) {
+        window.gsap.to(siriThinkCanvasDOM, {
+          opacity: state === "thinking" ? 1.0 : 0.0,
+          duration: 0.4
+        });
+      }
+
       if (state === "off") {
         window.updateSiriCircleAnimation(2.0); // 1.0 보다 큰 값으로 거리를 주어 사라지게 함
         if (siriRiveInstance) siriRiveInstance.pause();
@@ -214,13 +222,6 @@ if (siriBtns.length > 0 && siriCircle) {
           },
         });
 
-        // DOM 캔버스(Think) 투명도 조절
-        if (siriThinkCanvasDOM) {
-          window.gsap.to(siriThinkCanvasDOM, {
-            opacity: state === "thinking" ? 1.0 : 0.0,
-            duration: 0.4
-          });
-        }
 
         let targetProps = {
           duration: 0.6,
@@ -287,7 +288,7 @@ if (siriCanvas && window.rive) {
   siriCanvas.height = 512;
 
   siriRiveInstance = new window.rive.Rive({
-    src: "/siri.riv",
+    src: "./public/siri.riv",
     canvas: siriCanvas,
     autoplay: true,
     stateMachines: "State Machine 1",
@@ -344,7 +345,7 @@ if (siriThinkCanvas && window.rive) {
   siriThinkCanvas.width = 512;
   siriThinkCanvas.height = 512;
   siriThinkRiveInstance = new window.rive.Rive({
-    src: "/siri_think.riv",
+    src: "./public/siri_think.riv",
     canvas: siriThinkCanvas,
     autoplay: true,
     stateMachines: "State Machine 1", // 기본 상태 머신 이름

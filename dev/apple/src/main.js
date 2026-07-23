@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (loadingScreen && loadingCanvas && window.rive) {
     loadingRiveInstance = new window.rive.Rive({
-      src: "/siri_think.riv",
+      src: "./public/siri_think.riv",
       canvas: loadingCanvas,
       autoplay: true,
       stateMachines: "State Machine 1",
