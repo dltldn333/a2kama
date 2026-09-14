@@ -9,7 +9,8 @@
     "version-packages": "changeset version",
     "test": "pnpm -r test",
     "clean": "rm -rf node_modules packages/*/node_modules packages/*/dist",
-    "readme": "writeme build"
+    "readme": "writeme build",
+    "build:test": "vite build dev/test --config vite.config.ts --outDir dist --emptyOutDir"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",

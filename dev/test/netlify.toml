@@ -1,0 +1,8 @@
+# Netlify site settings: set "Base directory" to dev/test.
+# The demo imports the workspace packages, so install and build from the repository root.
+[build]
+  command = "cd ../.. && npx --yes pnpm@10.28.1 install --frozen-lockfile && npx --yes pnpm@10.28.1 build:test"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
