@@ -19,7 +19,7 @@ A lightweight styling library that applies WebGL-based distortion shader effects
 npm install a2kama @a2kama/presets
 ```
 
-*(Requires `mirage-engine` and `three` as peer dependencies.)*
+*(`mirage-engine` and `three` are installed automatically as dependencies.)*
 
 ## Usage
 
@@ -39,8 +39,8 @@ import { a2kGlass } from "@a2kama/presets";
 
 // Create a shader recipe
 const glassRecipe = a2kGlass.normal({ 
-  refraction: 1.5, 
-  depth: 10 
+  refraction: 150, 
+  depth: 30 
 });
 
 // Register the recipe
@@ -50,14 +50,14 @@ a2kama.register("myGlass", glassRecipe);
 a2kama.init();
 ```
 
-## Memory Management
+## Removing Elements
 
-When dynamically removing elements from the DOM, explicitly clear the WebGL mesh data to prevent memory leaks.
+When dynamically removing an element from the DOM, call `dispose()` first. It removes the a2kama shader attributes from the element so the engine stops rendering it.
 
 ```javascript
 const element = document.querySelector('.glass-card');
 
-// Dispose WebGL resources before removing from DOM
+// Detach the shader from the element before removing it from the DOM
 a2kama.dispose(element);
 element.remove();
 ```

@@ -28,7 +28,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@a2kama/presets": "workspace:^",
     "mirage-engine": "latest",
