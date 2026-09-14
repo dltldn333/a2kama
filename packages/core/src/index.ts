@@ -1,11 +1,19 @@
 import { Mirage, MirageConfig } from "mirage-engine";
-import { Recipe } from "./types";
+import { Recipe, RecipeTime } from "./types";
+
+interface Clock extends RecipeTime {
+  elapsed: number;
+}
 
 class A2kama {
   private recipes: Map<string, Recipe> = new Map();
   private mirageInstance: Mirage | null = null;
   private rootElement: HTMLElement | null = null;
   private animatedUniforms: WeakMap<HTMLElement, Record<string, any>> = new WeakMap();
+  // Current uniform values per element, shared by getOptions() and the clocks.
+  private uniformValues: WeakMap<HTMLElement, Record<string, any>> = new WeakMap();
+  private clocks: Map<HTMLElement, Clock> = new Map();
+  private lastFrameTime: number | null = null;
 
   /**
    * Retrieves a reactive Proxy object for the element's options.
@@ -27,23 +35,10 @@ class A2kama {
 
     let currentUniforms = this.animatedUniforms.get(targetElement);
     if (!currentUniforms) {
-      let initialUniforms: Record<string, any> = {};
+      const uniforms = this.getUniformValues(targetElement);
       let optionMap: Record<string, string> = {};
-      
-      const shaderData = targetElement.dataset.mirageShader;
-      const mapData = targetElement.dataset.a2kamaMap;
 
-      if (shaderData) {
-        try {
-          const parsed = JSON.parse(shaderData);
-          if (parsed.uniforms) {
-            initialUniforms = { ...parsed.uniforms };
-          }
-        } catch (e) {
-          console.error("a2kama: Failed to parse mirageShader dataset", e);
-        }
-      }
-      
+      const mapData = targetElement.dataset.a2kamaMap;
       if (mapData) {
         try {
           optionMap = JSON.parse(mapData);
@@ -51,32 +46,32 @@ class A2kama {
           console.error("a2kama: Failed to parse a2kamaMap dataset", e);
         }
       }
-      
+
       const engine = this.mirageInstance;
 
       // Create a user-facing options object
       const userOptions: Record<string, any> = {};
       if (Object.keys(optionMap).length > 0) {
         for (const [userKey, uniformKey] of Object.entries(optionMap)) {
-          if (uniformKey in initialUniforms) {
-            userOptions[userKey] = initialUniforms[uniformKey];
+          if (uniformKey in uniforms) {
+            userOptions[userKey] = uniforms[uniformKey];
           }
         }
       } else {
-        Object.assign(userOptions, initialUniforms);
+        Object.assign(userOptions, uniforms);
       }
 
       // Create a Proxy to intercept all property assignments.
       const proxy = new Proxy(userOptions, {
         set(target, property, value) {
           target[property as string] = value;
-          
+
           // Map back to uniform key
           const uniformKey = optionMap[property as string] || (property as string);
-          initialUniforms[uniformKey] = value;
+          uniforms[uniformKey] = value;
 
-          // Synchronize with mirage-engine on every property change
-          engine.updateUniforms(targetElement, initialUniforms);
+          // Send only the changed uniform, so values driven elsewhere (e.g. time) are not reset
+          engine.updateUniforms(targetElement, { [uniformKey]: value });
           return true; // Indicate success
         }
       });
@@ -114,6 +109,11 @@ class A2kama {
           if (recipe.optionMap) {
             el.dataset.a2kamaMap = JSON.stringify(recipe.optionMap);
           }
+
+          this.uniformValues.set(el, { ...recipe.shader.uniforms });
+          if (recipe.time) {
+            this.clocks.set(el, { ...recipe.time, elapsed: 0 });
+          }
         }
       } else {
         console.warn(
@@ -132,10 +132,15 @@ class A2kama {
     };
 
     this.mirageInstance = new Mirage(this.rootElement, defaultConfig);
+    this.mirageInstance.getTracker().onRender.add(this.advanceClocks);
     this.mirageInstance.start();
   }
 
   dispose(element: HTMLElement) {
+    this.clocks.delete(element);
+    this.uniformValues.delete(element);
+    this.animatedUniforms.delete(element);
+
     if (this.mirageInstance) {
       // Clean up the element from mirage engine
       // Currently mirage-engine may not expose a specific single element destroy,
@@ -145,6 +150,7 @@ class A2kama {
       delete element.dataset.mirageFilter;
       delete element.dataset.mirageDom;
       delete element.dataset.mirageShader;
+      delete element.dataset.a2kamaMap;
     }
   }
 
@@ -152,6 +158,46 @@ class A2kama {
   get engine(): Mirage | null {
     return this.mirageInstance;
   }
+
+  private getUniformValues(element: HTMLElement): Record<string, any> {
+    const cached = this.uniformValues.get(element);
+    if (cached) return cached;
+
+    let uniforms: Record<string, any> = {};
+    const shaderData = element.dataset.mirageShader;
+    if (shaderData) {
+      try {
+        const parsed = JSON.parse(shaderData);
+        if (parsed.uniforms) {
+          uniforms = { ...parsed.uniforms };
+        }
+      } catch (e) {
+        console.error("a2kama: Failed to parse mirageShader dataset", e);
+      }
+    }
+
+    this.uniformValues.set(element, uniforms);
+    return uniforms;
+  }
+
+  // Runs once per engine frame, right before the scene is drawn.
+  private advanceClocks = () => {
+    const now = performance.now();
+    // Cap the step so a tab returning from the background does not jump ahead.
+    const delta = this.lastFrameTime === null ? 0 : Math.min((now - this.lastFrameTime) / 1000, 0.1);
+    this.lastFrameTime = now;
+
+    if (!this.mirageInstance) return;
+
+    for (const [element, clock] of this.clocks) {
+      const uniforms = this.uniformValues.get(element);
+      const speed = clock.speed && uniforms ? Number(uniforms[clock.speed] ?? 1) : 1;
+
+      clock.elapsed += delta * speed;
+      if (uniforms) uniforms[clock.uniform] = clock.elapsed;
+      this.mirageInstance.updateUniforms(element, { [clock.uniform]: clock.elapsed });
+    }
+  };
 }
 
 const a2kama = new A2kama();

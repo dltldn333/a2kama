@@ -113,31 +113,38 @@ export const a2kGlass = {
         },
         uvModifier: /* glsl */ `
           // --- Settings ---
-          float textureZoom = uGlassZoom;
-          float maxDepth = uGlassDepth;
-          float bevelWidth = uGlassBevelWidth; 
+          // Clamp inputs so none of the divisions below can hit zero.
+          float textureZoom = max(uGlassZoom, 0.001);
+          float maxDepth = max(uGlassDepth, 0.001);
+          float bevelWidth = clamp(uGlassBevelWidth, 0.001, maxDepth);
           float refraction = uGlassRefraction;
-          float bevelCurve = uGlassBevelCurve;
+          float bevelCurve = max(uGlassBevelCurve, 0.001);
 
           // --- Logic ---
           vec2 xRadii_uv = mix(clampedRadius.xw, clampedRadius.yz, step(0.0, p.x));
           float r_uv = mix(xRadii_uv.y, xRadii_uv.x, step(0.0, p.y));
           float d_uv = sdRoundedBox(p, halfSize, r_uv);
 
+          // Radial fallback direction, safe at the exact center where p == 0
+          vec2 radial_uv = p / max(length(p), 0.0001);
+
           vec2 e_uv = vec2(0.5, 0.0);
           float dx_uv = sdRoundedBox(p + e_uv.xy, halfSize, r_uv) - sdRoundedBox(p - e_uv.xy, halfSize, r_uv);
           float dy_uv = sdRoundedBox(p + e_uv.yx, halfSize, r_uv) - sdRoundedBox(p - e_uv.yx, halfSize, r_uv);
-          vec2 grad = normalize(vec2(dx_uv, dy_uv)); 
-          if (length(vec2(dx_uv, dy_uv)) < 0.001) grad = normalize(p);
+          vec2 grad = vec2(dx_uv, dy_uv);
+          grad = length(grad) < 0.001 ? radial_uv : normalize(grad);
 
           float edgeDist = max(-d_uv, 0.0);
           
           // Smooth out diagonal tears in deep interior by blending to a radial vector
           float blend_uv = smoothstep(max(1.0, r_uv * 0.5), max(2.0, r_uv * 1.5), edgeDist);
-          grad = normalize(mix(grad, normalize(p), blend_uv));
-          
+          grad = mix(grad, radial_uv, blend_uv);
+          grad /= max(length(grad), 0.0001);
+
+          // t1/t2 are clamped: pow() with a negative base is undefined in GLSL,
+          // and multiplying that NaN by a zero mask is still NaN.
           float mask1 = step(0.0, edgeDist) * step(edgeDist, bevelWidth);
-          float t1 = edgeDist / bevelWidth; 
+          float t1 = clamp(edgeDist / bevelWidth, 0.0, 1.0);
 
           float curve1 = pow(1.0 - t1, bevelCurve); 
 
@@ -145,7 +152,7 @@ export const a2kGlass = {
           float push1 = ((target1 - edgeDist) + (t1 * bevelCurve)) * mask1;
 
           float mask2 = step(bevelWidth, edgeDist) * step(edgeDist, maxDepth);
-          float t2 = (edgeDist - bevelWidth) / (maxDepth - bevelWidth); 
+          float t2 = clamp((edgeDist - bevelWidth) / max(maxDepth - bevelWidth, 0.001), 0.0, 1.0);
           float curve2 = pow(1.0 - t2, bevelCurve); 
           float push2 = curve2 * bevelCurve * mask2;
 
@@ -176,20 +183,13 @@ export const a2kGlass = {
           float lightDirection = uGlassLightDirection;
           float lightIntensity = uGlassLightIntensity;
           float lightSymmetry = uGlassLightSymmetry;
-          float bevel = uGlassBevelWidth;
+          float bevel = max(uGlassBevelWidth, 0.001);
 
           // --- Logic ---
-          vec2 e_c = vec2(0.5, 0.0);
-          float dx_c = sdRoundedBox(p + e_c.xy, halfSize, r_uv) - sdRoundedBox(p - e_c.xy, halfSize, r_uv);
-          float dy_c = sdRoundedBox(p + e_c.yx, halfSize, r_uv) - sdRoundedBox(p - e_c.yx, halfSize, r_uv);
-          vec2 dir_c = normalize(vec2(dx_c, dy_c));
-          if (length(vec2(dx_c, dy_c)) < 0.001) dir_c = normalize(p);
+          // Surface direction: the blended SDF gradient already computed in uvModifier
+          vec2 dir_c = grad;
 
-          float edgeDist_c = max(-d, 0.0);
-          float blend_c = smoothstep(max(1.0, r_uv * 0.5), max(2.0, r_uv * 1.5), edgeDist_c);
-          dir_c = normalize(mix(dir_c, normalize(p), blend_c));
-
-          float n_cos_c = max(bevel + d, 0.0) / max(bevel, 0.001);
+          float n_cos_c = min(max(bevel + d, 0.0) / bevel, 1.0);
           float n_sin_c = sqrt(max(1.0 - n_cos_c * n_cos_c, 0.0));
           vec3 normal_c = normalize(vec3(dir_c.x * n_cos_c, dir_c.y * n_cos_c, n_sin_c));
 

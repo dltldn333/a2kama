@@ -50,11 +50,21 @@ options.refraction = 200;
 
 ## a2kWater
 
-`a2kWater.normal(options)` is an experimental placeholder: a static sine ripple with a blue tint.
+`a2kWater.normal(options)` renders an animated water surface. Several directional waves are layered in element space, their slopes refract the background, and slopes facing the light glint. a2kama advances the `uWaterTime` uniform every frame, so no animation loop is needed.
 
-| Option | Default | Description |
-| :----- | :------ | :---------- |
-| `intensity` | `0.5` | Ripple strength. |
-| `speed` | `1.0` | Reserved; not used yet. |
+| Option | Default | Range | Description |
+| :----- | :------ | :---- | :---------- |
+| `speed` | `1.0` | 0 – 4 | Animation speed multiplier. `0` freezes the surface. |
+| `amplitude` | `8` | 0 – 40 | Maximum refraction offset in pixels. |
+| `wavelength` | `90` | 10 – 400 | Length of the primary wave in pixels. |
+| `direction` | `30` | 0 – 360 | Travel direction of the primary wave in degrees (0 = right, 90 = up). |
+| `turbulence` | `0.6` | 0 – 1 | Weight of the secondary waves. `0` gives clean parallel waves. |
+| `edgeSoftness` | `16` | 0 – 100 | Distance from the edge, in pixels, over which the distortion fades in. |
+| `highlight` | `0.5` | 0 – 2 | Strength of the glints on slopes facing the light. |
+| `lightDirection` | `45` | 0 – 360 | Angle of the light source in degrees. |
+| `tint` | `[0.36, 0.66, 0.85]` | 0 – 1 each | Water color as RGB. |
+| `tintStrength` | `0.18` | 0 – 1 | How much of the tint is mixed into the background. |
+
+`intensity` is still accepted as a deprecated alias of `amplitude`.
 
 **License | MIT © dltldn333**

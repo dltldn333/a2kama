@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a2kama Test · Uniform Playground</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --panel-bg: #111317;
+        --panel-border: #23262d;
+        --row-border: #1c1f25;
+        --text: #e8e9ec;
+        --muted: #8b8f98;
+        --accent: #6ab7ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #0b0c0f;
+        color: var(--text);
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        height: 100vh;
+      }
+
+      /*
+        Same structure as dev/apple: mirage-engine mounts its canvas next to the
+        target (#stage), so #frame hosts that canvas and lifts it above the DOM.
+      */
+      #frame {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      #frame > canvas {
+        z-index: 100 !important;
+        position: fixed !important;
+      }
+
+      /*
+        No overflow clipping inside #stage. mirage-engine applies clip scissors in
+        canvas pixels to its capture buffers as well, which cuts travelers when
+        devicePixelRatio differs from the quality factor. #frame clips instead.
+      */
+      #stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #0e1014;
+        color: #e9ebf0;
+      }
+
+      /* ── Mock app UI (mirrored background) ── */
+      .ui-sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 220px;
+        padding: 24px 16px;
+        background-color: #13161b;
+        border-right: 1px solid #1f232b;
+      }
+
+      .ui-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 8px 28px;
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .ui-brand-mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background-image: linear-gradient(135deg, #7c6cff, #ff6ad5);
+      }
+
+      .ui-nav-item {
+        margin-bottom: 2px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #a3a8b3;
+      }
+
+      .ui-nav-item.is-active {
+        background-color: #1f2330;
+        color: #ffffff;
+      }
+
+      .ui-section {
+        margin: 26px 12px 10px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6c7280;
+      }
+
+      .ui-main {
+        position: absolute;
+        left: 220px;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        padding: 28px 32px;
+      }
+
+      .ui-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .ui-header-text {
+        flex: 1;
+      }
+
+      .ui-greeting {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+      }
+
+      .ui-sub {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: #8a8f9a;
+      }
+
+      .ui-search {
+        width: 240px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background-color: #1a1e25;
+        font-size: 13px;
+        color: #6c7280;
+      }
+
+      .ui-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-image: linear-gradient(135deg, #ffb86b, #ff6a88);
+      }
+
+      .ui-hero {
+        position: relative;
+        height: 180px;
+        margin-bottom: 26px;
+        padding: 26px 28px;
+        border-radius: 22px;
+        background-image: linear-gradient(120deg, #5b4bff, #c04dff 55%, #ff7a9c);
+      }
+
+      .ui-hero-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .ui-hero-title {
+        margin: 8px 0 4px;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+      }
+
+      .ui-hero-meta {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .ui-hero-button {
+        position: absolute;
+        left: 28px;
+        bottom: 24px;
+        padding: 9px 20px;
+        border-radius: 999px;
+        background-color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1b1340;
+      }
+
+      .ui-row-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .ui-row-link {
+        font-size: 12px;
+        font-weight: 500;
+        color: #8a8f9a;
+      }
+
+      .ui-albums {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 26px;
+      }
+
+      .ui-cover {
+        aspect-ratio: 1;
+        margin-bottom: 8px;
+        border-radius: 14px;
+      }
+
+      .ui-album-title {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .ui-album-artist {
+        font-size: 12px;
+        color: #8a8f9a;
+      }
+
+      .ui-track {
+        display: grid;
+        grid-template-columns: 28px 1fr 1fr 48px;
+        align-items: center;
+        padding: 10px 8px;
+        border-bottom: 1px solid #1c2027;
+        font-size: 13px;
+      }
+
+      .ui-track-index,
+      .ui-track-artist,
+      .ui-track-time {
+        color: #8a8f9a;
+      }
+
+      .ui-track-time {
+        text-align: right;
+      }
+
+      /* ── Draggable a2kama travelers ── */
+      .card {
+        position: absolute;
+        touch-action: none;
+        cursor: grab;
+      }
+
+      .card.dragging {
+        cursor: grabbing;
+      }
+
+      .glass-card {
+        left: calc(50% + 110px - 230px);
+        top: calc(100% - 108px);
+        width: 460px;
+        height: 76px;
+        border-radius: 38px;
+        background-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .water-card {
+        left: calc(100% - 332px);
+        top: 110px;
+        width: 280px;
+        height: 176px;
+        border-radius: 28px;
+        background-color: rgba(255, 255, 255, 0.02);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Card content is mirrored into the canvas; let the card itself take the drag. */
+      .player,
+      .widget {
+        width: 100%;
+        height: 100%;
+        color: #ffffff;
+        pointer-events: none;
+      }
+
+      .player {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 22px 0 14px;
+      }
+
+      .player-cover {
+        flex: none;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background-image: linear-gradient(135deg, #34d1bf, #3a7bff);
+      }
+
+      .player-text {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .player-title {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .player-artist {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .player-progress {
+        height: 3px;
+        margin-top: 8px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .player-progress i {
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: 3px;
+        background: #ffffff;
+      }
+
+      .player-controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .player-controls svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
+
+      .player-play {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #ffffff;
+        color: #0e1014;
+      }
+
+      .widget {
+        display: flex;
+        flex-direction: column;
+        padding: 18px 20px;
+      }
+
+      .widget-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .widget-title {
+        margin-top: 6px;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .widget-meta {
+        margin-top: 2px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .widget-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: auto;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .widget-level {
+        flex: 1;
+        height: 6px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .widget-level i {
+        display: block;
+        width: 62%;
+        height: 100%;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      /* ── Control panel (outside the mirrored stage) ── */
+      .panel {
+        overflow-y: auto;
+        background: var(--panel-bg);
+        border-left: 1px solid var(--panel-border);
+      }
+
+      .panel-head {
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid var(--panel-border);
+      }
+
+      .panel-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+
+      .panel-head h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .icon-button {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border-radius: 50%;
+        font-weight: 700;
+      }
+
+      .panel-head p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.92em;
+      }
+
+      .field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .field button {
+        flex: none;
+        white-space: nowrap;
+      }
+
+      button {
+        font: inherit;
+        color: var(--text);
+        background: #1a1d23;
+        border: 1px solid var(--panel-border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      .group {
+        padding: 16px 20px 20px;
+        border-bottom: 1px solid var(--panel-border);
+      }
+
+      .group-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .group-head h2 {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .group-layer {
+        display: block;
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .panel-empty {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 20px;
+        padding: 18px;
+        border: 1px dashed var(--panel-border);
+        border-radius: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .panel-empty strong {
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: baseline;
+        gap: 2px 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--row-border);
+        font-size: 13px;
+      }
+
+      .row-name small {
+        display: block;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+      }
+
+      .row output {
+        font-variant-numeric: tabular-nums;
+        color: var(--accent);
+      }
+
+      .row input {
+        grid-column: 1 / -1;
+        width: 100%;
+        margin: 6px 0 0;
+        accent-color: var(--accent);
+      }
+
+      .row input[type="color"] {
+        height: 28px;
+        padding: 0;
+        border: none;
+        background: none;
+      }
+
+      .snippet {
+        margin: 14px 0 0;
+        padding: 12px;
+        overflow-x: auto;
+        background: #0b0c0f;
+        border: 1px solid var(--panel-border);
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #c9d1d9;
+      }
+
+      /* ── Overlays above the canvas (outside #stage, so they are not mirrored) ── */
+      .selection-ring {
+        position: absolute;
+        z-index: 150;
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 4px rgba(106, 183, 255, 0.35);
+        pointer-events: none;
+      }
+
+      .selection-tag {
+        position: absolute;
+        left: 14px;
+        bottom: calc(100% + 8px);
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+        color: #06121f;
+      }
+
+      .guide {
+        position: absolute;
+        inset: 0;
+        z-index: 200;
+        background: rgba(8, 10, 14, 0.5);
+        cursor: pointer;
+      }
+
+      .guide-spot {
+        position: absolute;
+        border: 2px solid rgba(255, 255, 255, 0.95);
+        animation: guide-pulse 1.6s ease-out infinite;
+        pointer-events: none;
+      }
+
+      .guide-spot span {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 12px);
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        color: #0e1014;
+        transform: translateX(-50%);
+      }
+
+      .guide-spot.label-above span {
+        top: auto;
+        bottom: calc(100% + 12px);
+      }
+
+      @keyframes guide-pulse {
+        from {
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45);
+        }
+        to {
+          box-shadow: 0 0 0 16px rgba(255, 255, 255, 0);
+        }
+      }
+
+      .guide-hint {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        color: #ffffff;
+        transform: translate(-50%, -50%);
+      }
+
+      @media (max-width: 860px) {
+        /* Keep the window itself from scrolling; the panel scrolls on its own. */
+        .app {
+          grid-template-columns: 1fr;
+          grid-template-rows: minmax(0, 1fr) minmax(0, 42vh);
+        }
+
+        .panel {
+          border-left: none;
+          border-top: 1px solid var(--panel-border);
+        }
+
+        .ui-sidebar,
+        .ui-search {
+          display: none;
+        }
+
+        .ui-main {
+          left: 0;
+          padding: 20px;
+        }
+
+        .ui-hero-title {
+          font-size: 26px;
+        }
+
+        .glass-card {
+          left: calc(50% - 170px);
+          top: calc(100% - 96px);
+          width: 340px;
+          height: 72px;
+        }
+
+        .water-card {
+          left: calc(100% - 244px);
+          top: 84px;
+          width: 220px;
+          height: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div id="frame">
+        <main id="stage">
+          <aside class="ui-sidebar">
+            <div class="ui-brand"><span class="ui-brand-mark"></span>Soundwave</div>
+            <div class="ui-nav-item is-active" data-i18n="nav.home">Home</div>
+            <div class="ui-nav-item" data-i18n="nav.browse">Browse</div>
+            <div class="ui-nav-item" data-i18n="nav.radio">Radio</div>
+            <div class="ui-nav-item" data-i18n="nav.library">Library</div>
+            <div class="ui-section" data-i18n="nav.playlists">Playlists</div>
+            <div class="ui-nav-item" data-i18n="playlist.morning">Morning Focus</div>
+            <div class="ui-nav-item" data-i18n="playlist.deep">Deep Work</div>
+            <div class="ui-nav-item" data-i18n="playlist.night">Night Drive</div>
+            <div class="ui-nav-item" data-i18n="playlist.coastal">Coastal Chill</div>
+          </aside>
+
+          <section class="ui-main">
+            <header class="ui-header">
+              <div class="ui-header-text">
+                <h2 class="ui-greeting" data-i18n="header.greeting">Good evening</h2>
+                <p class="ui-sub" data-i18n="header.sub">Picked for your Thursday night</p>
+              </div>
+              <div class="ui-search" data-i18n="header.search">Search artists, songs, podcasts</div>
+              <div class="ui-avatar"></div>
+            </header>
+
+            <div class="ui-hero">
+              <div class="ui-hero-kicker" data-i18n="hero.kicker">New release</div>
+              <div class="ui-hero-title">Tidal Bloom</div>
+              <div class="ui-hero-meta" data-i18n="hero.meta">Aurora Lane · 12 songs · 41 min</div>
+              <div class="ui-hero-button" data-i18n="hero.play">Play album</div>
+            </div>
+
+            <div class="ui-row-title"><span data-i18n="row.recent">Recently played</span><span class="ui-row-link" data-i18n="row.seeAll">See all</span></div>
+            <div class="ui-albums">
+              <div>
+                <div class="ui-cover" style="background-image: linear-gradient(135deg, #ff9966, #ff5e62)"></div>
+                <div class="ui-album-title">Solar Drift</div>
+                <div class="ui-album-artist">Juno Park</div>
+              </div>
+              <div>
+                <div class="ui-cover" style="background-image: linear-gradient(135deg, #56ccf2, #2f80ed)"></div>
+                <div class="ui-album-title">Blue Hours</div>
+                <div class="ui-album-artist">Mika Sol</div>
+              </div>
+              <div>
+                <div class="ui-cover" style="background-image: linear-gradient(135deg, #a8e063, #2f9e6a)"></div>
+                <div class="ui-album-title">Evergreen</div>
+                <div class="ui-album-artist">The Pines</div>
+              </div>
+              <div>
+                <div class="ui-cover" style="background-image: linear-gradient(135deg, #f7c948, #f76b1c)"></div>
+                <div class="ui-album-title">Amber Static</div>
+                <div class="ui-album-artist">Low Orbit</div>
+              </div>
+            </div>
+
+            <div class="ui-row-title"><span data-i18n="row.upNext">Up next</span></div>
+            <div class="ui-track">
+              <span class="ui-track-index">1</span><span>Glasshouse</span><span class="ui-track-artist">Aurora Lane</span
+              ><span class="ui-track-time">3:42</span>
+            </div>
+            <div class="ui-track">
+              <span class="ui-track-index">2</span><span>Undertow</span><span class="ui-track-artist">Aurora Lane</span
+              ><span class="ui-track-time">4:05</span>
+            </div>
+            <div class="ui-track">
+              <span class="ui-track-index">3</span><span>Salt &amp; Light</span
+              ><span class="ui-track-artist">Mika Sol</span><span class="ui-track-time">2:58</span>
+            </div>
+            <div class="ui-track">
+              <span class="ui-track-index">4</span><span>Night Swim</span><span class="ui-track-artist">Juno Park</span
+              ><span class="ui-track-time">3:31</span>
+            </div>
+          </section>
+
+          <!--
+            Traveler N samples capture buffer N, which holds the page plus every traveler
+            on a lower layer. Water (3) is stacked above Glass (2), so it refracts the glass.
+            Like the dev/apple dock, each card mirrors its own content (include-tree)
+            instead of lifting it with a sandwich, so the upper card refracts that too.
+          -->
+          <div
+            id="glass"
+            class="card glass-card"
+            style="z-index: 2"
+            data-a2kama="testGlass"
+            data-mirage-travel="traveler 2"
+            data-mirage-select="include-tree"
+          >
+            <div class="player">
+              <div class="player-cover"></div>
+              <div class="player-text">
+                <div class="player-title">Glasshouse</div>
+                <div class="player-artist">Aurora Lane</div>
+                <div class="player-progress"><i></i></div>
+              </div>
+              <div class="player-controls">
+                <svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z" /></svg>
+                <span class="player-play">
+                  <svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+                </span>
+                <svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z" /></svg>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="water"
+            class="card water-card"
+            style="z-index: 3"
+            data-a2kama="testWater"
+            data-mirage-travel="traveler 3"
+            data-mirage-select="include-tree"
+          >
+            <div class="widget">
+              <div class="widget-kicker" data-i18n="widget.kicker">AMBIENT</div>
+              <div class="widget-title" data-i18n="widget.title">Ocean Waves</div>
+              <div class="widget-meta" data-i18n="widget.meta">Focus mode · 42 min left</div>
+              <div class="widget-footer">
+                <span class="widget-level"><i></i></span>
+                <span>62%</span>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <div id="selection-ring" class="selection-ring" hidden><span class="selection-tag"></span></div>
+
+        <div id="guide" class="guide" hidden>
+          <div class="guide-spot" data-target="#glass"><span data-i18n="guide.drag">Drag</span></div>
+          <div class="guide-spot" data-target="#water"><span data-i18n="guide.drag">Drag</span></div>
+          <p class="guide-hint" data-i18n="guide.hint">Click a card to tune it</p>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel-head">
+          <div class="panel-title-row">
+            <h1 data-i18n="panel.title">Uniform Playground</h1>
+            <button
+              type="button"
+              id="guide-open"
+              class="icon-button"
+              data-i18n-label="guide.open"
+              aria-label="Show guide"
+            >
+              ?
+            </button>
+          </div>
+          <p data-i18n-html="panel.description">
+            Click the player bar (Glass) or the widget (Water) to tune it. Every slider writes one uniform through
+            <code>a2kama.getOptions()</code>, and the snippet is the recipe for the current values.
+          </p>
+          <div class="field">
+            <span id="layer-order"></span>
+            <button type="button" id="swap-layers" data-i18n="panel.swap">Swap</button>
+          </div>
+        </header>
+        <div id="panel-empty" class="panel-empty">
+          <strong data-i18n="panel.emptyTitle">Nothing selected</strong>
+          <span data-i18n="panel.emptyBody">Click a card on the left to edit its uniforms.</span>
+        </div>
+        <section class="group" data-group="glass" hidden></section>
+        <section class="group" data-group="water" hidden></section>
+      </aside>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
