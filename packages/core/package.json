@@ -2,20 +2,35 @@
   "name": "a2kama",
   "version": "1.0.1",
   "description": "",
-  "main": "src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./presets": "./src/presets.ts"
+    ".": {
+      "a2kama-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./presets": {
+      "a2kama-source": "./src/presets.ts",
+      "types": "./dist/presets.d.ts",
+      "import": "./dist/presets.mjs",
+      "require": "./dist/presets.cjs"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.28.1",
+  "license": "MIT",
   "dependencies": {
-    "@a2kama/presets": "^1.0.0",
+    "@a2kama/presets": "workspace:^",
     "mirage-engine": "latest",
     "three": "^0.160.1"
   }
