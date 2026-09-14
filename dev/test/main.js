@@ -285,6 +285,18 @@ function select(group) {
   updateLayerLabels();
 }
 
+function deselect() {
+  selected = null;
+  emptyState.hidden = false;
+  for (const group of GROUPS) group.section.hidden = true;
+  ring.hidden = true;
+}
+
+// Pressing anywhere on the app except a card clears the selection.
+document.querySelector("#stage").addEventListener("pointerdown", (event) => {
+  if (selected && !event.target.closest(".card")) deselect();
+});
+
 // The ring sits outside the mirrored stage, so it follows the card every frame.
 function trackRing() {
   if (selected) {
