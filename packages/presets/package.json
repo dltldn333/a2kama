@@ -2,8 +2,23 @@
   "name": "@a2kama/presets",
   "version": "1.0.0",
   "description": "Presets for a2kama",
-  "main": "src/index.ts",
-  "scripts": {},
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "a2kama-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

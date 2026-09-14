@@ -31,7 +31,7 @@ importers:
   packages/core:
     dependencies:
       '@a2kama/presets':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../presets
       mirage-engine:
         specifier: latest
