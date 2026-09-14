@@ -33,5 +33,10 @@
     "@a2kama/presets": "workspace:^",
     "mirage-engine": "latest",
     "three": "^0.160.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dltldn333/a2kama.git",
+    "directory": "packages/core"
   }
 }
