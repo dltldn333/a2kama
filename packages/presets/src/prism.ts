@@ -4,8 +4,8 @@ import { hueToRgb, pxToUv } from "./glsl";
 export interface PrismOptions {
   /**
    * Width of each prism facet in pixels.
-   * @default 64
-   * @range [10, 200]
+   * @default 10
+   * @range [2, 200]
    */
   facetSize?: number;
 
@@ -40,7 +40,7 @@ export interface PrismOptions {
 
 export const a2kPrism = {
   normal(options: PrismOptions = {}): Recipe {
-    const { facetSize = 64, angle = 35, refraction = 10, dispersion = 6, rainbow = 0.3 } = options;
+    const { facetSize = 10, angle = 35, refraction = 10, dispersion = 6, rainbow = 0.3 } = options;
 
     return {
       shader: {

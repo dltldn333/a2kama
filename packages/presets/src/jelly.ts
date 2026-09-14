@@ -11,7 +11,7 @@ export interface JellyOptions {
 
   /**
    * Wobble displacement of the background, in pixels.
-   * @default 10
+   * @default 15
    * @range [0, 40]
    */
   wobble?: number;
@@ -39,7 +39,7 @@ export interface JellyOptions {
 
   /**
    * Glossy highlight strength.
-   * @default 0.8
+   * @default 0.3
    * @range [0, 2]
    */
   gloss?: number;
@@ -62,11 +62,11 @@ export const a2kJelly = {
   normal(options: JellyOptions = {}): Recipe {
     const {
       speed = 2,
-      wobble = 10,
+      wobble = 15,
       duration = 1.6,
       softness = 36,
       refraction = 18,
-      gloss = 0.8,
+      gloss = 0.3,
       tintStrength = 0.45,
       tint = [1, 0.42, 0.68],
     } = options;

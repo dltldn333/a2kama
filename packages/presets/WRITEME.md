@@ -111,7 +111,7 @@ A row of prism facets that bend and split the background into color.
 
 | Option | Default | Range | Description |
 | :----- | :------ | :---- | :---------- |
-| `facetSize` | `64` | 10 – 200 | Width of each facet in pixels. |
+| `facetSize` | `10` | 2 – 200 | Width of each facet in pixels. |
 | `angle` | `35` | 0 – 360 | Direction across the facets in degrees. |
 | `refraction` | `10` | 0 – 40 | How far each facet bends the background, in pixels. |
 | `dispersion` | `6` | 0 – 30 | RGB split between channels in pixels. |

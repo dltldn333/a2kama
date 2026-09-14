@@ -186,7 +186,7 @@ const EFFECTS = {
     factory: "a2kPrism.normal",
     create: (options) => a2kPrism.normal(options),
     controls: [
-      range("facetSize", 10, 200, 1),
+      range("facetSize", 2, 200, 1),
       range("angle", 0, 360, 1),
       range("refraction", 0, 40, 0.5),
       range("dispersion", 0, 30, 0.5),
