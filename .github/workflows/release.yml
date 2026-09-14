@@ -22,21 +22,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
 
-      # No registry-url: its generated .npmrc carries an empty token that blocks OIDC.
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
-
-      # npm trusted publishing (OIDC) needs npm >= 11.5.1; pnpm 10 publishes through npm.
-      - name: Update npm
-        run: npm install -g npm@latest
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate READMEs
+        run: pnpm readme
 
       - name: Build
         run: pnpm run build
