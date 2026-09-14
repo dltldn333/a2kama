@@ -3,9 +3,7 @@ import {
   a2kAurora,
   a2kBloom,
   a2kGlass,
-  a2kGlitch,
   a2kHeatHaze,
-  a2kHolographic,
   a2kJelly,
   a2kOil,
   a2kPrism,
@@ -62,11 +60,9 @@ const MESSAGES = {
     "effect.prism": "Prism",
     "effect.aurora": "Aurora",
     "effect.bloom": "Bloom",
-    "effect.holographic": "Holographic",
     "effect.ripple": "Ripple",
     "effect.heatHaze": "Heat haze",
     "effect.smoke": "Smoke",
-    "effect.glitch": "Glitch",
     "effect.oil": "Oil",
   },
   ko: {
@@ -115,11 +111,9 @@ const MESSAGES = {
     "effect.prism": "프리즘",
     "effect.aurora": "오로라",
     "effect.bloom": "블룸",
-    "effect.holographic": "홀로그래픽",
     "effect.ripple": "리플",
     "effect.heatHaze": "아지랑이",
     "effect.smoke": "스모크",
-    "effect.glitch": "글리치",
     "effect.oil": "오일",
   },
 };
@@ -221,18 +215,6 @@ const EFFECTS = {
       color("tint"),
     ],
   },
-  holographic: {
-    factory: "a2kHolographic.normal",
-    create: (options) => a2kHolographic.normal(options),
-    controls: [
-      range("speed", 0, 4, 0.05),
-      range("intensity", 0, 1, 0.01),
-      range("bands", 0.1, 6, 0.05),
-      range("angle", 0, 360, 1),
-      range("sparkle", 0, 1, 0.01),
-      range("refraction", 0, 20, 0.5),
-    ],
-  },
   ripple: {
     factory: "a2kRipple.normal",
     create: (options) => a2kRipple.normal(options),
@@ -267,18 +249,6 @@ const EFFECTS = {
       color("color"),
     ],
   },
-  glitch: {
-    factory: "a2kGlitch.normal",
-    create: (options) => a2kGlitch.normal(options),
-    controls: [
-      range("speed", 0, 4, 0.05),
-      range("intensity", 0, 1, 0.01),
-      range("split", 0, 30, 0.5),
-      range("shift", 0, 80, 1),
-      range("blockSize", 4, 80, 1),
-      range("scanlines", 0, 1, 0.01),
-    ],
-  },
   oil: {
     factory: "a2kOil.normal",
     create: (options) => a2kOil.normal(options),
@@ -305,17 +275,15 @@ const WIDGET_EFFECTS = [
   "prism",
   "aurora",
   "bloom",
-  "holographic",
   "ripple",
   "heatHaze",
   "smoke",
-  "glitch",
   "oil",
 ];
 
 const GROUPS = [
   { id: "glass", selector: "#glass", effectId: "glass", choices: null },
-  { id: "water", selector: "#water", effectId: "water", choices: WIDGET_EFFECTS },
+  { id: "water", selector: "#water", effectId: "prism", choices: WIDGET_EFFECTS },
 ];
 
 const round = (value, digits = 3) => Number(value.toFixed(digits));
