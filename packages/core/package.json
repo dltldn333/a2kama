@@ -38,5 +38,9 @@
     "type": "git",
     "url": "git+https://github.com/dltldn333/a2kama.git",
     "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

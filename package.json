@@ -1,7 +1,6 @@
 {
   "name": "a2kama-monorepo",
   "private": true,
-  "packageManager": "pnpm@10.28.1",
   "scripts": {
     "dev": "vite",
     "build": "pnpm -r build",

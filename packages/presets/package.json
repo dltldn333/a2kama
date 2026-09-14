@@ -26,5 +26,9 @@
     "type": "git",
     "url": "git+https://github.com/dltldn333/a2kama.git",
     "directory": "packages/presets"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
