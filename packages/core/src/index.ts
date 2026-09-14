@@ -14,6 +14,9 @@ class A2kama {
   private uniformValues: WeakMap<HTMLElement, Record<string, any>> = new WeakMap();
   private clocks: Map<HTMLElement, Clock> = new Map();
   private lastFrameTime: number | null = null;
+  // Elements whose recipe changed after init and still need a layout pass once rebuilt.
+  private pendingResync: Set<HTMLElement> = new Set();
+  private resyncCount = 0;
 
   /**
    * Retrieves a reactive Proxy object for the element's options.
@@ -61,8 +64,15 @@ class A2kama {
         Object.assign(userOptions, uniforms);
       }
 
-      // Create a Proxy to intercept all property assignments.
+      // Create a Proxy to intercept all property reads and assignments.
       const proxy = new Proxy(userOptions, {
+        get(target, property) {
+          if (typeof property !== "string") return Reflect.get(target, property);
+
+          // Read live uniform values, so values driven elsewhere (e.g. time) are current
+          const uniformKey = optionMap[property] || property;
+          return uniformKey in uniforms ? uniforms[uniformKey] : target[property];
+        },
         set(target, property, value) {
           target[property as string] = value;
 
@@ -87,6 +97,43 @@ class A2kama {
     this.recipes.set(name, recipe);
   }
 
+  /**
+   * Applies a registered recipe to an element, replacing the recipe it had.
+   * Options objects from getOptions() for the previous recipe no longer apply; call it again.
+   * @param element The target element.
+   * @param name The name the recipe was registered with.
+   */
+  setRecipe(element: HTMLElement, name: string) {
+    const recipe = this.recipes.get(name);
+    if (!recipe) {
+      console.warn(`a2kama: Recipe '${name}' not found for element`, element);
+      return;
+    }
+
+    element.dataset.a2kama = name;
+    // Apply mirage attributes required by the engine for travelers
+    // element.dataset.mirageTravel = "traveler";
+    // element.dataset.mirageFilter = "exclude-self";
+    element.dataset.mirageDom = "hide";
+
+    // Inject the generated shader from the recipe
+    element.dataset.mirageShader = JSON.stringify(recipe.shader);
+    if (recipe.optionMap) {
+      element.dataset.a2kamaMap = JSON.stringify(recipe.optionMap);
+    } else {
+      delete element.dataset.a2kamaMap;
+    }
+
+    this.uniformValues.set(element, { ...recipe.shader.uniforms });
+    this.animatedUniforms.delete(element);
+    if (this.mirageInstance) this.pendingResync.add(element);
+    if (recipe.time) {
+      this.clocks.set(element, { ...recipe.time, elapsed: 0 });
+    } else {
+      this.clocks.delete(element);
+    }
+  }
+
   init(root?: HTMLElement, config?: MirageConfig) {
     this.rootElement = root || document.body;
 
@@ -95,31 +142,8 @@ class A2kama {
 
     elements.forEach((el) => {
       const recipeName = el.getAttribute("data-a2kama");
-      if (recipeName && this.recipes.has(recipeName)) {
-        const recipe = this.recipes.get(recipeName)!;
-
-        if (el instanceof HTMLElement) {
-          // Apply mirage attributes required by the engine for travelers
-          // el.dataset.mirageTravel = "traveler";
-          // el.dataset.mirageFilter = "exclude-self";
-          el.dataset.mirageDom = "hide";
-
-          // Inject the generated shader from the recipe
-          el.dataset.mirageShader = JSON.stringify(recipe.shader);
-          if (recipe.optionMap) {
-            el.dataset.a2kamaMap = JSON.stringify(recipe.optionMap);
-          }
-
-          this.uniformValues.set(el, { ...recipe.shader.uniforms });
-          if (recipe.time) {
-            this.clocks.set(el, { ...recipe.time, elapsed: 0 });
-          }
-        }
-      } else {
-        console.warn(
-          `a2kama: Recipe '${recipeName}' not found for element`,
-          el,
-        );
+      if (recipeName && el instanceof HTMLElement) {
+        this.setRecipe(el, recipeName);
       }
     });
 
@@ -132,7 +156,9 @@ class A2kama {
     };
 
     this.mirageInstance = new Mirage(this.rootElement, defaultConfig);
-    this.mirageInstance.getTracker().onRender.add(this.advanceClocks);
+    const tracker = this.mirageInstance.getTracker();
+    tracker.onLayoutChange.add(this.resyncRebuiltMeshes);
+    tracker.onRender.add(this.advanceClocks);
     this.mirageInstance.start();
   }
 
@@ -179,6 +205,16 @@ class A2kama {
     this.uniformValues.set(element, uniforms);
     return uniforms;
   }
+
+  // Runs after mirage-engine has applied a layout change, including mesh rebuilds.
+  // A rebuilt mesh is scaled before its box-shadow padding is known, so it renders too small
+  // until the next layout pass. A no-op style change on the element schedules that pass.
+  private resyncRebuiltMeshes = () => {
+    for (const element of this.pendingResync) {
+      element.style.setProperty("--a2kama-resync", String(++this.resyncCount));
+    }
+    this.pendingResync.clear();
+  };
 
   // Runs once per engine frame, right before the scene is drawn.
   private advanceClocks = () => {

@@ -1,5 +1,18 @@
 import a2kama from "a2kama";
-import { a2kGlass, a2kWater } from "a2kama/presets";
+import {
+  a2kAurora,
+  a2kBloom,
+  a2kGlass,
+  a2kGlitch,
+  a2kHeatHaze,
+  a2kHolographic,
+  a2kJelly,
+  a2kOil,
+  a2kPrism,
+  a2kRipple,
+  a2kSmoke,
+  a2kWater,
+} from "a2kama/presets";
 
 // ── Language ──
 const MESSAGES = {
@@ -30,18 +43,31 @@ const MESSAGES = {
     "guide.open": "Show guide",
     "panel.title": "Uniform Playground",
     "panel.description":
-      "Click the player bar (Glass) or the widget (Water) to tune it. Every slider writes one uniform through <code>a2kama.getOptions()</code>, and the snippet is the recipe for the current values.",
+      "Click the player bar (Glass) or the widget to tune it. Every slider writes one uniform through <code>a2kama.getOptions()</code>, and the snippet is the recipe for the current values.",
     "panel.swap": "Swap",
     "panel.emptyTitle": "Nothing selected",
     "panel.emptyBody": "Click a card on the left to edit its uniforms.",
     "panel.reset": "Reset",
+    "panel.effect": "Effect",
+    "panel.rippleHint": "Click the widget to drop a ripple.",
+    "panel.jellyHint": "Click the widget to make it wobble.",
     "panel.layerOrder": "{top} (traveler {topLayer}) refracts {bottom} (traveler {bottomLayer})",
     "panel.onTop": "on top",
     "panel.underneath": "underneath",
-    "glass.title": "Glass",
     "glass.name": "Player bar",
-    "water.title": "Water",
     "water.name": "Ambient widget",
+    "effect.glass": "Glass",
+    "effect.water": "Water",
+    "effect.jelly": "Jelly",
+    "effect.prism": "Prism",
+    "effect.aurora": "Aurora",
+    "effect.bloom": "Bloom",
+    "effect.holographic": "Holographic",
+    "effect.ripple": "Ripple",
+    "effect.heatHaze": "Heat haze",
+    "effect.smoke": "Smoke",
+    "effect.glitch": "Glitch",
+    "effect.oil": "Oil",
   },
   ko: {
     "nav.home": "홈",
@@ -70,18 +96,31 @@ const MESSAGES = {
     "guide.open": "가이드 보기",
     "panel.title": "유니폼 플레이그라운드",
     "panel.description":
-      "플레이어 바(Glass)나 위젯(Water)을 클릭해 설정을 바꿔 보세요. 슬라이더마다 <code>a2kama.getOptions()</code>로 유니폼 하나를 바꾸고, 아래 코드는 현재 값으로 만든 레시피예요.",
+      "플레이어 바(Glass)나 위젯을 클릭해 설정을 바꿔 보세요. 슬라이더마다 <code>a2kama.getOptions()</code>로 유니폼 하나를 바꾸고, 아래 코드는 현재 값으로 만든 레시피예요.",
     "panel.swap": "레이어 바꾸기",
     "panel.emptyTitle": "선택된 카드가 없어요",
     "panel.emptyBody": "카드를 클릭하면 유니폼을 조절할 수 있어요.",
     "panel.reset": "초기화",
-    "panel.layerOrder": "{top}(traveler {topLayer})가 {bottom}(traveler {bottomLayer})를 굴절시켜요",
+    "panel.effect": "효과",
+    "panel.rippleHint": "위젯을 클릭하면 파문이 생겨요.",
+    "panel.jellyHint": "위젯을 클릭하면 출렁여요.",
+    "panel.layerOrder": "{top}(traveler {topLayer}) → {bottom}(traveler {bottomLayer}) 굴절",
     "panel.onTop": "위",
     "panel.underneath": "아래",
-    "glass.title": "글래스",
     "glass.name": "플레이어 바",
-    "water.title": "워터",
     "water.name": "앰비언트 위젯",
+    "effect.glass": "글래스",
+    "effect.water": "워터",
+    "effect.jelly": "젤리",
+    "effect.prism": "프리즘",
+    "effect.aurora": "오로라",
+    "effect.bloom": "블룸",
+    "effect.holographic": "홀로그래픽",
+    "effect.ripple": "리플",
+    "effect.heatHaze": "아지랑이",
+    "effect.smoke": "스모크",
+    "effect.glitch": "글리치",
+    "effect.oil": "오일",
   },
 };
 
@@ -96,57 +135,197 @@ function detectLanguage() {
 const lang = detectLanguage();
 const t = (key, vars = {}) => MESSAGES[lang][key].replace(/\{(\w+)\}/g, (_, name) => vars[name]);
 
-// Each param maps one recipe option to the uniform it drives.
-const GROUPS = [
-  {
-    id: "glass",
-    recipe: "testGlass",
-    selector: "#glass",
+// ── Effects ──
+// Only slider ranges live here; defaults and uniform names come from each preset.
+const range = (key, min, max, step) => ({ key, min, max, step });
+const color = (key) => ({ key });
+
+const EFFECTS = {
+  glass: {
     factory: "a2kGlass.normal",
     create: (options) => a2kGlass.normal(options),
-    params: [
-      { key: "refraction", uniform: "uGlassRefraction", min: 0, max: 300, step: 1, value: 100 },
-      { key: "depth", uniform: "uGlassDepth", min: 0, max: 200, step: 1, value: 40 },
-      { key: "bevelWidth", uniform: "uGlassBevelWidth", min: 0, max: 200, step: 1, value: 20 },
-      { key: "bevelCurve", uniform: "uGlassBevelCurve", min: 0.1, max: 10, step: 0.1, value: 3 },
-      { key: "splay", uniform: "uGlassSplay", min: 0, max: 200, step: 1, value: 0 },
-      { key: "zoom", uniform: "uGlassZoom", min: 0.1, max: 5, step: 0.05, value: 1 },
-      { key: "dispersion", uniform: "uGlassDispersion", min: 0, max: 200, step: 1, value: 0 },
-      { key: "frost", uniform: "uGlassFrost", min: 0, max: 100, step: 1, value: 0 },
-      { key: "lightDirection", uniform: "uGlassLightDirection", min: 0, max: 360, step: 1, value: 45 },
-      { key: "lightIntensity", uniform: "uGlassLightIntensity", min: 0, max: 2, step: 0.01, value: 0.6 },
-      { key: "lightSymmetry", uniform: "uGlassLightSymmetry", min: 0, max: 1, step: 0.01, value: 1 },
+    controls: [
+      range("refraction", 0, 300, 1),
+      range("depth", 0, 200, 1),
+      range("bevelWidth", 0, 200, 1),
+      range("bevelCurve", 0.1, 10, 0.1),
+      range("splay", 0, 200, 1),
+      range("zoom", 0.1, 5, 0.05),
+      range("dispersion", 0, 200, 1),
+      range("frost", 0, 100, 1),
+      range("lightDirection", 0, 360, 1),
+      range("lightIntensity", 0, 2, 0.01),
+      range("lightSymmetry", 0, 1, 0.01),
     ],
   },
-  {
-    id: "water",
-    recipe: "testWater",
-    selector: "#water",
+  water: {
     factory: "a2kWater.normal",
     create: (options) => a2kWater.normal(options),
-    params: [
-      { key: "speed", uniform: "uWaterSpeed", min: 0, max: 4, step: 0.05, value: 1 },
-      { key: "amplitude", uniform: "uWaterAmplitude", min: 0, max: 40, step: 0.5, value: 8 },
-      { key: "wavelength", uniform: "uWaterWavelength", min: 10, max: 400, step: 1, value: 90 },
-      { key: "direction", uniform: "uWaterDirection", min: 0, max: 360, step: 1, value: 30 },
-      { key: "turbulence", uniform: "uWaterTurbulence", min: 0, max: 1, step: 0.01, value: 0.6 },
-      { key: "edgeSoftness", uniform: "uWaterEdgeSoftness", min: 0, max: 100, step: 1, value: 16 },
-      { key: "highlight", uniform: "uWaterHighlight", min: 0, max: 2, step: 0.01, value: 0.5 },
-      { key: "lightDirection", uniform: "uWaterLightDirection", min: 0, max: 360, step: 1, value: 45 },
-      { key: "tintStrength", uniform: "uWaterTintStrength", min: 0, max: 1, step: 0.01, value: 0.18 },
-      { key: "tint", uniform: "uWaterTint", type: "color", value: [0.36, 0.66, 0.85] },
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("amplitude", 0, 40, 0.5),
+      range("wavelength", 10, 400, 1),
+      range("direction", 0, 360, 1),
+      range("turbulence", 0, 1, 0.01),
+      range("edgeSoftness", 0, 100, 1),
+      range("highlight", 0, 2, 0.01),
+      range("lightDirection", 0, 360, 1),
+      range("tintStrength", 0, 1, 0.01),
+      color("tint"),
     ],
   },
+  jelly: {
+    factory: "a2kJelly.normal",
+    create: (options) => a2kJelly.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("wobble", 0, 40, 0.5),
+      range("duration", 0.2, 4, 0.05),
+      range("softness", 1, 120, 1),
+      range("refraction", 0, 80, 1),
+      range("gloss", 0, 2, 0.01),
+      range("tintStrength", 0, 1, 0.01),
+      color("tint"),
+    ],
+  },
+  prism: {
+    factory: "a2kPrism.normal",
+    create: (options) => a2kPrism.normal(options),
+    controls: [
+      range("facetSize", 10, 200, 1),
+      range("angle", 0, 360, 1),
+      range("refraction", 0, 40, 0.5),
+      range("dispersion", 0, 30, 0.5),
+      range("rainbow", 0, 1, 0.01),
+    ],
+  },
+  aurora: {
+    factory: "a2kAurora.normal",
+    create: (options) => a2kAurora.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("intensity", 0, 2, 0.01),
+      range("scale", 40, 600, 1),
+      range("warp", 0, 30, 0.5),
+      color("colorA"),
+      color("colorB"),
+    ],
+  },
+  bloom: {
+    factory: "a2kBloom.normal",
+    create: (options) => a2kBloom.normal(options),
+    controls: [
+      range("threshold", 0, 0.95, 0.01),
+      range("radius", 0, 60, 1),
+      range("intensity", 0, 4, 0.05),
+      color("tint"),
+    ],
+  },
+  holographic: {
+    factory: "a2kHolographic.normal",
+    create: (options) => a2kHolographic.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("intensity", 0, 1, 0.01),
+      range("bands", 0.1, 6, 0.05),
+      range("angle", 0, 360, 1),
+      range("sparkle", 0, 1, 0.01),
+      range("refraction", 0, 20, 0.5),
+    ],
+  },
+  ripple: {
+    factory: "a2kRipple.normal",
+    create: (options) => a2kRipple.normal(options),
+    controls: [
+      range("speed", 0, 1200, 5),
+      range("amplitude", 0, 40, 0.5),
+      range("wavelength", 8, 160, 1),
+      range("duration", 0.2, 5, 0.05),
+      range("autoInterval", 0, 8, 0.1),
+      range("highlight", 0, 2, 0.01),
+    ],
+  },
+  heatHaze: {
+    factory: "a2kHeatHaze.normal",
+    create: (options) => a2kHeatHaze.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("amplitude", 0, 30, 0.5),
+      range("scale", 10, 200, 1),
+      range("tintStrength", 0, 1, 0.01),
+      color("tint"),
+    ],
+  },
+  smoke: {
+    factory: "a2kSmoke.normal",
+    create: (options) => a2kSmoke.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("density", 0, 1, 0.01),
+      range("scale", 40, 500, 1),
+      range("distortion", 0, 30, 0.5),
+      color("color"),
+    ],
+  },
+  glitch: {
+    factory: "a2kGlitch.normal",
+    create: (options) => a2kGlitch.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("intensity", 0, 1, 0.01),
+      range("split", 0, 30, 0.5),
+      range("shift", 0, 80, 1),
+      range("blockSize", 4, 80, 1),
+      range("scanlines", 0, 1, 0.01),
+    ],
+  },
+  oil: {
+    factory: "a2kOil.normal",
+    create: (options) => a2kOil.normal(options),
+    controls: [
+      range("speed", 0, 4, 0.05),
+      range("intensity", 0, 1, 0.01),
+      range("scale", 40, 500, 1),
+      range("refraction", 0, 30, 0.5),
+      range("darkness", 0, 1, 0.01),
+      range("bands", 0.2, 4, 0.05),
+    ],
+  },
+};
+
+// Effects that react to a click on the card, with the hint shown in the panel.
+const TAP_EFFECTS = {
+  jelly: { trigger: a2kJelly.trigger, hint: "panel.jellyHint" },
+  ripple: { trigger: a2kRipple.trigger, hint: "panel.rippleHint" },
+};
+
+const WIDGET_EFFECTS = [
+  "water",
+  "jelly",
+  "prism",
+  "aurora",
+  "bloom",
+  "holographic",
+  "ripple",
+  "heatHaze",
+  "smoke",
+  "glitch",
+  "oil",
 ];
 
-const GUIDE_KEY = "a2kama-test-guide-seen";
+const GROUPS = [
+  { id: "glass", selector: "#glass", effectId: "glass", choices: null },
+  { id: "water", selector: "#water", effectId: "water", choices: WIDGET_EFFECTS },
+];
 
 const round = (value, digits = 3) => Number(value.toFixed(digits));
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const toHex = (rgb) => `#${rgb.map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("")}`;
 const fromHex = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-const initialValue = (param) => (Array.isArray(param.value) ? [...param.value] : param.value);
+const copy = (value) => (Array.isArray(value) ? [...value] : value);
 const travelerLayer = (card) => Number(card.dataset.mirageTravel.split(/\s+/)[1]);
+const effectLabel = (group) => t(`effect.${group.effectId}`);
+const recipeName = (group) => `demo-${group.id}-${group.effectId}`;
 
 function formatValue(value) {
   return Array.isArray(value) ? toHex(value) : String(round(value));
@@ -158,7 +337,22 @@ function snippet(group) {
     const text = Array.isArray(value) ? `[${value.map((c) => round(c, 2)).join(", ")}]` : round(value);
     return `  ${key}: ${text},`;
   });
-  return `${group.factory}({\n${lines.join("\n")}\n});`;
+  return `${EFFECTS[group.effectId].factory}({\n${lines.join("\n")}\n});`;
+}
+
+// Registers the effect's default recipe for this card and derives its sliders from it.
+function loadEffect(group, effectId) {
+  const effect = EFFECTS[effectId];
+  const recipe = effect.create();
+
+  group.effectId = effectId;
+  group.params = effect.controls.map((control) => {
+    const uniform = recipe.optionMap[control.key];
+    const value = recipe.shader.uniforms[uniform];
+    return { ...control, uniform, value: copy(value), type: Array.isArray(value) ? "color" : "range" };
+  });
+  group.state = Object.fromEntries(group.params.map((param) => [param.key, copy(param.value)]));
+  a2kama.register(recipeName(group), recipe);
 }
 
 function renderGroup(group) {
@@ -171,6 +365,17 @@ function renderGroup(group) {
       </div>
       <button type="button" class="reset"></button>
     </div>
+    ${
+      group.choices
+        ? `<label class="effect-field">
+            <span>${t("panel.effect")}</span>
+            <select class="effect-select">
+              ${group.choices.map((id) => `<option value="${id}">${t(`effect.${id}`)}</option>`).join("")}
+            </select>
+          </label>`
+        : ""
+    }
+    ${TAP_EFFECTS[group.effectId] ? `<p class="effect-hint">${t(TAP_EFFECTS[group.effectId].hint)}</p>` : ""}
     <div class="rows"></div>
     <pre class="snippet"><code></code></pre>
   `;
@@ -216,22 +421,42 @@ function renderGroup(group) {
 
   root.querySelector(".reset").addEventListener("click", () => {
     for (const param of group.params) {
-      const value = initialValue(param);
+      const value = copy(param.value);
       inputs.get(param.key).input.value = Array.isArray(value) ? toHex(value) : value;
       apply(param, value);
     }
   });
 
+  const select = root.querySelector(".effect-select");
+  if (select) {
+    select.value = group.effectId;
+    select.addEventListener("change", () => switchEffect(group, select.value));
+  }
+
   code.textContent = snippet(group);
+  updateLayerLabels();
 }
 
-function makeDraggable(card, onGrab) {
+function switchEffect(group, effectId) {
+  loadEffect(group, effectId);
+  a2kama.setRecipe(group.card, recipeName(group));
+  group.options = a2kama.getOptions(group.card);
+  renderGroup(group);
+}
+
+function makeDraggable(card, onGrab, onTap) {
   const stage = card.offsetParent;
   let drag = null;
 
   card.addEventListener("pointerdown", (event) => {
     onGrab();
-    drag = { id: event.pointerId, dx: event.clientX - card.offsetLeft, dy: event.clientY - card.offsetTop };
+    drag = {
+      id: event.pointerId,
+      dx: event.clientX - card.offsetLeft,
+      dy: event.clientY - card.offsetTop,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
     card.setPointerCapture(event.pointerId);
     card.classList.add("dragging");
   });
@@ -244,12 +469,16 @@ function makeDraggable(card, onGrab) {
     card.style.top = `${top}px`;
   });
 
-  const end = () => {
+  card.addEventListener("pointerup", (event) => {
+    if (drag && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 4) onTap(event);
     drag = null;
     card.classList.remove("dragging");
-  };
-  card.addEventListener("pointerup", end);
-  card.addEventListener("pointercancel", end);
+  });
+
+  card.addEventListener("pointercancel", () => {
+    drag = null;
+    card.classList.remove("dragging");
+  });
 }
 
 // ── Selection: clicking a card opens its uniforms in the panel ──
@@ -260,21 +489,25 @@ const emptyState = document.querySelector("#panel-empty");
 let selected = null;
 
 function updateLayerLabels() {
+  if (!GROUPS.every((group) => group.card && group.section)) return;
+
   const [top, bottom] = [...GROUPS].sort((a, b) => travelerLayer(b.card) - travelerLayer(a.card));
   document.querySelector("#layer-order").textContent = t("panel.layerOrder", {
-    top: t(`${top.id}.title`),
+    top: effectLabel(top),
     topLayer: travelerLayer(top.card),
-    bottom: t(`${bottom.id}.title`),
+    bottom: effectLabel(bottom),
     bottomLayer: travelerLayer(bottom.card),
   });
 
   for (const group of GROUPS) {
-    group.section.querySelector(".group-title").textContent = `${t(`${group.id}.title`)} · ${t(`${group.id}.name`)}`;
+    const title = group.section.querySelector(".group-title");
+    if (!title) continue;
+    title.textContent = `${effectLabel(group)} · ${t(`${group.id}.name`)}`;
     group.section.querySelector(".group-layer").textContent =
       `traveler ${travelerLayer(group.card)} · ${t(group === top ? "panel.onTop" : "panel.underneath")}`;
     group.section.querySelector(".reset").textContent = t("panel.reset");
   }
-  if (selected) ringTag.textContent = `${t(`${selected.id}.title`)} · traveler ${travelerLayer(selected.card)}`;
+  if (selected) ringTag.textContent = `${effectLabel(selected)} · traveler ${travelerLayer(selected.card)}`;
 }
 
 function select(group) {
@@ -318,10 +551,12 @@ for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el
 for (const el of document.querySelectorAll("[data-i18n-html]")) el.innerHTML = t(el.dataset.i18nHtml);
 for (const el of document.querySelectorAll("[data-i18n-label]")) el.setAttribute("aria-label", t(el.dataset.i18nLabel));
 
-// 1. Register one recipe per group from its default values.
+// 1. Register each card's starting effect and point the card at it.
 for (const group of GROUPS) {
-  group.state = Object.fromEntries(group.params.map((param) => [param.key, initialValue(param)]));
-  a2kama.register(group.recipe, group.create(group.state));
+  group.card = document.querySelector(group.selector);
+  group.section = document.querySelector(`[data-group="${group.id}"]`);
+  loadEffect(group, group.effectId);
+  group.card.dataset.a2kama = recipeName(group);
 }
 
 // 2. Start the engine on the stage only, so the panel and overlays are not mirrored.
@@ -333,11 +568,15 @@ a2kama.init(document.querySelector("#stage"), {
 
 // 3. Wire each card to its options proxy and controls.
 for (const group of GROUPS) {
-  group.card = document.querySelector(group.selector);
-  group.section = document.querySelector(`[data-group="${group.id}"]`);
   group.options = a2kama.getOptions(group.card);
   renderGroup(group);
-  makeDraggable(group.card, () => select(group));
+  makeDraggable(
+    group.card,
+    () => select(group),
+    (event) => {
+      TAP_EFFECTS[group.effectId]?.trigger(group.options, group.card, event.clientX, event.clientY);
+    },
+  );
 }
 updateLayerLabels();
 trackRing();
@@ -355,7 +594,7 @@ document.querySelector("#swap-layers").addEventListener("click", () => {
   updateLayerLabels();
 });
 
-// ── First-visit guide: rings on the cards, closed by any click ──
+// ── Guide: shown on every load, closed by any click ──
 const guide = document.querySelector("#guide");
 
 function positionGuideSpots() {
@@ -380,11 +619,6 @@ function openGuide() {
 
 function closeGuide() {
   guide.hidden = true;
-  try {
-    localStorage.setItem(GUIDE_KEY, "1");
-  } catch {
-    // Storage can be unavailable (private mode); the guide just shows again next time.
-  }
 }
 
 document.querySelector("#guide-open").addEventListener("click", openGuide);
@@ -395,13 +629,6 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("resize", () => {
   if (!guide.hidden) positionGuideSpots();
 });
-
-let guideSeen = false;
-try {
-  guideSeen = localStorage.getItem(GUIDE_KEY) === "1";
-} catch {
-  guideSeen = false;
-}
-if (!guideSeen) openGuide();
+openGuide();
 
 window.a2kama = a2kama;

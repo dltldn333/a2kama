@@ -47,7 +47,7 @@ options.refraction = 200;
 
 | Option | Default | Range | Description |
 | :----- | :------ | :---- | :---------- |
-| `speed` | `1.0` | 0 – 4 | Animation speed multiplier. `0` freezes the surface. |
+| `speed` | `2.0` | 0 – 4 | Animation speed multiplier. `0` freezes the surface. |
 | `amplitude` | `8` | 0 – 40 | Maximum refraction offset in pixels. |
 | `wavelength` | `90` | 10 – 400 | Length of the primary wave in pixels. |
 | `direction` | `30` | 0 – 360 | Travel direction of the primary wave in degrees (0 = right, 90 = up). |

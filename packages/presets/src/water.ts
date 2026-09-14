@@ -3,7 +3,7 @@ import type { Recipe } from "a2kama";
 export interface WaterOptions {
   /**
    * Animation speed multiplier. 0 freezes the surface.
-   * @default 1.0
+   * @default 2.0
    * @range [0.0, 4.0]
    */
   speed?: number;
@@ -81,7 +81,7 @@ export interface WaterOptions {
 export const a2kWater = {
   normal(options: WaterOptions = {}): Recipe {
     const {
-      speed = 1.0,
+      speed = 2.0,
       amplitude = options.intensity ?? 8,
       wavelength = 90,
       direction = 30,
