@@ -2,7 +2,7 @@
 
 <p align="center">
 <a href="https://github.com/dltldn333/a2kama">
- <img src="https://raw.githubusercontent.com/dltldn333/a2kama/main/.github/assets/a2kama.svg" width="140" alt="a2kama logo">
+ <img src="https://raw.githubusercontent.com/dltldn333/a2kama/main/.github/assets/a2kama.svg" width="98" alt="a2kama logo">
 </a>
 </p>
 
