@@ -1,5 +1,11 @@
 # @a2kama/presets
 
+## 1.1.1
+
+### Patch Changes
+
+- 7f83971: Add the a2kama logo to the README.
+
 ## 1.1.0
 
 ### Minor Changes
